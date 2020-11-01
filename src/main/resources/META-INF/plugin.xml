@@ -1,0 +1,35 @@
+<idea-plugin>
+    <id>org.jetbrains.plugins.template</id>
+    <name>Template</name>
+    <vendor>JetBrains</vendor>
+
+    <!-- Product and plugin compatibility requirements -->
+    <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!--        <applicationService serviceImplementation="org.jetbrains.plugins.template.services.MyApplicationService"/>-->
+        <!--        <projectService serviceImplementation="org.jetbrains.plugins.template.services.MyProjectService"/>-->
+        <fileType name="Skellig Test Data File" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataFileType"
+                  fieldName="INSTANCE" language="SkelligTestData" extensions="simple"/>
+        <lang.parserDefinition language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="SkelligTestData"
+                                       implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="org.skellig.plugin.language.testdata.SkelligColorSettingsPage"/>
+        <!--        <annotator language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataAnnotator"/>-->
+        <completion.contributor language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataCompletionContributor"/>
+        <lang.foldingBuilder language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataFoldingBuilder"/>
+        <!--        <lang.psiStructureViewFactory language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataStructureViewFactory"/>-->
+        <lang.formatter language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.formatter.SimpleFormattingModelBuilder"/>
+        <codeStyleSettingsProvider implementation="org.skellig.plugin.language.testdata.codestyle.SkelligTestDataCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider implementation="org.skellig.plugin.language.testdata.codestyle.SimpleLanguageCodeStyleSettingsProvider"/>
+        <lang.braceMatcher language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataBraceMatcher"/>
+        <lang.commenter language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.commenter.SkelligTestDataCommenter"/>
+        <!--        <fileTypeFactory implementation="org.skellig.plugin.language.testdata.SimpleFileTypeFactory"/>-->
+    </extensions>
+
+    <!--<applicationListeners>
+        <listener class="org.jetbrains.plugins.template.listeners.MyProjectManagerListener"
+                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
+    </applicationListeners>-->
+</idea-plugin>
