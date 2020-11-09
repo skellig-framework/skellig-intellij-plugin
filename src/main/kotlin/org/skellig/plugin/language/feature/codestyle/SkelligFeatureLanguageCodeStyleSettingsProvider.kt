@@ -1,17 +1,17 @@
-package org.skellig.plugin.language.testdata.codestyle
+package org.skellig.plugin.language.feature.codestyle
 
 import com.intellij.lang.Language
 import com.intellij.psi.codeStyle.CodeStyleSettingsCustomizable
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
 import org.jetbrains.annotations.NotNull
-import org.skellig.plugin.language.testdata.SkelligTestDataLanguage
+import org.skellig.plugin.language.feature.SkelligFeatureLanguage
 
 
-class SimpleLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
+class SkelligFeatureLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
 
     @NotNull
     override fun getLanguage(): Language {
-        return SkelligTestDataLanguage.INSTANCE
+        return SkelligFeatureLanguage.INSTANCE
     }
 
     override fun customizeSettings(@NotNull consumer: CodeStyleSettingsCustomizable, @NotNull settingsType: SettingsType) {
@@ -24,26 +24,30 @@ class SimpleLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvide
     }
 
     override fun getCodeSample(@NotNull settingsType: SettingsType): String {
-        return """// This is a comment.
-               name(execute command (.*)) {
-                  variables {
-                     args = "-a 1 -b 2"
-                  }
-                  
-                  payload {
-                     json [
-                       {
-                           a = $\{}
-                           c = get(key)
-                       }
-                     ]
-                  }
-                  
-                  response {
-                     a = b
-                     c = d
-                  }
-               }
+        return """//comment
+@Tag1
+Name: "Tests feature"
+
+   @Tag2
+   @Tag1_2 @Tag3
+   Test: Tests scenario
+      Given something
+      Run "<name>" something <f-d>
+      "Validate something"
+       | k1    |v2 | v3| v4|
+      Log result
+       | k1    |v2 |
+       | <k_1> |"v3."|
+
+   @Tag3
+   Test: Another test scenario
+      Given value is <value>,
+      Run function with <value>
+      Validate result is <expected>
+   Data:
+      |value|expected|
+      | v1  | <e_1>  |
+      | v2  | e2     |
                 """
     }
 }

@@ -1,0 +1,128 @@
+{
+  parserClass="org.skellig.plugin.parser.feature.SkelligFeatureParser"
+
+  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="SkelligFeature"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.skellig.plugin.language.feature.psi"
+  psiImplPackage="org.skellig.plugin.language.feature.psi.impl"
+
+  elementTypeHolderClass="org.skellig.plugin.language.feature.psi.SkelligFeatureTypes"
+  elementTypeClass="org.skellig.plugin.language.feature.psi.SkelligFeatureElementType"
+  tokenTypeClass="org.skellig.plugin.language.feature.psi.SkelligFeatureTokenType"
+
+   tokens = [
+//          number='regexp:\d+(\.\d*)?'
+//          symbols = 'regexp:[^:\n\f\\]+'
+//          symbols = 'regexp:[a-zA-Z_]+'
+          symbols = 'regexp:[;+&"?#!\\*\w,_-]+'
+          space = 'regexp:[\ \n\t\f]+'
+//          space = 'regexp:\s+'
+//          param = 'regex:[^:|\n\f\\]+'
+          comment='regexp://.*'
+          block_comment='regexp:/\*([^*]|\*+[^*/])*(\*+/)?'
+          string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+          l_param="<"
+          r_param=">"
+          param_separator="|"
+          tag_prefix="@"
+          tag_regex="regexp:@[a-zA-Z0-9_]+"
+          param_regex="regexp:<[a-zA-Z0-9_-]+>"
+          colon=":"
+      ]
+}
+
+root ::= feature*
+feature ::= tags feature_keyword text_or_string+ white tags scenario*
+
+scenario ::= tags test_keyword symbols+ space* steps lines_to_keyword white data_sections? white
+
+tags ::= white tag*
+//tags ::= white (tag (space|eol)+)*
+//tag ::= tag_prefix ('[^@\r\n\t ]')+ white?
+//tag ::= tag_prefix symbols white?
+tag ::= tag_regex white?
+
+//comment ::= (comment_line white)*
+//comment_line ::= space* '//' line_to_eol
+
+steps ::= step*
+//step ::= comment keyword_space line_to_eol (eol+ | eof) table? white
+step ::= symbols_or_params table?
+
+data_sections ::= space* data_keyword space* lines_to_keyword? table white
+
+//multiline_arg ::=  table | py_string
+//py_string ::= open_py_string (!close_py_string '.')* close_py_string
+//open_py_string ::= space* '"""' space* eol
+//close_py_string ::= eol space* '"""' white
+
+//cell ::= '[^\r\n|]'+ '|'
+cell ::= symbols_or_params param_separator
+row ::= space* param_separator cell+
+table ::= row+
+//private symbols_or_params ::= ((l_param symbols r_param)|symbols)
+private symbols_or_params ::= ((param_regex)|text_or_string)
+
+feature_keyword ::= Name colon
+data_keyword ::= Data colon
+test_keyword ::= Test colon
+steps_keyword ::= Steps colon
+
+lines_to_keyword ::= (!(eol space* reserved_words_and_symbols) '.')*
+reserved_words_and_symbols ::= keyword_space | test_keyword | table | tag
+line_to_eol ::= (!eol '.')*
+space ::= ' ' | '\t'
+eol ::= '\r'? '\n'
+white ::= (space | eol)*
+keyword_space ::= ' '
+text_or_string ::= (symbols|string)
+
+/*root ::= definition*
+
+definition ::= (stepsDef|paramsDef*)
+
+stepsDef ::= keywords (symbols|':')*
+
+//paramsDef ::= (paramSeparator|symbols)* white
+paramsDef ::= table
+
+keywords ::= (Name | Test | Data)
+
+paramSeparator ::= '|'
+
+table ::= row+
+cell ::= '[^\r\n|]'+ '|'
+row ::= space* '|' cell+ eol
+
+white ::= (space | eol)*
+space ::= ' ' | '\t'
+eol ::= '\r'? '\n'*/
+
+/*
+//comment
+@Tag1
+Name: "Tests feature"
+
+   @Tag2
+   @Tag1_2 @Tag3
+   Test: Tests scenario
+      Given something
+      Run "<name>" something <f-d>
+      "Validate something"
+       | k1    |v2 | v3| v4|
+      Log result
+       | k1    |v2 |
+       | <k_1> |"v3."|
+
+   @Tag3
+   Test: Another test scenario
+      Given value is <value>,
+      Run function with <value>
+      Validate result is <expected>
+   Data:
+      |value|expected|
+      | v1  | <e_1>  |
+      | v2  | e2     |
+*/

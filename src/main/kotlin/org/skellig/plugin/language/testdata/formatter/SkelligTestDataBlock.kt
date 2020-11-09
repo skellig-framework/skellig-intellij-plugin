@@ -5,11 +5,9 @@ import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
-import com.intellij.psi.impl.source.tree.CompositeElement
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
-import org.skellig.plugin.language.psi.*
-import org.skellig.plugin.language.testdata.psi.SkelligTestDataTokenType
+import org.skellig.plugin.language.testdata.psi.*
 import java.util.*
 
 

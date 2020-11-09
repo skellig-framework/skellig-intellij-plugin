@@ -12,7 +12,7 @@ import org.skellig.plugin.language.testdata.SkelligTestDataLanguage
 import org.skellig.plugin.language.testdata.psi.SkelligTestDataTypes
 
 
-class SimpleFormattingModelBuilder : FormattingModelBuilder {
+class SkelligTestDataFormattingModelBuilder : FormattingModelBuilder {
 
     @NotNull
     override fun createModel(element: PsiElement, settings: CodeStyleSettings): FormattingModel {

@@ -5,7 +5,7 @@
 
   psiClassPrefix="SkelligTestData"
   psiImplClassSuffix="Impl"
-  psiPackage="org.skellig.plugin.language.psi"
+  psiPackage="org.skellig.plugin.language.testdata.psi"
   psiImplPackage="org.skellig.plugin.language.testdata.psi.impl"
 
   elementTypeHolderClass="org.skellig.plugin.language.testdata.psi.SkelligTestDataTypes"

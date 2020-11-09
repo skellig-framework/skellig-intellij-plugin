@@ -7,6 +7,7 @@ import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.ColorSettingsPage
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
+import org.skellig.plugin.language.SkelligFileIcons
 import javax.swing.Icon
 
 class SkelligColorSettingsPage : ColorSettingsPage {
@@ -24,7 +25,7 @@ class SkelligColorSettingsPage : ColorSettingsPage {
 
     @Nullable
     override fun getIcon(): Icon? {
-        return SkelligFileIcons.FILE
+        return SkelligFileIcons.TEST_DATA_FILE
     }
 
     @NotNull

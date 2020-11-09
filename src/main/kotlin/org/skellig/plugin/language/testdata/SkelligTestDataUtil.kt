@@ -5,8 +5,7 @@ import com.intellij.psi.PsiManager
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
-import org.skellig.plugin.language.psi.SkelligTestDataDefinition
-import org.skellig.plugin.language.psi.SkelligTestDataTestDefinition
+import org.skellig.plugin.language.testdata.psi.SkelligTestDataTestDefinition
 import org.skellig.plugin.language.testdata.psi.SkelligTestDataFile
 import java.util.*
 

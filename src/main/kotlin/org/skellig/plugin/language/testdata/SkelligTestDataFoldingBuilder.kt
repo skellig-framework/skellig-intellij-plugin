@@ -11,7 +11,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
-import org.skellig.plugin.language.psi.*
+import org.skellig.plugin.language.testdata.psi.*
 import java.util.*
 
 
