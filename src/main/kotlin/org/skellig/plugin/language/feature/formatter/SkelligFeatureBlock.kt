@@ -2,13 +2,12 @@ package org.skellig.plugin.language.feature.formatter
 
 import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
-import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
 import com.intellij.psi.formatter.common.AbstractBlock
-import com.intellij.psi.util.elementType
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
-import org.skellig.plugin.language.feature.psi.*
+import org.skellig.plugin.language.feature.psi.SkelligFeatureScenarioDef
+import org.skellig.plugin.language.feature.psi.SkelligFeatureTable
 import java.util.*
 
 
@@ -19,13 +18,9 @@ class SkelligFeatureBlock(@NotNull node: ASTNode, @Nullable wrap: Wrap?, @Nullab
         val blocks: MutableList<Block> = ArrayList<Block>()
         var child: ASTNode? = myNode.firstChildNode
         while (child != null) {
-            if (child.elementType !== TokenType.WHITE_SPACE ) {
-//            if (child.psi is SkelligFeatureFeature ||
-//                    child.psi is SkelligFeatureTags ||
-//                    child.psi is SkelligFeatureScenario ||
-//                    child.psi is SkelligFeatureStep) {
+            if (child.elementType !== TokenType.WHITE_SPACE) {
                 val block: Block = SkelligFeatureBlock(child, Wrap.createWrap(WrapType.NONE, false),
-                        Alignment.createAlignment(true), spacingBuilder)
+                        Alignment.createAlignment(), spacingBuilder)
                 blocks.add(block)
             }
             child = child.treeNext
@@ -34,26 +29,21 @@ class SkelligFeatureBlock(@NotNull node: ASTNode, @Nullable wrap: Wrap?, @Nullab
     }
 
     override fun getIndent(): Indent? {
-        if (node.psi.textRange.length > 0 &&
-                (node.psi is SkelligFeatureScenario ||
-                node.psi is SkelligFeatureSteps ||
-                node.psi is SkelligFeatureDataSections ||
-                node.psi is SkelligFeatureTags)) {
-//        if (node.psi.elementType == SkelligFeatureTypes.SCENARIO ||
-//                node.psi.elementType == SkelligFeatureTypes.STEPS) {
-            return Indent.getNormalIndent(false)
-//            return Indent.getIndent(Indent.Type.SPACES, 1, false, true)
+        if (node.psi is SkelligFeatureScenarioDef) {
+            return Indent.getNormalIndent(true)
+        } else if (node.psi is SkelligFeatureTable) {
+            return Indent.getIndent(Indent.Type.SPACES, 2, false, false);
         }
         return Indent.getNoneIndent()
     }
 
     @Nullable
     override fun getSpacing(@Nullable child1: Block?, @NotNull child2: Block): Spacing? {
-        return null//spacingBuilder!!.getSpacing(this, child1, child2)
+        return spacingBuilder!!.getSpacing(this, child1, child2)
     }
 
     override fun isLeaf(): Boolean {
-        return false//myNode.firstChildNode == null
+        return myNode.firstChildNode == null
     }
 
 }

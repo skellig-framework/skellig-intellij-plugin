@@ -31,9 +31,9 @@ class SkelligFeatureFormattingModelBuilder : FormattingModelBuilder {
 
     private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder? {
         return SpacingBuilder(settings, SkelligFeatureLanguage.INSTANCE)
-                .around(SkelligFeatureTypes.COLON)
+                .around(SkelligFeatureTypes.PARAM_SEPARATOR)
                 .spaceIf(settings.getCommonSettings(SkelligFeatureLanguage.INSTANCE.id).SPACE_AROUND_ASSIGNMENT_OPERATORS)
                 .before(SkelligFeatureTypes.SYMBOLS)
-                .none()
+                .spaces(1)
     }
 }

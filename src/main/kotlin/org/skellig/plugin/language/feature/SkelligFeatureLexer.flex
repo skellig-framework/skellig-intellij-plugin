@@ -26,7 +26,7 @@ EOL=\R
 WHITE_SPACE=\s+
 
 SYMBOLS=[;+&\"?#!\\*\w,_-]+
-SPACE=[\ \n\t\f]+
+SPACE=[ \t\n\x0B\f\r]+
 COMMENT="//".*
 BLOCK_COMMENT="/"\*([^*]|\*+[^*/])*(\*+"/")?
 STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
@@ -40,11 +40,13 @@ PARAM_REGEX=<[a-zA-Z0-9_-]+>
   "<"                  { return L_PARAM; }
   ">"                  { return R_PARAM; }
   "|"                  { return PARAM_SEPARATOR; }
-  "@"                  { return TAG_PREFIX; }
   ":"                  { return COLON; }
   "Name"               { return NAME; }
   "Data"               { return DATA; }
   "Test"               { return TEST; }
+  "Steps"              { return STEPS; }
+  "keyword_space"      { return KEYWORD_SPACE; }
+  "tag"                { return TAG; }
 
   {SYMBOLS}            { return SYMBOLS; }
   {SPACE}              { return SPACE; }

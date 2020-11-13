@@ -40,6 +40,7 @@ class SkelligFeatureColorSettingsPage : ColorSettingsPage {
 Name: Tests feature
 
 Test: Tests scenario
+Steps:
   Given something
   Run <name> something <fd>
   Validate something
@@ -50,6 +51,7 @@ Test: Tests scenario
 
 @Tag3
 Test: Another test scenario
+Steps:
   Given value is <value>
   Run function with <value>
   Validate result is <expected>
