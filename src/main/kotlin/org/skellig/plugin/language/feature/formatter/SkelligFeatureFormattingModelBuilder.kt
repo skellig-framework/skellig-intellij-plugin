@@ -9,13 +9,16 @@ import com.intellij.psi.codeStyle.CodeStyleSettings
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import org.skellig.plugin.language.feature.SkelligFeatureLanguage
-import org.skellig.plugin.language.feature.psi.SkelligFeatureTypes
 
 
 class SkelligFeatureFormattingModelBuilder : FormattingModelBuilder {
 
+    private val tableFormatter : TableFormatter = TableFormatter()
+
     @NotNull
     override fun createModel(element: PsiElement, settings: CodeStyleSettings): FormattingModel {
+        tableFormatter.format(element)
+
         return FormattingModelProvider
                 .createFormattingModelForPsiFile(element.containingFile,
                         SkelligFeatureBlock(element.node,
@@ -31,9 +34,9 @@ class SkelligFeatureFormattingModelBuilder : FormattingModelBuilder {
 
     private fun createSpaceBuilder(settings: CodeStyleSettings): SpacingBuilder? {
         return SpacingBuilder(settings, SkelligFeatureLanguage.INSTANCE)
-                .around(SkelligFeatureTypes.PARAM_SEPARATOR)
-                .spaceIf(settings.getCommonSettings(SkelligFeatureLanguage.INSTANCE.id).SPACE_AROUND_ASSIGNMENT_OPERATORS)
-                .before(SkelligFeatureTypes.SYMBOLS)
-                .spaces(1)
+//                .around(SkelligFeatureTypes.PARAM_SEPARATOR)
+//                .spaceIf(settings.getCommonSettings(SkelligFeatureLanguage.INSTANCE.id).SPACE_AROUND_ASSIGNMENT_OPERATORS)
+//                .before(SkelligFeatureTypes.SYMBOLS)
+//                .spaces(1)
     }
 }
