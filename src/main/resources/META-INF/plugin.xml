@@ -12,32 +12,46 @@
         <!--        <projectService serviceImplementation="org.jetbrains.plugins.template.services.MyProjectService"/>-->
         <fileType name="Skellig Test Data File" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataFileType"
                   fieldName="INSTANCE" language="SkelligTestData" extensions="std"/>
-        <lang.parserDefinition language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataParserDefinition"/>
+        <lang.parserDefinition language="SkelligTestData"
+                               implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataParserDefinition"/>
         <lang.syntaxHighlighterFactory language="SkelligTestData"
                                        implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="org.skellig.plugin.language.testdata.SkelligColorSettingsPage"/>
         <!--        <annotator language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataAnnotator"/>-->
-        <completion.contributor language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataCompletionContributor"/>
-        <lang.foldingBuilder language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataFoldingBuilder"/>
+        <completion.contributor language="SkelligTestData"
+                                implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataCompletionContributor"/>
+        <lang.foldingBuilder language="SkelligTestData"
+                             implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataFoldingBuilder"/>
         <!--        <lang.psiStructureViewFactory language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataStructureViewFactory"/>-->
-        <lang.formatter language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.formatter.SkelligTestDataFormattingModelBuilder"/>
-        <codeStyleSettingsProvider implementation="org.skellig.plugin.language.testdata.codestyle.SkelligTestDataCodeStyleSettingsProvider"/>
-        <langCodeStyleSettingsProvider implementation="org.skellig.plugin.language.testdata.codestyle.SkelligTestDataLanguageCodeStyleSettingsProvider"/>
-        <lang.braceMatcher language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataBraceMatcher"/>
-        <lang.commenter language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.commenter.SkelligTestDataCommenter"/>
+        <lang.formatter language="SkelligTestData"
+                        implementationClass="org.skellig.plugin.language.testdata.formatter.SkelligTestDataFormattingModelBuilder"/>
+        <codeStyleSettingsProvider
+                implementation="org.skellig.plugin.language.testdata.codestyle.SkelligTestDataCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider
+                implementation="org.skellig.plugin.language.testdata.codestyle.SkelligTestDataLanguageCodeStyleSettingsProvider"/>
+        <lang.braceMatcher language="SkelligTestData"
+                           implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataBraceMatcher"/>
+        <lang.commenter language="SkelligTestData"
+                        implementationClass="org.skellig.plugin.language.testdata.commenter.SkelligTestDataCommenter"/>
         <!--        <fileTypeFactory implementation="org.skellig.plugin.language.testdata.SimpleFileTypeFactory"/>-->
 
         <fileType name="Skellig Feature File" implementationClass="org.skellig.plugin.language.feature.SkelligFeatureFileType"
                   fieldName="INSTANCE" language="SkelligFeature" extensions="sf"/>
-        <lang.parserDefinition language="SkelligFeature" implementationClass="org.skellig.plugin.language.feature.SkelligFeatureParserDefinition"/>
+        <lang.parserDefinition language="SkelligFeature"
+                               implementationClass="org.skellig.plugin.language.feature.SkelligFeatureParserDefinition"/>
         <lang.syntaxHighlighterFactory language="SkelligFeature"
                                        implementationClass="org.skellig.plugin.language.feature.highlighter.SkelligFeatureSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="org.skellig.plugin.language.feature.highlighter.SkelligFeatureColorSettingsPage"/>
-        <completion.contributor language="SkelligTestData" implementationClass="org.skellig.plugin.language.feature.SkelligFeatureCompletionContributor"/>
+        <completion.contributor language="SkelligTestData"
+                                implementationClass="org.skellig.plugin.language.feature.SkelligFeatureCompletionContributor"/>
 
-        <lang.formatter language="SkelligFeature" implementationClass="org.skellig.plugin.language.feature.formatter.SkelligFeatureFormattingModelBuilder"/>
-        <codeStyleSettingsProvider implementation="org.skellig.plugin.language.feature.codestyle.SkelligFeatureCodeStyleSettingsProvider"/>
-        <langCodeStyleSettingsProvider implementation="org.skellig.plugin.language.feature.codestyle.SkelligFeatureLanguageCodeStyleSettingsProvider"/>
+        <lang.formatter language="SkelligFeature"
+                        implementationClass="org.skellig.plugin.language.feature.formatter.SkelligFeatureFormattingModelBuilder"/>
+        <codeStyleSettingsProvider
+                implementation="org.skellig.plugin.language.feature.codestyle.SkelligFeatureCodeStyleSettingsProvider"/>
+        <langCodeStyleSettingsProvider
+                implementation="org.skellig.plugin.language.feature.codestyle.SkelligFeatureLanguageCodeStyleSettingsProvider"/>
+
     </extensions>
 
     <!--<applicationListeners>
