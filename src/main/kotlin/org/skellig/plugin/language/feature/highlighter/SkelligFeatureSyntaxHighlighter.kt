@@ -38,6 +38,7 @@ class SkelligFeatureSyntaxHighlighter : SyntaxHighlighterBase() {
     private val KEYWORDS =
             setOf(SkelligFeatureTypes.NAME,
                     SkelligFeatureTypes.TEST,
+                    SkelligFeatureTypes.STEPS,
                     SkelligFeatureTypes.DATA)
 
     @NotNull
