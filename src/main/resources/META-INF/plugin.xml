@@ -1,7 +1,7 @@
 <idea-plugin>
-    <id>org.jetbrains.plugins.template</id>
-    <name>Template</name>
-    <vendor>JetBrains</vendor>
+    <id>org.skellig.plugin.language</id>
+    <name>Skellig IntelliJ</name>
+    <vendor>Skellig</vendor>
 
     <!-- Product and plugin compatibility requirements -->
     <!-- https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html -->
@@ -33,6 +33,8 @@
                            implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataBraceMatcher"/>
         <lang.commenter language="SkelligTestData"
                         implementationClass="org.skellig.plugin.language.testdata.commenter.SkelligTestDataCommenter"/>
+        <psi.referenceContributor implementation="org.skellig.plugin.language.testdata.reference.SkelligTestDataReferenceContributor"/>
+<!--        <psi.referenceContributor implementation="org.skellig.plugin.language.feature.reference.SkelligFeatureReferenceContributor"/>-->
         <!--        <fileTypeFactory implementation="org.skellig.plugin.language.testdata.SimpleFileTypeFactory"/>-->
 
         <fileType name="Skellig Feature File" implementationClass="org.skellig.plugin.language.feature.SkelligFeatureFileType"
