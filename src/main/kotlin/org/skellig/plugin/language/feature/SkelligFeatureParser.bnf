@@ -12,6 +12,8 @@
   elementTypeClass="org.skellig.plugin.language.feature.psi.SkelligFeatureElementType"
   tokenTypeClass="org.skellig.plugin.language.feature.psi.SkelligFeatureTokenType"
 
+  psiImplUtilClass="org.skellig.plugin.language.feature.psi.SkelligFeatureStepsUtil"
+
    tokens = [
           symbols = 'regexp:[;+&"?#!\\*\w,_-]+'
 //          space = 'regexp:[\ \n\t\f]+'
@@ -39,6 +41,11 @@ tag_def ::= tag_regex*
 
 step_def ::= steps_keyword step*
 step ::= symbols_or_params+ table?
+{
+ mixin="org.skellig.plugin.language.feature.psi.SkelligFeatureStepElementImpl"
+ implements="org.skellig.plugin.language.feature.psi.SkelligFeatureStepElement"
+ methods=[getName getNameIdentifier]
+}
 
 data_def ::=  data_keyword table
 

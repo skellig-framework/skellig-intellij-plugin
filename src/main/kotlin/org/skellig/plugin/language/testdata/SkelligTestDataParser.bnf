@@ -12,6 +12,8 @@
   elementTypeClass="org.skellig.plugin.language.testdata.psi.SkelligTestDataElementType"
   tokenTypeClass="org.skellig.plugin.language.testdata.psi.SkelligTestDataTokenType"
 
+  psiImplUtilClass="org.skellig.plugin.language.testdata.psi.SkelligTestDataUtil"
+
    tokens = [
           key ='regex:[^:=\ \n\t\f\\]'
           number='regexp:\d+(\.\d*)?'
@@ -35,6 +37,11 @@
 root ::= definition
 definition ::= testDefinition*
 testDefinition ::= name functionOpenBracket valueDef+ functionCloseBracket objectOpenBracket testBody objectCloseBracket
+{
+ mixin="org.skellig.plugin.language.testdata.psi.impl.SkelligTestDataNamedElementImpl"
+ implements="org.skellig.plugin.language.testdata.psi.SkelligTestDataNamedElement"
+ methods=[getName getNameIdentifier]
+}
 testBody ::= statement*
 statement ::= idDef | variablesDef | dataDef | validationDef | dataStatement
 dataStatement ::= parameterDef | fieldDefinition | objectDefinition | arrayDef | complexFunctionsDef | jsonFunctionsDef

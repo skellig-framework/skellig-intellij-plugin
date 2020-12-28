@@ -1,13 +1,16 @@
-package org.skellig.plugin.language.testdata.psi.impl
+package org.skellig.plugin.language.feature.psi
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
-import org.skellig.plugin.language.testdata.psi.SkelligTestDataNamedElement
-import org.skellig.plugin.language.testdata.psi.SkelligTestDataTypes
 
-open class SkelligTestDataNamedElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), SkelligTestDataNamedElement {
+abstract class SkelligFeatureStepElementImpl(node: ASTNode) : ASTWrapperPsiElement(node), SkelligFeatureStepElement {
+
+    override fun getValue(): Any? {
+        return node.text
+    }
+
     override fun getNameIdentifier(): PsiElement? {
         return node.psi
     }
@@ -24,7 +27,7 @@ open class SkelligTestDataNamedElementImpl(node: ASTNode) : ASTWrapperPsiElement
 
     override fun getName(): String {
         val n = this.node.psi.children
-                .filter { c -> c.elementType == SkelligTestDataTypes.VALUE_DEF }
+                .filter { c -> c.elementType == SkelligFeatureTypes.TEXT_OR_STRING }
                 .joinToString(" ") { i -> i.text }
         return n
     }
