@@ -36,7 +36,7 @@
 
 root ::= definition
 definition ::= testDefinition*
-testDefinition ::= name functionOpenBracket valueDef+ functionCloseBracket objectOpenBracket testBody objectCloseBracket
+testDefinition ::= name functionOpenBracket string functionCloseBracket objectOpenBracket testBody objectCloseBracket
 {
  mixin="org.skellig.plugin.language.testdata.psi.impl.SkelligTestDataNamedElementImpl"
  implements="org.skellig.plugin.language.testdata.psi.SkelligTestDataNamedElement"
@@ -72,11 +72,11 @@ dataDef ::= (message|request|body|payload) (objectOpenBracket|arrayOpenBracket) 
 validationDef ::= validationObjectDef | validationArray
 private validationObjectDef ::= (validate|assert|'expected response') objectOpenBracket (dataStatement | fromTestDef)* objectCloseBracket
 private validationArray ::= (validate|assert|'expected response') arrayOpenBracket symbols* arrayCloseBracket
-fromTestDef ::= from_test separator valueDef
+fromTestDef ::= fromTest separator valueDef
 
 valueDef ::= ( number | symbols | string )
 
-keywords ::= (name|id|variables|message|payload|request|body|validate|assert|if|template|json|csv|from_test)
+keywords ::= (name|id|variables|message|payload|request|body|validate|assert|if|template|json|csv|fromTest|'expected response')
 
 
 /*
