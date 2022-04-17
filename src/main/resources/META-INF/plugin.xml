@@ -1,5 +1,6 @@
 <idea-plugin>
-    <id>org.skellig.plugin.language</id>
+<!--    <id>org.skellig.plugin.language</id>-->
+    <id>org.jetbrains.plugins.cucumber</id>
     <name>Skellig IntelliJ</name>
     <vendor>Skellig</vendor>
 
@@ -10,19 +11,19 @@
     <extensions defaultExtensionNs="com.intellij">
         <!--        <applicationService serviceImplementation="org.jetbrains.plugins.template.services.MyApplicationService"/>-->
         <!--        <projectService serviceImplementation="org.jetbrains.plugins.template.services.MyProjectService"/>-->
-        <fileType name="Skellig Test Data File" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataFileType"
+       <!-- <fileType name="Skellig Test Data File" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataFileType"
                   fieldName="INSTANCE" language="SkelligTestData" extensions="std"/>
         <lang.parserDefinition language="SkelligTestData"
                                implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataParserDefinition"/>
         <lang.syntaxHighlighterFactory language="SkelligTestData"
                                        implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="org.skellig.plugin.language.testdata.SkelligColorSettingsPage"/>
-        <!--        <annotator language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataAnnotator"/>-->
+        &lt;!&ndash;        <annotator language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataAnnotator"/>&ndash;&gt;
         <completion.contributor language="SkelligTestData"
                                 implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataCompletionContributor"/>
         <lang.foldingBuilder language="SkelligTestData"
                              implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataFoldingBuilder"/>
-        <!--        <lang.psiStructureViewFactory language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataStructureViewFactory"/>-->
+        &lt;!&ndash;        <lang.psiStructureViewFactory language="SkelligTestData" implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataStructureViewFactory"/>&ndash;&gt;
         <lang.formatter language="SkelligTestData"
                         implementationClass="org.skellig.plugin.language.testdata.formatter.SkelligTestDataFormattingModelBuilder"/>
         <codeStyleSettingsProvider
@@ -33,11 +34,20 @@
                            implementationClass="org.skellig.plugin.language.testdata.SkelligTestDataBraceMatcher"/>
         <lang.commenter language="SkelligTestData"
                         implementationClass="org.skellig.plugin.language.testdata.commenter.SkelligTestDataCommenter"/>
-        <psi.referenceContributor implementation="org.skellig.plugin.language.testdata.reference.SkelligTestDataReferenceContributor"/>
+        <psi.referenceContributor implementation="org.skellig.plugin.language.testdata.reference.SkelligTestDataReferenceContributor"/>-->
 <!--        <psi.referenceContributor implementation="org.skellig.plugin.language.feature.reference.SkelligFeatureReferenceContributor"/>-->
         <!--        <fileTypeFactory implementation="org.skellig.plugin.language.testdata.SimpleFileTypeFactory"/>-->
 
-        <fileType name="Skellig Feature File" implementationClass="org.skellig.plugin.language.feature.SkelligFeatureFileType"
+        <fileType name="Skellig" implementationClass="org.jetbrains.plugins.cucumber.psi.SkelligFileType"
+                  fieldName="INSTANCE" language="Skellig" extensions="skellig"/>
+        <lang.parserDefinition language="Skellig"
+                               implementationClass="org.jetbrains.plugins.cucumber.psi.SkelligParserDefinition"/>
+        <lang.formatter language="Skellig"
+                        implementationClass="org.jetbrains.plugins.cucumber.psi.formatter.GherkinFormattingModelBuilder"/>
+        <lang.syntaxHighlighterFactory language="Skellig"
+                                       implementationClass="org.jetbrains.plugins.cucumber.psi.highlighter.SkelligSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="org.jetbrains.plugins.cucumber.psi.highlighter.SkelligColorsPage"/>
+        <!--<fileType name="Skellig Feature File" implementationClass="org.skellig.plugin.language.feature.SkelligFeatureFileType"
                   fieldName="INSTANCE" language="SkelligFeature" extensions="sf"/>
         <lang.parserDefinition language="SkelligFeature"
                                implementationClass="org.skellig.plugin.language.feature.SkelligFeatureParserDefinition"/>
@@ -52,7 +62,7 @@
         <codeStyleSettingsProvider
                 implementation="org.skellig.plugin.language.feature.codestyle.SkelligFeatureCodeStyleSettingsProvider"/>
         <langCodeStyleSettingsProvider
-                implementation="org.skellig.plugin.language.feature.codestyle.SkelligFeatureLanguageCodeStyleSettingsProvider"/>
+                implementation="org.skellig.plugin.language.feature.codestyle.SkelligFeatureLanguageCodeStyleSettingsProvider"/>-->
 
     </extensions>
 

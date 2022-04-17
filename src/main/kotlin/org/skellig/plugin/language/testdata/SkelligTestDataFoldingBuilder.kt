@@ -63,16 +63,16 @@ class SkelligTestDataFoldingBuilder : FoldingBuilderEx(), DumbAware {
     @Nullable
     override fun getPlaceholderText(@NotNull node: ASTNode): String {
         val retTxt = "..."
-        if (node.psi is SkelligTestDataTestDefinition) {
-            val nodeElement: SkelligTestDataTestDefinition = node.psi as SkelligTestDataTestDefinition
-            return getFullText(nodeElement)
-        }
+//        if (node.psi is SkelligTestDataTestDefinition) {
+//            val nodeElement: SkelligTestDataTestDefinition = node.psi as SkelligTestDataTestDefinition
+//            return getFullText(nodeElement)
+//        }
         return retTxt
     }
 
-    private fun getFullText(node: SkelligTestDataTestDefinition): String {
-        return node.valueDefList.joinToString(" ") { item -> item.text }
-    }
+//    private fun getFullText(node: SkelligTestDataTestDefinition): String {
+//        return node.valueDefList.joinToString(" ") { item -> item.text }
+//    }
 
     override fun isCollapsedByDefault(@NotNull node: ASTNode): Boolean {
         return true

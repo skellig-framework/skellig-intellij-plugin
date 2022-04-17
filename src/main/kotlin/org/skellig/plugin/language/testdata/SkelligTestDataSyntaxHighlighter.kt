@@ -45,7 +45,7 @@ class SkelligTestDataSyntaxHighlighter : SyntaxHighlighterBase() {
     private val KEYWORDS =
             setOf(SkelligTestDataTypes.IF,
                     SkelligTestDataTypes.NAME,
-                    SkelligTestDataTypes.FROM_TEST,
+                    SkelligTestDataTypes.FROMTEST,
                     SkelligTestDataTypes.ID,
                     SkelligTestDataTypes.JSON,
                     SkelligTestDataTypes.TEMPLATE,

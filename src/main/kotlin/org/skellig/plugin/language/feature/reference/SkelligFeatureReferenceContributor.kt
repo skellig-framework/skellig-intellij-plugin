@@ -5,7 +5,6 @@ import com.intellij.psi.*
 import com.intellij.util.ProcessingContext
 import org.skellig.plugin.language.feature.psi.SkelligFeatureStep
 
-
 class SkelligFeatureReferenceContributor : PsiReferenceContributor() {
 
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {

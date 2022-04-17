@@ -10,13 +10,13 @@ import static org.skellig.plugin.language.testdata.psi.SkelligTestDataTypes.*;
 %%
 
 %{
-  public SkelligTestDataLexer() {
+  public _SkelligTestDataLexer() {
     this((java.io.Reader)null);
   }
 %}
 
 %public
-%class SkelligTestDataLexer
+%class _SkelligTestDataLexer
 %implements FlexLexer
 %function advance
 %type IElementType
@@ -34,38 +34,39 @@ STRING=('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")
 
 %%
 <YYINITIAL> {
-  {WHITE_SPACE}        { return WHITE_SPACE; }
+  {WHITE_SPACE}                      { return WHITE_SPACE; }
 
-  "="                  { return SEPARATOR; }
-  "${"                 { return PARAMETEROPENBRACKET; }
-  "{"                  { return OBJECTOPENBRACKET; }
-  "}"                  { return OBJECTCLOSEBRACKET; }
-  "["                  { return ARRAYOPENBRACKET; }
-  "]"                  { return ARRAYCLOSEBRACKET; }
-  "("                  { return FUNCTIONOPENBRACKET; }
-  ")"                  { return FUNCTIONCLOSEBRACKET; }
-  "."                  { return DOT; }
-  "name"               { return NAME; }
-  "id"                 { return ID; }
-  "if"                 { return IF; }
-  "template"           { return TEMPLATE; }
-  "json"               { return JSON; }
-  "csv"                { return CSV; }
-  "variables"          { return VARIABLES; }
-  "message"            { return MESSAGE; }
-  "request"            { return REQUEST; }
-  "body"               { return BODY; }
-  "payload"            { return PAYLOAD; }
-  "validate"           { return VALIDATE; }
-  "assert"             { return ASSERT; }
-  "from_test"          { return FROM_TEST; }
+  "regex:[^:=\\ \\n\\t\\f\\\\]"      { return KEY; }
+  "="                                { return SEPARATOR; }
+  "${"                               { return PARAMETEROPENBRACKET; }
+  "{"                                { return OBJECTOPENBRACKET; }
+  "}"                                { return OBJECTCLOSEBRACKET; }
+  "["                                { return ARRAYOPENBRACKET; }
+  "]"                                { return ARRAYCLOSEBRACKET; }
+  "("                                { return FUNCTIONOPENBRACKET; }
+  ")"                                { return FUNCTIONCLOSEBRACKET; }
+  "."                                { return DOT; }
+  "name"                             { return NAME; }
+  "id"                               { return ID; }
+  "if"                               { return IF; }
+  "template"                         { return TEMPLATE; }
+  "json"                             { return JSON; }
+  "csv"                              { return CSV; }
+  "variables"                        { return VARIABLES; }
+  "message"                          { return MESSAGE; }
+  "request"                          { return REQUEST; }
+  "body"                             { return BODY; }
+  "payload"                          { return PAYLOAD; }
+  "validate"                         { return VALIDATE; }
+  "assert"                           { return ASSERT; }
+  "fromTest"                         { return FROMTEST; }
 
-  {NUMBER}             { return NUMBER; }
-  {SYMBOLS}            { return SYMBOLS; }
-  {SPACE}              { return SPACE; }
-  {COMMENT}            { return COMMENT; }
-  {BLOCK_COMMENT}      { return BLOCK_COMMENT; }
-  {STRING}             { return STRING; }
+  {NUMBER}                           { return NUMBER; }
+  {SYMBOLS}                          { return SYMBOLS; }
+  {SPACE}                            { return SPACE; }
+  {COMMENT}                          { return COMMENT; }
+  {BLOCK_COMMENT}                    { return BLOCK_COMMENT; }
+  {STRING}                           { return STRING; }
 
 }
 
