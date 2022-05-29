@@ -7,7 +7,7 @@ import com.intellij.psi.tree.TokenSet
 
 interface GherkinElementTypes {
     companion object {
-        val GHERKIN_FILE = IFileElementType(SkelligLanguage.Companion.INSTANCE)
+        val GHERKIN_FILE = IFileElementType(SkelligLanguage.INSTANCE)
         val FEATURE: IElementType = GherkinElementType("feature")
         val FEATURE_HEADER: IElementType = GherkinElementType("feature header")
         val SCENARIO: IElementType = GherkinElementType("scenario")

@@ -47,6 +47,12 @@
         <lang.syntaxHighlighterFactory language="Skellig"
                                        implementationClass="org.jetbrains.plugins.cucumber.psi.highlighter.SkelligSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="org.jetbrains.plugins.cucumber.psi.highlighter.SkelligColorsPage"/>
+
+        <fileType name="SkelligTestStep" implementationClass="org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepFileType"
+                  fieldName="INSTANCE" language="SkelligTestStep" extensions="sts"/>
+        <lang.parserDefinition language="SkelligTestStep"
+                               implementationClass="org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepParserDefinition"/>
+
         <!--<fileType name="Skellig Feature File" implementationClass="org.skellig.plugin.language.feature.SkelligFeatureFileType"
                   fieldName="INSTANCE" language="SkelligFeature" extensions="sf"/>
         <lang.parserDefinition language="SkelligFeature"
