@@ -8,15 +8,15 @@ import org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepElementVisitor
 
 interface SkelligTestStepFieldValuePair : PsiElement {
 
-    val field: SkelligTestStepText?
+    val property: SkelligTestStepProperty?
     val value: PsiElement?
 }
 
 open class SkelligTestStepFieldValuePairImpl(node: ASTNode) : SkelligTestStepPsiElementBase(node), SkelligTestStepFieldValuePair {
 
-    override val field: SkelligTestStepText?
+    override val property: SkelligTestStepProperty?
         get() {
-            return node.findChildByType(SkelligTestStepElementTypes.TEXT)?.psi as SkelligTestStepText?
+            return node.findChildByType(SkelligTestStepElementTypes.PROPERTY)?.psi as SkelligTestStepProperty?
         }
 
     override val value: PsiElement?

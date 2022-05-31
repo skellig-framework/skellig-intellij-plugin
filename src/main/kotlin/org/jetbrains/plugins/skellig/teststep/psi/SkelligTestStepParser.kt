@@ -40,7 +40,7 @@ class SkelligTestStepParser : PsiParser {
                 var isValidContent = true
                 var tokenType: IElementType? = SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET
                 var brackets = 0
-                while (!builder.eof() && isValidContent) {
+                while (!builder.eof() && isValidContent && tokenType != SkelligTestStepTokenTypes.NAME) {
                     if (tokenType != TokenType.NEW_LINE_INDENT) {
                         tokenType = builder.tokenType
 
@@ -52,8 +52,8 @@ class SkelligTestStepParser : PsiParser {
                             parseTestStepComponent(builder, SkelligTestStepElementTypes.VALIDATION)
                         } else if (tokenType == SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET) {
                             brackets++
-                            true
-                        } else if (tokenType == SkelligTestStepTokenTypes.TEXT) {
+                            break
+                        } else if (tokenType == SkelligTestStepTokenTypes.PROPERTY) {
                             if (parseFieldValue(builder)) continue
                             else false
                         } else {
@@ -112,32 +112,49 @@ class SkelligTestStepParser : PsiParser {
             return !hasError
         }
 
-        private fun hadLineBreakBefore(builder: PsiBuilder, prevTokenEnd: Int): Boolean {
-            if (prevTokenEnd < 0) return false
-            val precedingText = builder.originalText.subSequence(prevTokenEnd, builder.currentOffset).toString()
-            return precedingText.contains("\n")
-        }
-
         private fun parseTestStepComponent(builder: PsiBuilder, elementType: SkelligTestStepElementType): Boolean {
-            val ruleMarker = builder.mark()
+            val marker = builder.mark()
             builder.advanceLexer()
             return if (builder.tokenType == SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET) {
                 builder.advanceLexer()
                 if (parseTestData(builder)) {
                     if (builder.tokenType === SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET) {
-                        ruleMarker.done(elementType)
+                        marker.done(elementType)
                         true
                     } else {
-                        ruleMarker.error(CLOSING_BRACKETS_ERROR)
+                        marker.error(CLOSING_BRACKETS_ERROR)
                         false
                     }
                 } else {
-//                    ruleMarker.error("Failed to parse")
-                    ruleMarker.drop()
+                    marker.drop()
                     false
                 }
-            } else {
-                ruleMarker.error(OPENING_BRACKETS_ERROR)
+            } else if (builder.tokenType == SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET && elementType != SkelligTestStepTokenTypes.VARIABLES) {
+                builder.advanceLexer()
+                if (parseArrayTestData(builder)) {
+                    if (builder.tokenType === SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
+                        marker.done(elementType)
+                        true
+                    } else {
+                        marker.error(CLOSING_ARRAY_BRACKETS_ERROR)
+                        false
+                    }
+                } else {
+                    marker.drop()
+                    false
+                }
+            } else if (builder.tokenType == SkelligTestStepTokenTypes.EQUAL && elementType != SkelligTestStepTokenTypes.VARIABLES) {
+                builder.advanceLexer()
+                if (parseSingleValue(builder)) {
+                    marker.done(elementType)
+                    true
+                } else {
+                    marker.drop()
+                    false
+                }
+            }
+            else {
+                marker.error("$elementType must have a value")
                 false
             }
         }
@@ -157,7 +174,7 @@ class SkelligTestStepParser : PsiParser {
                 val marker = builder.mark()
 
                 if (!SkelligTestStepElementTypes.elementsForToken.containsKey(builder.tokenType)) {
-                    marker.error("Invalid character found instead of a field declaration")
+                    marker.error("Invalid character found instead of a property declaration")
                     return false
                 } else {
                     val fieldMarker = builder.mark()

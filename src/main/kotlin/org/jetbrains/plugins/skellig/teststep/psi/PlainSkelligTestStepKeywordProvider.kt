@@ -11,7 +11,7 @@ class PlainSkelligTestStepKeywordProvider : SkelligTestStepKeywordProvider {
         private val ourKeywordsWithNoSpaceAfter: MutableSet<String?> = HashSet()
 
         init {
-            DEFAULT_KEYWORD_TABLE.put(SkelligTestStepTokenTypes.NAME, "Name")
+            DEFAULT_KEYWORD_TABLE.put(SkelligTestStepTokenTypes.NAME, "name")
             DEFAULT_KEYWORD_TABLE.put(SkelligTestStepTokenTypes.ID, "id")
             DEFAULT_KEYWORD_TABLE.put(SkelligTestStepTokenTypes.IF, "if")
             DEFAULT_KEYWORD_TABLE.put(SkelligTestStepTokenTypes.TEMPLATE, "template")

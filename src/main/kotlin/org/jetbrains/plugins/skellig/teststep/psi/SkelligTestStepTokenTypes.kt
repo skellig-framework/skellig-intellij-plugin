@@ -6,6 +6,7 @@ interface SkelligTestStepTokenTypes {
     companion object {
         val COMMENT = SkelligTestStepElementType("COMMENT")
         val TEXT = SkelligTestStepElementType("TEXT")
+        val PROPERTY = SkelligTestStepElementType("PROPERTY")
         val EQUAL = SkelligTestStepElementType("EQUAL")
         val OBJECT_OPEN_BRACKET = SkelligTestStepElementType("OBJECT_OPEN_BRACKET")  // {
         val OBJECT_CLOSE_BRACKET = SkelligTestStepElementType("OBJECT_CLOSE_BRACKET")  // }
@@ -36,6 +37,10 @@ interface SkelligTestStepTokenTypes {
 
         val KEYWORDS = TokenSet.create(
             NAME, ID, IF, TEMPLATE, JSON, CSV, VARIABLES, MESSAGE, REQUEST, BODY, PAYLOAD, VALIDATE, ASSERT, FROMTEST
+        )
+
+        val BRACKETS = TokenSet.create(
+            OBJECT_OPEN_BRACKET, OBJECT_CLOSE_BRACKET, OPEN_BRACKET, CLOSE_BRACKET, ARRAY_OPEN_BRACKET, ARRAY_CLOSE_BRACKET
         )
 
         val REQUESTS = TokenSet.create(

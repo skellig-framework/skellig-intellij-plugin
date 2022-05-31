@@ -44,6 +44,7 @@ class SkelligTestStepParserDefinition : ParserDefinition {
         else if (node.elementType === SkelligTestStepElementTypes.PARAMETER) SkelligTestStepParameterImpl(node)
         else if (node.elementType === SkelligTestStepElementTypes.FUNCTION) SkelligTestStepFunctionImpl(node)
         else if (node.elementType === SkelligTestStepElementTypes.TEXT) SkelligTestStepTextImpl(node)
+        else if (node.elementType === SkelligTestStepElementTypes.PROPERTY) SkelligTestStepPropertyImpl(node)
 
         else if (node.elementType === SkelligTestStepElementTypes.VALUE) SkelligTestStepSimpleValueImpl(node)
         else if (node.elementType === SkelligTestStepElementTypes.OBJECT) SkelligTestStepObjectImpl(node)

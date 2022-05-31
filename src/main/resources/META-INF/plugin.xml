@@ -52,6 +52,9 @@
                   fieldName="INSTANCE" language="SkelligTestStep" extensions="sts"/>
         <lang.parserDefinition language="SkelligTestStep"
                                implementationClass="org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepParserDefinition"/>
+        <lang.syntaxHighlighterFactory language="SkelligTestStep"
+                                       implementationClass="org.jetbrains.plugins.skellig.teststep.psi.highlighter.SkelligTestStepSyntaxHighlighterFactory"/>
+        <colorSettingsPage implementation="org.jetbrains.plugins.skellig.teststep.psi.highlighter.SkelligTestStepColorsPage"/>
 
         <!--<fileType name="Skellig Feature File" implementationClass="org.skellig.plugin.language.feature.SkelligFeatureFileType"
                   fieldName="INSTANCE" language="SkelligFeature" extensions="sf"/>

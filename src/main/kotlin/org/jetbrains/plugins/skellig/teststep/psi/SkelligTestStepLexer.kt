@@ -21,6 +21,7 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
     private var expressionIndexes: MutableSet<Int>? = null
     private var eofChars = setOf('\n', '\r')
     private var specialChars = setOf('(', ')', '{', '}', '[', ']', '.', '#', '$', ':', '=').union(eofChars)
+    private var propertyValueChars = setOf('=', '{', '[')
 
     override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
         myBuffer = buffer
@@ -75,16 +76,15 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                 advanceOverWhitespace()
             }
         } else if (myState != STATE_INSIDE_STRING && Character.isWhitespace(c)) {
-            advanceOverWhitespace()
+            advanceOverWhitespace(if (myState == ARRAY_STATE) myState else STATE_DEFAULT)
             myCurrentToken = TokenType.WHITE_SPACE
             while (myPosition < myEndOffset && Character.isWhitespace(myBuffer[myPosition])) {
-                advanceOverWhitespace()
-                if (isNewLineChar(myBuffer[myPosition])) {
+                advanceOverWhitespace(if (myState == ARRAY_STATE) myState else STATE_DEFAULT)
+                if (myPosition < myEndOffset && isNewLineChar(myBuffer[myPosition])) {
                     myCurrentToken = TokenType.NEW_LINE_INDENT
                     break
                 }
             }
-
         } else if (isStringAtPosition()) {
             myCurrentToken = SkelligTestStepTokenTypes.STRING_TEXT
             myState = STATE_INSIDE_STRING
@@ -122,7 +122,13 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                 myCurrentToken = SkelligTestStepTokenTypes.EXPRESSION
                 myState = STATE_EXPRESSION
             } else {
-                myCurrentToken = if (c == '[') SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET else SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET
+                myCurrentToken = if (c == '[') {
+                    myState = ARRAY_STATE
+                    SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET
+                } else {
+                    myState = STATE_DEFAULT
+                    SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET
+                }
             }
             myPosition++
         } else if (isParameterAtPosition()) {
@@ -135,11 +141,10 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
             processEnclosedInBrackets('#', '[', ']', expressionIndexes)
         } else if (myState == SIMPLE_VALUE_STATE) {
             myCurrentToken = SkelligTestStepTokenTypes.TEXT
-            advanceToNextSpecialChar(specialChars)
-            myState = SIMPLE_VALUE_STATE
+            advanceToNextSpecialChar(specialChars, SIMPLE_VALUE_STATE)
         } else {
             if (myState == STATE_DEFAULT) {
-                if (isStringAtPosition(SkelligTestStepTokenTypes.NAME.toString().toLowerCase())) {
+                if (myState == STATE_DEFAULT && isStringAtPosition(SkelligTestStepTokenTypes.NAME.toString().toLowerCase())) {
                     myCurrentToken = SkelligTestStepTokenTypes.NAME
                     myPosition += myCurrentToken.toString().length
                     myState = STATE_TEST_STEP
@@ -160,8 +165,30 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                     }
                 }
             }
-            myCurrentToken = SkelligTestStepTokenTypes.TEXT
-            advanceToNextSpecialChar(specialChars)
+            myCurrentToken = if (myState == STATE_DEFAULT && isProperty()) {
+                advanceToNextSpecialChar(specialChars, PROPERTY_STATE)
+                SkelligTestStepTokenTypes.PROPERTY
+            } else {
+                advanceToNextSpecialChar(specialChars, if (myState == ARRAY_STATE) myState else STATE_DEFAULT)
+                SkelligTestStepTokenTypes.TEXT
+            }
+        }
+    }
+
+    private fun isProperty(): Boolean {
+        var position = myPosition
+        //TODO: Ignore propertyValueChars in quotes, params and expression
+        while (position < myEndOffset - 1 && !propertyValueChars.contains(myBuffer[position])) {
+            position++
+        }
+        return if (myBuffer[position] == '=') {
+            var backPosition = position - 1
+            while (backPosition >= 0 && eofChars.contains(myBuffer[backPosition])) {
+                backPosition--
+            }
+            backPosition == position - 1
+        } else {
+            propertyValueChars.contains(myBuffer[position])
         }
     }
 
@@ -216,9 +243,9 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
         return myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '#' && myBuffer[myPosition + 1] == '['
     }
 
-    private fun advanceOverWhitespace() {
+    private fun advanceOverWhitespace(nextState : Int = STATE_DEFAULT) {
         if (myBuffer[myPosition] == '\n') {
-            myState = STATE_DEFAULT
+            myState = nextState
         }
         myPosition++
     }
@@ -242,14 +269,14 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
         return myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '/' && myBuffer[myPosition + 1] == '/'
     }
 
-    private fun advanceToNextSpecialChar(specialChars : Set<Char>) {
+    private fun advanceToNextSpecialChar(specialChars : Set<Char>, nextState : Int = STATE_DEFAULT) {
         myPosition++
         val mark = myPosition
         while (myPosition < myEndOffset && !specialChars.contains(myBuffer[myPosition])) {
             myPosition++
         }
         returnWhitespace(mark)
-        myState = STATE_DEFAULT
+        myState = nextState
     }
 
     private fun returnWhitespace(mark: Int) {
@@ -291,6 +318,8 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
         private const val STATE_INSIDE_STRING = 5
         private const val STATE_TEST_STEP = 6
         private const val SIMPLE_VALUE_STATE = 7
+        private const val PROPERTY_STATE = 8
+        private const val ARRAY_STATE = 9
         private const val STRING_MARKER = "\""
     }
 }
