@@ -2,9 +2,6 @@ package org.jetbrains.plugins.skellig.teststep.psi
 
 import com.intellij.psi.tree.IElementType
 
-/**
- * @author Roman.Chernyatchik
- */
 class SkelligTestStepKeywordTable {
     private val myType2KeywordsTable: MutableMap<IElementType, MutableCollection<String>> = HashMap()
     fun putAllKeywordsInto(target: MutableMap<String?, IElementType>) {

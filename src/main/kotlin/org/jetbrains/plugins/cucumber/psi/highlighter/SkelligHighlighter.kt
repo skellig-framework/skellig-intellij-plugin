@@ -6,9 +6,6 @@ import org.jetbrains.plugins.cucumber.psi.highlighter.SkelligHighlighter
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 
-/**
- * @author Roman.Chernyatchik
- */
 object SkelligHighlighter {
 
     @NonNls

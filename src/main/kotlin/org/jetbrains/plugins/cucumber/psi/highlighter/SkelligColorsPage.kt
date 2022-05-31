@@ -9,12 +9,8 @@ import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import org.jetbrains.plugins.cucumber.psi.PlainGherkinKeywordProvider
 import org.skellig.plugin.language.SkelligFileIcons
-import org.skellig.plugin.language.feature.highlighter.SkelligFeatureSyntaxHighlighter
 import javax.swing.Icon
 
-/**
- * @author Roman.Chernyatchik
- */
 class SkelligColorsPage : ColorSettingsPage {
     companion object {
 

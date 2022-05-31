@@ -1,4 +1,3 @@
-// Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.jetbrains.plugins.cucumber.psi
 
 import com.intellij.openapi.util.TextRange
@@ -8,10 +7,6 @@ import org.jetbrains.plugins.cucumber.OutlineStepSubstitution
 import org.jetbrains.plugins.cucumber.psi.impl.GherkinFileImpl
 import org.jetbrains.plugins.cucumber.steps.AbstractStepDefinition
 
-/**
- * @author Roman.Chernyatchik
- * @date May 21, 2009
- */
 object GherkinPsiUtil {
 
     fun getGherkinFile(element: PsiElement): GherkinFile? {

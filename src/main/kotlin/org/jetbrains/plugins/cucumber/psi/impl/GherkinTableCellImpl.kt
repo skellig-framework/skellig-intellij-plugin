@@ -14,9 +14,6 @@ import org.jetbrains.plugins.cucumber.psi.GherkinElementFactory
 import org.jetbrains.plugins.cucumber.psi.GherkinElementVisitor
 import org.jetbrains.plugins.cucumber.psi.GherkinTableCell
 
-/**
- * @author Roman.Chernyatchik
- */
 class GherkinTableCellImpl(node: ASTNode) : GherkinPsiElementBase(node), GherkinTableCell {
     override fun acceptGherkin(gherkinElementVisitor: GherkinElementVisitor) {
         gherkinElementVisitor.visitGherkinTableCell(this)

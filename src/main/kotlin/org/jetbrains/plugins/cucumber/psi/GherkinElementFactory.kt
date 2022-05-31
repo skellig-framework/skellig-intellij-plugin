@@ -1,4 +1,3 @@
-// Copyright 2000-2020 JetBrains s.r.o. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.jetbrains.plugins.cucumber.psi
 
 import com.intellij.openapi.diagnostic.Logger
@@ -6,10 +5,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 import org.jetbrains.plugins.cucumber.CucumberElementFactory
 
-/**
- * @author Roman.Chernyatchik
- * @date Sep 5, 2009
- */
+
 object GherkinElementFactory {
     private val LOG = Logger.getInstance(GherkinElementFactory::class.java.name)
     fun createFeatureFromText(project: Project?, text: String): GherkinFeature? {

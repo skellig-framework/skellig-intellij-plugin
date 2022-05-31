@@ -1,9 +1,5 @@
 package org.jetbrains.plugins.cucumber.psi
 
-/**
- * @author Roman.Chernyatchik
- * @date Aug 22, 2009
- */
 interface GherkinStepsHolder : GherkinPsiElement, GherkinSuppressionHolder {
     val scenarioName: String
     val steps: Array<GherkinStep?>

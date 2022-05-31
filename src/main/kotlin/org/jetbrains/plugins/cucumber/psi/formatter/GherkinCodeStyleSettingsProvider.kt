@@ -6,9 +6,6 @@ import com.intellij.openapi.options.Configurable
 import com.intellij.psi.codeStyle.CodeStyleSettings
 import com.intellij.psi.codeStyle.CodeStyleSettingsProvider
 
-/**
- * @author Rustam Vishnyakov
- */
 class GherkinCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
     override fun createSettingsPage(settings: CodeStyleSettings, originalSettings: CodeStyleSettings): Configurable {
         return object : CodeStyleAbstractConfigurable(settings, originalSettings, this.configurableDisplayName) {

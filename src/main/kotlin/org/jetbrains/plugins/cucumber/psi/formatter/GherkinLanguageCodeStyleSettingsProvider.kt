@@ -7,9 +7,6 @@ import com.intellij.psi.codeStyle.CommonCodeStyleSettings
 import com.intellij.psi.codeStyle.LanguageCodeStyleSettingsProvider
 import org.jetbrains.plugins.cucumber.psi.SkelligLanguage
 
-/**
- * @author Rustam Vishnyakov
- */
 class GherkinLanguageCodeStyleSettingsProvider : LanguageCodeStyleSettingsProvider() {
 
     override fun customizeDefaults(
