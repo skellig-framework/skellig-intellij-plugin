@@ -43,6 +43,10 @@ interface SkelligTestStepTokenTypes {
             OBJECT_OPEN_BRACKET, OBJECT_CLOSE_BRACKET, OPEN_BRACKET, CLOSE_BRACKET, ARRAY_OPEN_BRACKET, ARRAY_CLOSE_BRACKET
         )
 
+        val VALUE_CLOSING_BRACKETS = TokenSet.create(
+            OBJECT_CLOSE_BRACKET, ARRAY_CLOSE_BRACKET
+        )
+
         val REQUESTS = TokenSet.create(
             MESSAGE, REQUEST, BODY, PAYLOAD
         )

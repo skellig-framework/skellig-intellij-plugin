@@ -114,6 +114,9 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                 myState = STATE_PARAMETER
             } else {
                 myCurrentToken = if (c == '{') SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET else SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET
+                if (state == ARRAY_STATE) {
+                    myState = STATE_DEFAULT
+                }
             }
             myPosition++
         } else if ((c == '[' || c == ']') && myState != STATE_INSIDE_STRING) {
