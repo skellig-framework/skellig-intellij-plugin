@@ -58,7 +58,11 @@ class SkelligTestStepParser : PsiParser {
                             || tokenType == TokenType.WHITE_SPACE || tokenType == TokenType.NEW_LINE_INDENT
                 }
                 if (isValidContent) {
-                    advanceLexer(builder)
+                    if (tokenType == SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET ||
+                        tokenType == SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET
+                        || tokenType == TokenType.WHITE_SPACE || tokenType == TokenType.NEW_LINE_INDENT) {
+                       advanceLexer(builder)
+                    }
                     if (builder.tokenType != null) {
                         tokenType = builder.tokenType
                     }
@@ -118,6 +122,7 @@ class SkelligTestStepParser : PsiParser {
             advanceLexer(builder)
             if (parseTestData(builder)) {
                 if (builder.tokenType === SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET) {
+                    advanceLexer(builder)
                     marker.done(elementType)
                     true
                 } else {
@@ -132,6 +137,7 @@ class SkelligTestStepParser : PsiParser {
             advanceLexer(builder)
             if (parseArrayTestData(builder)) {
                 if (builder.tokenType === SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
+                    advanceLexer(builder)
                     marker.done(elementType)
                     true
                 } else {
@@ -175,8 +181,8 @@ class SkelligTestStepParser : PsiParser {
                 marker.error("Invalid character found instead of a property declaration")
                 return false
             } else {
-                val fieldMarker = builder.mark()
-                fieldMarker.done(SkelligTestStepElementTypes.elementsForToken[builder.tokenType]!!)
+//                val fieldMarker = builder.mark()
+//                fieldMarker.done(SkelligTestStepElementTypes.elementsForToken[builder.tokenType]!!)
                 val fieldName = builder.tokenText
                 advanceLexer(builder)
 
@@ -184,7 +190,7 @@ class SkelligTestStepParser : PsiParser {
                     advanceLexer(builder)
                     return false
                 } else {
-                    advanceLexer(builder)
+                    //advanceLexer(builder)
                 }
             }
         }
@@ -227,6 +233,7 @@ class SkelligTestStepParser : PsiParser {
         advanceLexer(builder)
         return if (parseTestData(builder)) {
             if (builder.tokenType == SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET) {
+                advanceLexer(builder)
                 marker.done(SkelligTestStepElementTypes.OBJECT)
                 true
             } else {
@@ -240,9 +247,9 @@ class SkelligTestStepParser : PsiParser {
     }
 
     private fun parseArrayTestData(builder: PsiBuilder): Boolean {
+        val arrayMarker = builder.mark()
         advanceLexer(builder)
         var isContentValid = true
-        val arrayMarker = builder.mark()
         while (isContentValid && builder.tokenType != null && builder.tokenType != SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
             if (SkelligTestStepElementTypes.elementsInArrayForToken.containsKey(builder.tokenType)) {
                 if (parseSingleValue(builder)) {
@@ -251,17 +258,9 @@ class SkelligTestStepParser : PsiParser {
                     isContentValid = false
                 }
             } else if (builder.tokenType == SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET) {
-                if (parseObjectTestData(builder)) {
-                    advanceLexer(builder)
-                } else {
-                    isContentValid = false
-                }
+                isContentValid = parseObjectTestData(builder)
             } else if (builder.tokenType == SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET) {
-                if (parseArrayTestData(builder)) {
-                    advanceLexer(builder)
-                } else {
-                    isContentValid = false
-                }
+                isContentValid = parseArrayTestData(builder)
             } else if (builder.tokenType == TokenType.NEW_LINE_INDENT) {
                 advanceLexer(builder)
             } else {
@@ -271,6 +270,7 @@ class SkelligTestStepParser : PsiParser {
         }
         return if (isContentValid) {
             if (builder.tokenType == SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
+                advanceLexer(builder)
                 arrayMarker.done(SkelligTestStepElementTypes.ARRAY)
                 true
             } else {
