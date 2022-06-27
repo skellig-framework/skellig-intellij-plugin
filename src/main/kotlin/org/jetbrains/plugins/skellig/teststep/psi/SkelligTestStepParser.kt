@@ -60,8 +60,9 @@ class SkelligTestStepParser : PsiParser {
                 if (isValidContent) {
                     if (tokenType == SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET ||
                         tokenType == SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET
-                        || tokenType == TokenType.WHITE_SPACE || tokenType == TokenType.NEW_LINE_INDENT) {
-                       advanceLexer(builder)
+                        || tokenType == TokenType.WHITE_SPACE || tokenType == TokenType.NEW_LINE_INDENT
+                    ) {
+                        advanceLexer(builder)
                     }
                     if (builder.tokenType != null) {
                         tokenType = builder.tokenType
@@ -70,18 +71,35 @@ class SkelligTestStepParser : PsiParser {
             }
 
             if (isValidContent) {
-                if (objectBrackets != 0) {
-                    marker.error("Invalid number of opening and closing curly brackets")
-                } else if (arrayBrackets != 0) {
-                    marker.error("Invalid number of opening and closing array brackets")
-                } else {
+                if (!markErrorIfInvalidBracketsCount(marker)) {
                     marker.done(SkelligTestStepElementTypes.STEP)
                 }
             } else {
-                marker.error("Property must be declared in the test step")
+                advanceToNextTestStep(builder)
+                if (!markErrorIfInvalidBracketsCount(marker)) {
+                    marker.error("Property must be declared in the test step")
+                }
             }
         }
         return isValidContent
+    }
+
+    private fun advanceToNextTestStep(builder: PsiBuilder) {
+        while (!builder.eof() && builder.tokenType != SkelligTestStepTokenTypes.NAME) {
+            advanceLexer(builder)
+        }
+    }
+
+    private fun markErrorIfInvalidBracketsCount(marker: PsiBuilder.Marker): Boolean {
+        return if (objectBrackets != 0) {
+            marker.error("Invalid number of opening and closing curly brackets")
+            true
+        } else if (arrayBrackets != 0) {
+            marker.error("Invalid number of opening and closing array brackets")
+            true
+        } else {
+            false
+        }
     }
 
     private fun parseTestStepName(builder: PsiBuilder, marker: PsiBuilder.Marker): Boolean {
@@ -136,14 +154,8 @@ class SkelligTestStepParser : PsiParser {
         } else if (builder.tokenType == SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET && elementType != SkelligTestStepTokenTypes.VARIABLES) {
             advanceLexer(builder)
             if (parseArrayTestData(builder)) {
-                if (builder.tokenType === SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
-                    advanceLexer(builder)
-                    marker.done(elementType)
-                    true
-                } else {
-                    marker.error(CLOSING_ARRAY_BRACKETS_ERROR)
-                    false
-                }
+                marker.done(elementType)
+                true
             } else {
                 marker.drop()
                 false
@@ -181,8 +193,6 @@ class SkelligTestStepParser : PsiParser {
                 marker.error("Invalid character found instead of a property declaration")
                 return false
             } else {
-//                val fieldMarker = builder.mark()
-//                fieldMarker.done(SkelligTestStepElementTypes.elementsForToken[builder.tokenType]!!)
                 val fieldName = builder.tokenText
                 advanceLexer(builder)
 
@@ -247,39 +257,44 @@ class SkelligTestStepParser : PsiParser {
     }
 
     private fun parseArrayTestData(builder: PsiBuilder): Boolean {
-        val arrayMarker = builder.mark()
-        advanceLexer(builder)
         var isContentValid = true
-        while (isContentValid && builder.tokenType != null && builder.tokenType != SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
-            if (SkelligTestStepElementTypes.elementsInArrayForToken.containsKey(builder.tokenType)) {
-                if (parseSingleValue(builder)) {
+        return if (builder.tokenType == SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
+            advanceLexer(builder)
+            isContentValid
+        } else {
+            val arrayMarker = builder.mark()
+            advanceLexer(builder)
+            while (isContentValid && builder.tokenType != null && builder.tokenType != SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
+                if (SkelligTestStepElementTypes.elementsInArrayForToken.containsKey(builder.tokenType)) {
+                    if (parseSingleValue(builder)) {
+                        advanceLexer(builder)
+                    } else {
+                        isContentValid = false
+                    }
+                } else if (builder.tokenType == SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET) {
+                    isContentValid = parseObjectTestData(builder)
+                } else if (builder.tokenType == SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET) {
+                    isContentValid = parseArrayTestData(builder)
+                } else if (builder.tokenType == TokenType.NEW_LINE_INDENT) {
                     advanceLexer(builder)
                 } else {
+                    arrayMarker.error("Invalid content in array. Must contain a value, object or array");
                     isContentValid = false
                 }
-            } else if (builder.tokenType == SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET) {
-                isContentValid = parseObjectTestData(builder)
-            } else if (builder.tokenType == SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET) {
-                isContentValid = parseArrayTestData(builder)
-            } else if (builder.tokenType == TokenType.NEW_LINE_INDENT) {
-                advanceLexer(builder)
-            } else {
-                arrayMarker.error("Invalid content in array. Must contain a value, object or array");
-                isContentValid = false
             }
-        }
-        return if (isContentValid) {
-            if (builder.tokenType == SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
-                advanceLexer(builder)
-                arrayMarker.done(SkelligTestStepElementTypes.ARRAY)
-                true
+            if (isContentValid) {
+                if (builder.tokenType == SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
+                    advanceLexer(builder)
+                    arrayMarker.done(SkelligTestStepElementTypes.ARRAY)
+                    true
+                } else {
+                    arrayMarker.error(CLOSING_ARRAY_BRACKETS_ERROR)
+                    false
+                }
             } else {
-                arrayMarker.error(CLOSING_ARRAY_BRACKETS_ERROR)
+                arrayMarker.drop()
                 false
             }
-        } else {
-            arrayMarker.drop()
-            false
         }
     }
 
