@@ -64,7 +64,7 @@ interface SkelligTestStepTokenTypes {
         )
 
         val VALUE_TOKENS = TokenSet.create(
-            TEXT, PARAMETER, FUNCTION, EXPRESSION, DOT
+            TEXT, PARAMETER, FUNCTION, EXPRESSION, DOT, STRING_TEXT
         )
     }
 }

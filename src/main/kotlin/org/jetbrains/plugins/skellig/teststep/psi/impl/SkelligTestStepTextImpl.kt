@@ -6,7 +6,7 @@ import org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepElementVisitor
 
 interface SkelligTestStepText : PsiElement
 
-class SkelligTestStepTextImpl(node: ASTNode) : SkelligTestStepPsiElementBase(node), SkelligTestStepText {
+open class SkelligTestStepTextImpl(node: ASTNode) : SkelligTestStepPsiElementBase(node), SkelligTestStepText {
 
     override fun getPresentableText(): String {
         return "SkelligTestStepText: $elementText"

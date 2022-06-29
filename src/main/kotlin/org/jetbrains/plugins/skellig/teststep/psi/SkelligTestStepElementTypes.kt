@@ -10,11 +10,12 @@ interface SkelligTestStepElementTypes {
         val ID = SkelligTestStepElementType("id")
         val VARIABLES = SkelligTestStepElementType("variables")
         val TEXT = SkelligTestStepElementType("text")
+        val STRING_TEXT = SkelligTestStepElementType("string_text")
         val PROPERTY = SkelligTestStepElementType("property")
         val VALUE = SkelligTestStepElementType("value")  // what goes after '='. Is a combination of TEXT, PARAM, FUNCTION, EXPRESSION
         val OBJECT = SkelligTestStepElementType("object")
         val ARRAY = SkelligTestStepElementType("array")
-        val FIELD_VALUE = SkelligTestStepElementType("FIELD_VALUE")
+        val FIELD_VALUE = SkelligTestStepElementType("field_value")
         val PARAMETER = SkelligTestStepElementType("parameter")
         val EXPRESSION = SkelligTestStepElementType("expression")
         val FUNCTION = SkelligTestStepElementType("function")
@@ -28,6 +29,7 @@ interface SkelligTestStepElementTypes {
         val elementsForToken = mapOf(
             Pair(SkelligTestStepTokenTypes.PROPERTY, PROPERTY),
             Pair(SkelligTestStepTokenTypes.TEXT, TEXT),
+            Pair(SkelligTestStepTokenTypes.STRING_TEXT, STRING_TEXT),
             Pair(SkelligTestStepTokenTypes.DOT, DOT),
 
             Pair(SkelligTestStepTokenTypes.VALIDATE, VALIDATION),

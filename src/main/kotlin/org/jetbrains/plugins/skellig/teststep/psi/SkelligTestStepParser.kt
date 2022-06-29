@@ -24,7 +24,7 @@ class SkelligTestStepParser : PsiParser {
     }
 
     private fun parseFileTopLevel(builder: PsiBuilder): Boolean {
-        var isValidContent = true
+        val isValidContent = true
         while (!builder.eof()) {
             val tokenType = builder.tokenType
             if (tokenType === SkelligTestStepTokenTypes.NAME) {
@@ -87,18 +87,6 @@ class SkelligTestStepParser : PsiParser {
     private fun advanceToNextTestStep(builder: PsiBuilder) {
         while (!builder.eof() && builder.tokenType != SkelligTestStepTokenTypes.NAME) {
             advanceLexer(builder)
-        }
-    }
-
-    private fun markErrorIfInvalidBracketsCount(marker: PsiBuilder.Marker): Boolean {
-        return if (objectBrackets != 0) {
-            marker.error("Invalid number of opening and closing curly brackets")
-            true
-        } else if (arrayBrackets != 0) {
-            marker.error("Invalid number of opening and closing array brackets")
-            true
-        } else {
-            false
         }
     }
 
@@ -267,7 +255,7 @@ class SkelligTestStepParser : PsiParser {
             while (isContentValid && builder.tokenType != null && builder.tokenType != SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET) {
                 if (SkelligTestStepElementTypes.elementsInArrayForToken.containsKey(builder.tokenType)) {
                     if (parseSingleValue(builder)) {
-                        advanceLexer(builder)
+                       // advanceLexer(builder)
                     } else {
                         isContentValid = false
                     }
@@ -302,15 +290,26 @@ class SkelligTestStepParser : PsiParser {
         val valueMarker = builder.mark()
         var valueCounter = 0
         while (SkelligTestStepTokenTypes.VALUE_TOKENS.contains(builder.tokenType)) {
-            val marker = builder.mark()
-            marker.done(SkelligTestStepElementTypes.elementsForToken[builder.tokenType]!!)
             valueCounter++
             if (!SkelligTestStepTokenTypes.VALUE_CLOSING_BRACKETS.contains(builder.lookAhead(1))) advanceLexer(builder)
             else break
         }
+        advanceLexer(builder)
         valueMarker.done(SkelligTestStepElementTypes.VALUE)
 
         return valueCounter > 0
+    }
+
+    private fun markErrorIfInvalidBracketsCount(marker: PsiBuilder.Marker): Boolean {
+        return if (objectBrackets != 0) {
+            marker.error("Invalid number of opening and closing curly brackets")
+            true
+        } else if (arrayBrackets != 0) {
+            marker.error("Invalid number of opening and closing array brackets")
+            true
+        } else {
+            false
+        }
     }
 
     private fun advanceLexer(builder: PsiBuilder) {

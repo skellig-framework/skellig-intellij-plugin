@@ -18,8 +18,9 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
     private var myCurLanguage: String? = null
     private var parameterIndexes: MutableSet<Int>? = null
     private var expressionIndexes: MutableSet<Int>? = null
+    private var stringChars = setOf('\"', '\'')
     private var eofChars = setOf('\n', '\r')
-    private var specialChars = setOf('(', ')', '{', '}', '[', ']', '.', '#', '$', ':', '=').union(eofChars)
+    private var specialChars = setOf('(', ')', '{', '}', '[', ']', '.', '#', '$', ':', '=').union(stringChars).union(eofChars)
     private var propertyValueChars = setOf('=', '{', '[')
 
     override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
@@ -77,7 +78,7 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
         } else if (myState != STATE_INSIDE_STRING && Character.isWhitespace(c)) {
             advanceOverWhitespace(if (myState == ARRAY_STATE) myState else STATE_DEFAULT)
             myCurrentToken = TokenType.WHITE_SPACE
-            while (myPosition < myEndOffset && Character.isWhitespace(myBuffer[myPosition])) {
+            while (myPosition < myEndOffset && Character.isSpaceChar(myBuffer[myPosition])) {
                 advanceOverWhitespace(if (myState == ARRAY_STATE) myState else STATE_DEFAULT)
                 if (myPosition < myEndOffset && isNewLineChar(myBuffer[myPosition])) {
                     myCurrentToken = TokenType.NEW_LINE_INDENT
@@ -86,9 +87,8 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
             }
         } else if (isStringAtPosition()) {
             myCurrentToken = SkelligTestStepTokenTypes.STRING_TEXT
-            myState = STATE_INSIDE_STRING
-            myPosition += 1
-            advanceToParameterOrSymbol(STRING_MARKER, STATE_INSIDE_STRING, false)
+            advanceToNextSpecialChar(stringChars, myState, false)
+            myPosition++
         } else if (isCommentAtPosition() && myState != STATE_INSIDE_STRING) {
             myCurrentToken = SkelligTestStepTokenTypes.COMMENT
             advanceToNextSpecialChar(eofChars)
@@ -194,7 +194,7 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
         }
     }
 
-    private fun isNewLineChar(c: Char) = c == '\n' || c == '\r'
+    private fun isNewLineChar(c: Char) = eofChars.contains(c)
 
     private fun processEnclosedInBrackets(openingSymbol: Char, openingBracket: Char, closingBracket: Char, indexesMemory: MutableSet<Int>?) {
         var counter = 1
@@ -226,7 +226,8 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
     private fun processFunction(): Boolean {
         var isFunction = false
         var position = myPosition
-        while (position++ < myEndOffset && position < myBuffer.length && myBuffer[position] != '\n') {
+        while (position++ < myEndOffset && position < myBuffer.length &&
+            !stringChars.contains(myBuffer[position]) && !eofChars.contains(myBuffer[position])) {
             if (!isFunction && myBuffer[position - 1] != '\\' && myBuffer[position] == '(') {
                 isFunction = true
             } else if (isFunction && myBuffer[position - 1] != '\\' && myBuffer[position] == ')') {
@@ -245,7 +246,7 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
         return myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '#' && myBuffer[myPosition + 1] == '['
     }
 
-    private fun advanceOverWhitespace(nextState : Int = STATE_DEFAULT) {
+    private fun advanceOverWhitespace(nextState: Int = STATE_DEFAULT) {
         if (myBuffer[myPosition] == '\n') {
             myState = nextState
         }
@@ -271,13 +272,14 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
         return myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '/' && myBuffer[myPosition + 1] == '/'
     }
 
-    private fun advanceToNextSpecialChar(specialChars : Set<Char>, nextState : Int = STATE_DEFAULT) {
+    private fun advanceToNextSpecialChar(specialChars: Set<Char>, nextState: Int = STATE_DEFAULT, shouldReturnWhitespace: Boolean = true) {
         myPosition++
         val mark = myPosition
         while (myPosition < myEndOffset && !specialChars.contains(myBuffer[myPosition])) {
             myPosition++
         }
-        returnWhitespace(mark)
+
+        if (shouldReturnWhitespace) returnWhitespace(mark)
         myState = nextState
     }
 

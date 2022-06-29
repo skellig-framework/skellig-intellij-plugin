@@ -92,6 +92,7 @@ class SkelligTestStepBlock @JvmOverloads constructor(
                 child.elementType == SkelligTestStepElementTypes.REQUEST ||
                 child.elementType == SkelligTestStepElementTypes.VALUE ||
                 child.elementType == SkelligTestStepElementTypes.TEXT ||
+                child.elementType == SkelligTestStepElementTypes.STRING_TEXT ||
                 child.elementType == SkelligTestStepElementTypes.VALIDATION
             ) {
                 Indent.getNormalIndent()
