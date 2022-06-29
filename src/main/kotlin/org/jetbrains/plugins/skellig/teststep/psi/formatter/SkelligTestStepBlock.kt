@@ -7,8 +7,6 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
 import org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepElementTypes
 import org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepTokenTypes
-import org.skellig.plugin.language.testdata.formatter.SkelligTestDataBlock
-import java.util.ArrayList
 
 class SkelligTestStepBlock @JvmOverloads constructor(
     private val myNode: ASTNode,
@@ -32,6 +30,27 @@ class SkelligTestStepBlock @JvmOverloads constructor(
             SkelligTestStepElementTypes.VARIABLES,
             SkelligTestStepElementTypes.REQUEST,
             SkelligTestStepElementTypes.VALIDATION
+        )
+
+        private val BRACKET_TO_TEXT_BLOCKS_TO_SPACE = TokenSet.create(
+            SkelligTestStepTokenTypes.EQUAL,
+            SkelligTestStepTokenTypes.OPEN_BRACKET,
+            SkelligTestStepTokenTypes.CLOSE_BRACKET
+        )
+
+        private val TEXT_TO_BRACKET_BLOCKS_TO_SPACE = TokenSet.create(
+            SkelligTestStepTokenTypes.EQUAL,
+            SkelligTestStepTokenTypes.OPEN_BRACKET,
+            SkelligTestStepTokenTypes.CLOSE_BRACKET,
+            SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET,
+            SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET
+        )
+
+        private val TEXT_BLOCKS_TO_SPACE = TokenSet.create(
+            SkelligTestStepTokenTypes.NAME,
+            SkelligTestStepTokenTypes.TEXT,
+            SkelligTestStepTokenTypes.PARAMETER,
+            SkelligTestStepElementTypes.VALUE
         )
 
         private val READ_ONLY_BLOCKS = TokenSet.create(SkelligTestStepTokenTypes.STRING_TEXT, SkelligTestStepTokenTypes.COMMENT)
@@ -66,10 +85,9 @@ class SkelligTestStepBlock @JvmOverloads constructor(
                 continue
             }
 
-            var indent = if (
+            val indent = if (
                 child.elementType == SkelligTestStepElementTypes.FIELD_VALUE ||
                 child.elementType == SkelligTestStepElementTypes.OBJECT ||
-                child.elementType == SkelligTestStepElementTypes.ARRAY ||
                 child.elementType == SkelligTestStepElementTypes.VARIABLES ||
                 child.elementType == SkelligTestStepElementTypes.REQUEST ||
                 child.elementType == SkelligTestStepElementTypes.VALUE ||
@@ -77,8 +95,7 @@ class SkelligTestStepBlock @JvmOverloads constructor(
                 child.elementType == SkelligTestStepElementTypes.VALIDATION
             ) {
                 Indent.getNormalIndent()
-            }
-            else Indent.getNoneIndent()
+            } else Indent.getNoneIndent()
 
             result.add(SkelligTestStepBlock(child, indent))
         }
@@ -103,19 +120,15 @@ class SkelligTestStepBlock @JvmOverloads constructor(
         }
         val block1 = child1 as ASTBlock
         val block2 = child2 as ASTBlock
-        val node1 = block1.node
-        val node2 = block2.node
-        val parent1 = if (node1!!.treeParent != null) node1.treeParent.elementType else null
-        val elementType1 = node1.elementType
-        val elementType2 = node2!!.elementType
+        val elementType1 = block1.node?.elementType
+        val elementType2 = block2.node?.elementType
+
         if (READ_ONLY_BLOCKS.contains(elementType2)) {
             return Spacing.getReadOnlySpacing()
         }
 
-        if (elementType1 === SkelligTestStepTokenTypes.PROPERTY &&
-            (elementType2 === SkelligTestStepTokenTypes.EQUAL ||
-                    elementType2 === SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET ||
-                    elementType2 === SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET)) {
+        if (TEXT_TO_BRACKET_BLOCKS_TO_SPACE.contains(elementType2) ||
+            BRACKET_TO_TEXT_BLOCKS_TO_SPACE.contains(elementType1)) {
             return Spacing.createSpacing(1, 1, 0, false, 0)
         }
 
@@ -128,7 +141,7 @@ class SkelligTestStepBlock @JvmOverloads constructor(
     }
 
     override fun isIncomplete(): Boolean {
-       return false
+        return false
     }
 
     override fun isLeaf(): Boolean {
