@@ -14,8 +14,12 @@ interface SkelligTestStepTokenTypes {
         val ARRAY_CLOSE_BRACKET = SkelligTestStepElementType("ARRAY_CLOSE_BRACKET")  // ]
         val OPEN_BRACKET = SkelligTestStepElementType("OPEN_BRACKET")  // (
         val CLOSE_BRACKET = SkelligTestStepElementType("CLOSE_BRACKET")  // )
-        val PARAMETER = SkelligTestStepElementType("PARAMETER_BRACKET")  // ${
-        val EXPRESSION = SkelligTestStepElementType("EXPRESSION")  // #[
+        val PARAMETER_OPEN_BRACKET = SkelligTestStepElementType("PARAMETER_OPEN_BRACKET")  // ${
+        val PARAMETER_CLOSE_BRACKET = SkelligTestStepElementType("PARAMETER_CLOSE_BRACKET")  // }
+        val PARAMETER = SkelligTestStepElementType("PARAMETER")
+        val EXPRESSION_OPEN_BRACKET = SkelligTestStepElementType("EXPRESSION_OPEN_BRACKET")  // #[
+        val EXPRESSION = SkelligTestStepElementType("EXPRESSION")
+        val EXPRESSION_CLOSE_BRACKET = SkelligTestStepElementType("EXPRESSION_CLOSE_BRACKET")  // ]
         val FUNCTION = SkelligTestStepElementType("FUNCTION")  // ( )
         val COLON = SkelligTestStepElementType("COLON")
         val DOT = SkelligTestStepElementType("DOT")
@@ -40,7 +44,8 @@ interface SkelligTestStepTokenTypes {
         )
 
         val BRACKETS = TokenSet.create(
-            OBJECT_OPEN_BRACKET, OBJECT_CLOSE_BRACKET, OPEN_BRACKET, CLOSE_BRACKET, ARRAY_OPEN_BRACKET, ARRAY_CLOSE_BRACKET
+            OBJECT_OPEN_BRACKET, OBJECT_CLOSE_BRACKET, OPEN_BRACKET, CLOSE_BRACKET, ARRAY_OPEN_BRACKET, ARRAY_CLOSE_BRACKET,
+            PARAMETER_OPEN_BRACKET, PARAMETER_CLOSE_BRACKET, EXPRESSION_OPEN_BRACKET, EXPRESSION_CLOSE_BRACKET
         )
 
         val VALUE_CLOSING_BRACKETS = TokenSet.create(
@@ -64,7 +69,11 @@ interface SkelligTestStepTokenTypes {
         )
 
         val VALUE_TOKENS = TokenSet.create(
-            TEXT, PARAMETER, FUNCTION, EXPRESSION, DOT, STRING_TEXT
+            TEXT,
+            PARAMETER_OPEN_BRACKET, PARAMETER, COLON, PARAMETER_CLOSE_BRACKET,
+            FUNCTION,
+            EXPRESSION_OPEN_BRACKET, EXPRESSION, EXPRESSION_CLOSE_BRACKET,
+            DOT, STRING_TEXT
         )
     }
 }

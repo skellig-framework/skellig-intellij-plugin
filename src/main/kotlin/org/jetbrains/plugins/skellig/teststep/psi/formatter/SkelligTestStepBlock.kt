@@ -129,7 +129,9 @@ class SkelligTestStepBlock @JvmOverloads constructor(
         }
 
         if (TEXT_TO_BRACKET_BLOCKS_TO_SPACE.contains(elementType2) ||
-            BRACKET_TO_TEXT_BLOCKS_TO_SPACE.contains(elementType1)) {
+            BRACKET_TO_TEXT_BLOCKS_TO_SPACE.contains(elementType1) ||
+            (elementType1 == SkelligTestStepTokenTypes.PROPERTY && elementType2 == SkelligTestStepElementTypes.ARRAY) ||
+            (elementType1 == SkelligTestStepTokenTypes.PROPERTY && elementType2 == SkelligTestStepElementTypes.OBJECT)) {
             return Spacing.createSpacing(1, 1, 0, false, 0)
         }
 

@@ -19,6 +19,7 @@ class SkelligTestStepSyntaxHighlighter(private val myKeywordProvider: SkelligTes
             ATTRIBUTES[SkelligTestStepTokenTypes.TEXT] = SkelligTestStepHighlighter.TEXT
             ATTRIBUTES[SkelligTestStepTokenTypes.STRING_TEXT] = SkelligTestStepHighlighter.STRING
             ATTRIBUTES[SkelligTestStepTokenTypes.PROPERTY] = SkelligTestStepHighlighter.PROPERTY
+            ATTRIBUTES[SkelligTestStepTokenTypes.PARAMETER] = SkelligTestStepHighlighter.PARAMETER
         }
     }
 

@@ -22,6 +22,7 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
             AttributesDescriptor("string", SkelligTestStepHighlighter.STRING),
             AttributesDescriptor("brackets", SkelligTestStepHighlighter.BRACKETS),
             AttributesDescriptor("property", SkelligTestStepHighlighter.PROPERTY),
+            AttributesDescriptor("parameter", SkelligTestStepHighlighter.PARAMETER),
         )
     }
 
@@ -47,6 +48,7 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
                    1
                    2
                  ]
+                 c = \$\{key}
               }
            }
         """.trimIndent()
