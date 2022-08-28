@@ -1,0 +1,51 @@
+name ( request ) {
+    i = test 1
+
+    //// asfd as
+    // asf
+    variables {
+    }
+// wewwewe
+    a [
+        {
+            b [
+                {
+                    a = "=" 10
+                }
+                {
+                    a = 100
+                    b {
+                        c = 1 + 1
+                    }
+                }
+            ]
+            c = "12"
+        }
+    ]
+
+    request {
+
+        a = 1
+        b [
+            1
+            2
+        ]
+        c {
+            f [ 1, 2]
+        }
+    }
+
+    message {
+
+    }
+
+    validate {
+        a [
+            contains
+            ff
+        ]
+
+    }
+
+
+}

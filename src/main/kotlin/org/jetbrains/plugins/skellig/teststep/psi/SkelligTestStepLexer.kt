@@ -87,7 +87,7 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                     break
                 }
             }
-        } else if (isStringAtPosition()) {
+        } else if (myState != STATE_PARAMETER && isStringAtPosition()) {
             myCurrentToken = SkelligTestStepTokenTypes.STRING_TEXT
             advanceToNextSpecialChar(stringChars, myState, false)
             myPosition++
@@ -107,7 +107,9 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
         } else if (c == ')' && myState != STATE_INSIDE_STRING && myState != STATE_FUNCTION) {
             myCurrentToken = SkelligTestStepTokenTypes.CLOSE_BRACKET
             myPosition++
-        } else if (isParameterAtPosition()) {
+        }
+        // Set state as a starting of a parameter
+        else if (isParameterAtPosition()) {
             myCurrentToken = SkelligTestStepTokenTypes.PARAMETER_OPEN_BRACKET
             myPosition += 2
             myState = STATE_PARAMETER
@@ -126,7 +128,9 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                     advanceToNextSpecialChar(specialChars, STATE_PARAMETER_DEFAULT)
                 }
             }
-        } else if (myState == STATE_PARAMETER) {
+        }
+        // Process parameter
+        else if (myState == STATE_PARAMETER) {
             // ${key}
             // ${key:}
             // ${key: default}
@@ -282,11 +286,13 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
     }
 
     private fun isParameterAtPosition(): Boolean {
-        return myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '$' && myBuffer[myPosition + 1] == '{'
+        return is_previous_not_backslash() &&
+                myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '$' && myBuffer[myPosition + 1] == '{'
     }
 
     private fun isExpressionAtPosition(): Boolean {
-        return myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '#' && myBuffer[myPosition + 1] == '['
+        return is_previous_not_backslash() &&
+                myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '#' && myBuffer[myPosition + 1] == '['
     }
 
     private fun advanceOverWhitespace(nextState: Int = STATE_DEFAULT) {
@@ -307,9 +313,11 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
     }
 
     private fun isStringAtPosition(): Boolean {
-        return (myBuffer[myPosition] == '\'' || myBuffer[myPosition] == '"') &&
-                (myBuffer.length > 1 && myBuffer[myPosition - 1] != '\\')
+        return (myBuffer[myPosition] == '\'' || myBuffer[myPosition] == '"') && is_previous_not_backslash()
+
     }
+
+    private fun is_previous_not_backslash() = (myPosition > 0 && myBuffer.length > 1 && myBuffer[myPosition - 1] != '\\')
 
     private fun isCommentAtPosition(): Boolean {
         return myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '/' && myBuffer[myPosition + 1] == '/'
@@ -318,8 +326,10 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
     private fun advanceToNextSpecialChar(specialChars: Set<Char>, nextState: Int = STATE_DEFAULT, shouldReturnWhitespace: Boolean = true) {
         myPosition++
         val mark = myPosition
-        while (myPosition < myEndOffset && !specialChars.contains(myBuffer[myPosition])) {
-            myPosition++
+        while (myPosition < myEndOffset) {
+            // ignore if character is marked with `\` meaning that it's not a special char
+            if (myBuffer[myPosition - 1] != '\\' && specialChars.contains(myBuffer[myPosition])) break
+            else myPosition++
         }
 
         if (shouldReturnWhitespace) returnWhitespace(mark)
