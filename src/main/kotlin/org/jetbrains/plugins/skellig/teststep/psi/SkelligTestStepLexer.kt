@@ -16,6 +16,8 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
     private var myKeywords: Collection<String?>? = null
     private var myState = 0
     private var currentParametersCount = 0
+    private var currentExpressionsCount = 0
+    private var arraysCount = 0
     private var myCurLanguage: String? = null
     private var parameterIndexes: MutableSet<Int>? = null
     private var expressionIndexes: MutableSet<Int>? = null
@@ -24,6 +26,7 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
     private var specialChars = setOf('(', ')', '{', '}', '[', ']', '.', '#', '$', ':', '=').union(stringChars).union(eofChars)
     private var propertyValueChars = setOf('=', '{', '[')
     private var parameterValueChars = setOf(':', '}', '$')
+    private var expressionValueChars = setOf('#', ']')
 
     override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
         myBuffer = buffer
@@ -101,10 +104,10 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
             myCurrentToken = SkelligTestStepTokenTypes.EQUAL
             myState = SIMPLE_VALUE_STATE
             myPosition++
-        } else if (c == '(' && myState != STATE_INSIDE_STRING && myState != STATE_FUNCTION) {
+        } else if (c == '(' && (myState == STATE_DEFAULT || myState == STATE_TEST_STEP)) {
             myCurrentToken = SkelligTestStepTokenTypes.OPEN_BRACKET
             myPosition++
-        } else if (c == ')' && myState != STATE_INSIDE_STRING && myState != STATE_FUNCTION) {
+        } else if (c == ')' && (myState == STATE_DEFAULT || myState == STATE_TEST_STEP)) {
             myCurrentToken = SkelligTestStepTokenTypes.CLOSE_BRACKET
             myPosition++
         }
@@ -114,8 +117,8 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
             myPosition += 2
             myState = STATE_PARAMETER
             currentParametersCount++
-//            advanceToNextSpecialChar(eofChars)
-        } else if (myState == STATE_PARAMETER_DEFAULT) {
+        }
+        else if (myState == STATE_PARAMETER_DEFAULT) {
             when (c) {
                 '}' -> {
                     myCurrentToken = SkelligTestStepTokenTypes.PARAMETER_CLOSE_BRACKET
@@ -130,7 +133,8 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
             }
         }
         // Process parameter
-        else if (myState == STATE_PARAMETER) {
+        else if (currentParametersCount > 0 || myState == STATE_PARAMETER) {
+            // examples:
             // ${key}
             // ${key:}
             // ${key: default}
@@ -140,7 +144,9 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                     myCurrentToken = SkelligTestStepTokenTypes.PARAMETER_CLOSE_BRACKET
                     myPosition++
                     currentParametersCount--
-                    myState = if (currentParametersCount == 0) SIMPLE_VALUE_STATE else STATE_PARAMETER
+                    myState = if (currentParametersCount == 0)
+                        if (arraysCount > 0) ARRAY_STATE else SIMPLE_VALUE_STATE
+                    else STATE_PARAMETER
                 }
                 ':' -> {
                     myCurrentToken = SkelligTestStepTokenTypes.COLON
@@ -152,42 +158,50 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                     advanceToNextSpecialChar(parameterValueChars, STATE_PARAMETER)
                 }
             }
-//            myState = STATE_PARAMETER
-//            while (myPosition < myEndOffset && myBuffer[myPosition] != '\n' && myBuffer[myPosition] != '}'
-//                && myBuffer[myPosition] != ':' && (myBuffer[myPosition] != '$' && myBuffer[myPosition + 1] != '{')) {
-//                myPosition++
-//            }
-//            myPosition++
-//            processEnclosedInBrackets('$', '{', '}', parameterIndexes)
         } else if ((c == '{' || c == '}') && myState != STATE_INSIDE_STRING) {
-            if (parameterIndexes?.contains(myPosition) == true) {
-                myCurrentToken = SkelligTestStepTokenTypes.PARAMETER
-                myState = STATE_PARAMETER
-            } else {
-                myCurrentToken = if (c == '{') SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET else SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET
-                if (state == ARRAY_STATE) {
-                    myState = STATE_DEFAULT
-                }
+            myCurrentToken = if (c == '{') SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET else SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET
+            if (state == ARRAY_STATE) {
+                myState = STATE_DEFAULT
             }
             myPosition++
-        } else if ((c == '[' || c == ']') && myState != STATE_INSIDE_STRING) {
-            if (expressionIndexes?.contains(myPosition) == true) {
-                myCurrentToken = SkelligTestStepTokenTypes.EXPRESSION
-                myState = STATE_EXPRESSION
-            } else {
-                myCurrentToken = if (c == '[') {
-                    myState = ARRAY_STATE
-                    SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET
-                } else {
-                    myState = STATE_DEFAULT
-                    SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET
-                }
-            }
-            myPosition++
-        } else if (isExpressionAtPosition()) {
-            myCurrentToken = SkelligTestStepTokenTypes.EXPRESSION
+        }
+
+        // Set state as a starting of an expression
+        else if (isExpressionAtPosition()) {
+            myCurrentToken = SkelligTestStepTokenTypes.EXPRESSION_OPEN_BRACKET
+            myPosition += 2
             myState = STATE_EXPRESSION
-            processEnclosedInBrackets('#', '[', ']', expressionIndexes)
+            currentExpressionsCount++
+        }
+        // Process expression
+        else if (currentExpressionsCount > 0 || myState == STATE_EXPRESSION) {
+            // example: #[a.b.subString(1,2)]
+            when (c) {
+                ']' -> {
+                    myCurrentToken = SkelligTestStepTokenTypes.EXPRESSION_CLOSE_BRACKET
+                    myPosition++
+                    currentExpressionsCount--
+                    myState = if (currentExpressionsCount == 0)
+                        if (arraysCount > 0) ARRAY_STATE else SIMPLE_VALUE_STATE
+                    else STATE_EXPRESSION
+                }
+                else -> {
+                    myCurrentToken = SkelligTestStepTokenTypes.EXPRESSION
+                    advanceToNextSpecialChar(expressionValueChars.union(parameterValueChars), STATE_EXPRESSION)
+                }
+            }
+        }
+        else if ((c == '[' || c == ']') && myState != STATE_INSIDE_STRING) {
+            myCurrentToken = if (c == '[') {
+                arraysCount++
+                myState = ARRAY_STATE
+                SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET
+            } else {
+                arraysCount--
+                myState = STATE_DEFAULT
+                SkelligTestStepTokenTypes.ARRAY_CLOSE_BRACKET
+            }
+            myPosition++
         } else if (myState == SIMPLE_VALUE_STATE) {
             myCurrentToken = SkelligTestStepTokenTypes.TEXT
             advanceToNextSpecialChar(specialChars, SIMPLE_VALUE_STATE)

@@ -48,9 +48,15 @@ interface SkelligTestStepElementTypes {
 
         val elementsInArrayForToken = mapOf(
             Pair(SkelligTestStepTokenTypes.TEXT, TEXT),
+            Pair(SkelligTestStepTokenTypes.STRING_TEXT, STRING_TEXT),
             Pair(SkelligTestStepTokenTypes.DOT, DOT),
             Pair(SkelligTestStepTokenTypes.PARAMETER, PARAMETER),
+            Pair(SkelligTestStepTokenTypes.PARAMETER_OPEN_BRACKET, PARAMETER),
+            Pair(SkelligTestStepTokenTypes.COLON, PARAMETER),
+            Pair(SkelligTestStepTokenTypes.PARAMETER_CLOSE_BRACKET, PARAMETER),
+            Pair(SkelligTestStepTokenTypes.EXPRESSION_OPEN_BRACKET, EXPRESSION),
             Pair(SkelligTestStepTokenTypes.EXPRESSION, EXPRESSION),
+            Pair(SkelligTestStepTokenTypes.EXPRESSION_CLOSE_BRACKET, EXPRESSION),
             Pair(SkelligTestStepTokenTypes.FUNCTION, FUNCTION),
         )
     }
