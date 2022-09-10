@@ -17,7 +17,7 @@ import javax.swing.Icon
 abstract class SkelligTestStepPsiElementBase(node: ASTNode) : ASTWrapperPsiElement(node), GherkinPsiElement {
 
     companion object {
-        private val TEXT_FILTER: TokenSet = TokenSet.create(SkelligTestStepTokenTypes.TEXT)
+        private val TEXT_FILTER: TokenSet = TokenSet.create(SkelligTestStepTokenTypes.STRING_TEXT, SkelligTestStepTokenTypes.TEXT)
     }
 
     open val elementText: String

@@ -90,6 +90,22 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                     break
                 }
             }
+        }  else if (c == '(' && (myState == STATE_DEFAULT || myState == STATE_TEST_STEP)) {
+            myCurrentToken = SkelligTestStepTokenTypes.OPEN_BRACKET
+            myPosition++
+        } else if (c == ')' && (myState == STATE_DEFAULT || myState == STATE_TEST_STEP)) {
+            myCurrentToken = SkelligTestStepTokenTypes.CLOSE_BRACKET
+            myState = STATE_DEFAULT
+            myPosition++
+        } else if (myState == STATE_TEST_STEP) {
+            if (isStringAtPosition()) {
+                myCurrentToken = SkelligTestStepTokenTypes.STRING_TEXT
+                advanceToNextSpecialChar(stringChars, myState, false)
+                myPosition++
+            } else {
+                myCurrentToken = SkelligTestStepTokenTypes.TEXT
+                advanceToNextSpecialChar(specialChars, myState)
+            }
         } else if (myState != STATE_PARAMETER && isStringAtPosition()) {
             myCurrentToken = SkelligTestStepTokenTypes.STRING_TEXT
             advanceToNextSpecialChar(stringChars, myState, false)
@@ -103,12 +119,6 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
         } else if (c == '=' && myState != STATE_INSIDE_STRING) {
             myCurrentToken = SkelligTestStepTokenTypes.EQUAL
             myState = SIMPLE_VALUE_STATE
-            myPosition++
-        } else if (c == '(' && (myState == STATE_DEFAULT || myState == STATE_TEST_STEP)) {
-            myCurrentToken = SkelligTestStepTokenTypes.OPEN_BRACKET
-            myPosition++
-        } else if (c == ')' && (myState == STATE_DEFAULT || myState == STATE_TEST_STEP)) {
-            myCurrentToken = SkelligTestStepTokenTypes.CLOSE_BRACKET
             myPosition++
         }
         // Set state as a starting of a parameter

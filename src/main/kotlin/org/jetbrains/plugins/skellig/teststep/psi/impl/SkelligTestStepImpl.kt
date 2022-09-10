@@ -21,7 +21,8 @@ class SkelligTestStepImpl(node: ASTNode) : SkelligTestStepPsiElementBase(node), 
     override val stepName: String
         get() {
             val node = node
-            val firstText: ASTNode? = node.findChildByType(SkelligTestStepTokenTypes.TEXT)
+            val firstText: ASTNode? =
+                node.findChildByType(SkelligTestStepTokenTypes.STRING_TEXT) ?: node.findChildByType(SkelligTestStepTokenTypes.TEXT)
             if (firstText != null) {
                 return firstText.text
             }

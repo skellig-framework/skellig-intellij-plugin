@@ -96,7 +96,7 @@ class SkelligTestStepParser : PsiParser {
         var hasError = false
         if (builder.tokenType === SkelligTestStepTokenTypes.OPEN_BRACKET) {
             advanceLexer(builder)
-            if (builder.tokenType === SkelligTestStepTokenTypes.TEXT) {
+            if (builder.tokenType === SkelligTestStepTokenTypes.STRING_TEXT || builder.tokenType === SkelligTestStepTokenTypes.TEXT) {
                 advanceLexer(builder)
                 if (builder.tokenType === SkelligTestStepTokenTypes.CLOSE_BRACKET) {
                     advanceLexer(builder)

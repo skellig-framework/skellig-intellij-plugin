@@ -1,14 +1,18 @@
 package org.jetbrains.plugins.cucumber
 
+import com.intellij.openapi.module.Module
 import com.intellij.openapi.util.Pair
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.util.text.StringUtil
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiReference
 import com.intellij.psi.search.TextOccurenceProcessor
 import com.intellij.util.Processor
 import org.jetbrains.annotations.NonNls
+import org.jetbrains.plugins.cucumber.steps.AbstractStepDefinition
+import org.jetbrains.plugins.cucumber.steps.reference.SkelligExtensionPoint
 import java.util.*
 import java.util.regex.Pattern
 
@@ -315,6 +319,10 @@ object CucumberUtil {
         return if (document == null) {
             null
         } else document.getLineNumber(textOffset) + 1
+    }
+
+    fun loadFrameworkSteps(framework: SkelligExtensionPoint, featureFile: PsiFile?, module: Module): List<AbstractStepDefinition> {
+        return framework.loadStepsFor(featureFile, module)
     }
 
     /**

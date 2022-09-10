@@ -1,6 +1,6 @@
 <idea-plugin>
-<!--    <id>org.skellig.plugin.language</id>-->
-    <id>org.jetbrains.plugins.cucumber</id>
+    <id>org.skellig.plugin.language</id>
+<!--    <id>org.jetbrains.plugins.cucumber</id>-->
     <name>Skellig IntelliJ</name>
     <vendor>Skellig</vendor>
 
@@ -47,7 +47,9 @@
         <lang.syntaxHighlighterFactory language="Skellig"
                                        implementationClass="org.jetbrains.plugins.cucumber.psi.highlighter.SkelligSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="org.jetbrains.plugins.cucumber.psi.highlighter.SkelligColorsPage"/>
-
+        <psi.referenceContributor  language="Skellig"
+                                   implementation="org.jetbrains.plugins.cucumber.steps.reference.CucumberReferenceContributor"/>
+        <fileBasedIndex implementation="org.jetbrains.plugins.skellig.teststep.psi.reference.SkelligTestStepStepIndex"/>
 
         <fileType name="SkelligTestStep" implementationClass="org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepFileType"
                   fieldName="INSTANCE" language="SkelligTestStep" extensions="sts"/>
@@ -78,8 +80,13 @@
 
     </extensions>
 
-    <!--<applicationListeners>
-        <listener class="org.jetbrains.plugins.template.listeners.MyProjectManagerListener"
-                  topic="com.intellij.openapi.project.ProjectManagerListener"/>
-    </applicationListeners>-->
+    <extensionPoints>
+        <extensionPoint name="skelligExtensionPoint"
+                        interface="org.jetbrains.plugins.cucumber.steps.reference.SkelligExtensionPoint"/>
+    </extensionPoints>
+
+    <extensions defaultExtensionNs="org.skellig.plugin.language">
+        <skelligExtensionPoint implementation="org.jetbrains.plugins.skellig.teststep.psi.reference.SkelligTestStepExtension"/>
+    </extensions>
+
 </idea-plugin>
