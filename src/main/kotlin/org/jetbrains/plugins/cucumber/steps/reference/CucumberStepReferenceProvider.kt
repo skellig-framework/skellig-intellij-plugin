@@ -22,7 +22,7 @@ class CucumberStepReferenceProvider : PsiReferenceProvider() {
     override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
         if (element is GherkinStepImpl) {
             var textNode = element.node.findChildByType(TEXT_AND_PARAM_SET)
-            if (textNode != null) {
+            if (textNode != null && !element.text.contains("Idea")) {
                 val start = textNode.textRange.startOffset
                 var end = textNode.textRange.endOffset
                 var endBeforeSpace = end

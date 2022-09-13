@@ -24,8 +24,7 @@ class GherkinTableCellImpl(node: ASTNode) : GherkinPsiElementBase(node), Gherkin
     }
 
     override fun getReference(): PsiReference? {
-//    return new GherkinSimpleReference(this);
-        return null
+        return GherkinSimpleReference(this);
     }
 
     override fun getName(): String? {

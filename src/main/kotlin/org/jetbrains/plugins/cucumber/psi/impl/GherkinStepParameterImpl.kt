@@ -28,9 +28,8 @@ class GherkinStepParameterImpl(node: ASTNode) : GherkinPsiElementBase(node), Ghe
         return this
     }
 
-    override fun getReference(): PsiReference? {
-//        return GherkinStepParameterReference(this)
-        return null
+    override fun getReference(): PsiReference {
+        return GherkinStepParameterReference(this)
     }
 
     override fun getName(): String? {
@@ -45,3 +44,4 @@ class GherkinStepParameterImpl(node: ASTNode) : GherkinPsiElementBase(node), Ghe
         return LocalSearchScope(containingFile)
     }
 }
+

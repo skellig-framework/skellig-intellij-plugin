@@ -10,7 +10,7 @@ import org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepFileType
 class SkelligTestStepStepIndex : AbstractStepIndex() {
 
     companion object {
-        val INDEX_ID = ID.create<Boolean, List<Int>>("java.cucumber.java8.step")
+        val INDEX_ID = ID.create<Boolean, List<Int>>("org.skellig.teststep")
     }
 
     override val packagesToScan: Array<String> = emptyArray()
