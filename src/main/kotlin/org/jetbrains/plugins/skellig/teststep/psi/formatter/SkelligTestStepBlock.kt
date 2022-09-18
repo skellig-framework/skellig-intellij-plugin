@@ -33,15 +33,11 @@ class SkelligTestStepBlock @JvmOverloads constructor(
         )
 
         private val BRACKET_TO_TEXT_BLOCKS_TO_SPACE = TokenSet.create(
-            SkelligTestStepTokenTypes.EQUAL,
-            SkelligTestStepTokenTypes.OPEN_BRACKET,
-            SkelligTestStepTokenTypes.CLOSE_BRACKET
+            SkelligTestStepTokenTypes.EQUAL
         )
 
         private val TEXT_TO_BRACKET_BLOCKS_TO_SPACE = TokenSet.create(
             SkelligTestStepTokenTypes.EQUAL,
-            SkelligTestStepTokenTypes.OPEN_BRACKET,
-            SkelligTestStepTokenTypes.CLOSE_BRACKET,
             SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET,
             SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET
         )
@@ -131,7 +127,8 @@ class SkelligTestStepBlock @JvmOverloads constructor(
         if (TEXT_TO_BRACKET_BLOCKS_TO_SPACE.contains(elementType2) ||
             BRACKET_TO_TEXT_BLOCKS_TO_SPACE.contains(elementType1) ||
             (elementType1 == SkelligTestStepTokenTypes.PROPERTY && elementType2 == SkelligTestStepElementTypes.ARRAY) ||
-            (elementType1 == SkelligTestStepTokenTypes.PROPERTY && elementType2 == SkelligTestStepElementTypes.OBJECT)) {
+            (elementType1 == SkelligTestStepTokenTypes.PROPERTY && elementType2 == SkelligTestStepElementTypes.OBJECT) ||
+            (elementType1 == SkelligTestStepTokenTypes.NAME && elementType2 == SkelligTestStepTokenTypes.OPEN_BRACKET)) {
             return Spacing.createSpacing(1, 1, 0, false, 0)
         }
 

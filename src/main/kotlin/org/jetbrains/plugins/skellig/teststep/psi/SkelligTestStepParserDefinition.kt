@@ -33,11 +33,12 @@ class SkelligTestStepParserDefinition : ParserDefinition {
     override fun getStringLiteralElements(): TokenSet = TokenSet.EMPTY
 
     override fun createElement(node: ASTNode): PsiElement {
-        if (node.elementType === SkelligTestStepElementTypes.STEP) return SkelligTestStepImpl(node)
-        return if (node.elementType === SkelligTestStepElementTypes.VARIABLES) SkelligTestStepVariablesImpl(node)
+        return if (node.elementType === SkelligTestStepElementTypes.STEP) SkelligTestStepImpl(node)
+        else if (node.elementType === SkelligTestStepElementTypes.VARIABLES) SkelligTestStepVariablesImpl(node)
         else if (node.elementType === SkelligTestStepElementTypes.REQUEST) SkelligTestStepRequestImpl(node)
         else if (node.elementType === SkelligTestStepElementTypes.VALIDATION) SkelligTestStepValidationImpl(node)
         else if (node.elementType === SkelligTestStepElementTypes.KEYWORD) SkelligTestStepKeywordImpl(node)
+        else if (node.elementType === SkelligTestStepElementTypes.ID) SkelligTestStepIdImpl(node)
 
         else if (node.elementType === SkelligTestStepElementTypes.EXPRESSION) SkelligTestStepExpressionImpl(node)
         else if (node.elementType === SkelligTestStepElementTypes.PARAMETER) SkelligTestStepParameterImpl(node)

@@ -25,6 +25,7 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
     private var eofChars = setOf('\n', '\r')
     private var specialChars = setOf('(', ')', '{', '}', '[', ']', '.', '#', '$', ':', '=').union(stringChars).union(eofChars)
     private var propertyValueChars = setOf('=', '{', '[')
+    private var afterKeywordChars = setOf(' ').union(propertyValueChars).union(eofChars)
     private var parameterValueChars = setOf(':', '}', '$')
     private var expressionValueChars = setOf('#', ']')
 
@@ -90,10 +91,10 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                     break
                 }
             }
-        }  else if (c == '(' && (myState == STATE_DEFAULT || myState == STATE_TEST_STEP)) {
+        }  else if (c == '(' && (myState == STATE_DEFAULT || myState == PROPERTY_STATE || myState == STATE_TEST_STEP)) {
             myCurrentToken = SkelligTestStepTokenTypes.OPEN_BRACKET
             myPosition++
-        } else if (c == ')' && (myState == STATE_DEFAULT || myState == STATE_TEST_STEP)) {
+        } else if (c == ')' && (myState == STATE_DEFAULT || myState == PROPERTY_STATE || myState == STATE_TEST_STEP)) {
             myCurrentToken = SkelligTestStepTokenTypes.CLOSE_BRACKET
             myState = STATE_DEFAULT
             myPosition++
@@ -224,17 +225,17 @@ class SkelligTestStepLexer(private val myKeywordProvider: SkelligTestStepKeyword
                     return
                 } else {
                     for (keyword in myKeywords!!) {
-                        if (isStringAtPosition(keyword!!)) {
+                        if (isStringAtPosition(keyword!!) && afterKeywordChars.contains(myBuffer[myPosition + keyword.length])) {
                             val length = keyword.length
                             myCurrentToken = myKeywordProvider.getTokenType(keyword)
                             myPosition += length
-                            myState = STATE_AFTER_KEYWORD
+                            //myState = STATE_AFTER_KEYWORD
                             return
                         }
                     }
                 }
             }
-            myCurrentToken = if (myState == STATE_DEFAULT && isProperty()) {
+            myCurrentToken = if (myState != ARRAY_STATE && isProperty()) {
                 advanceToNextSpecialChar(specialChars, PROPERTY_STATE)
                 SkelligTestStepTokenTypes.PROPERTY
             } else {

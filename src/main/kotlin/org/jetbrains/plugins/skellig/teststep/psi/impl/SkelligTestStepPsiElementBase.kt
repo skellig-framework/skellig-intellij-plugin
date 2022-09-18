@@ -22,30 +22,31 @@ abstract class SkelligTestStepPsiElementBase(node: ASTNode) : ASTWrapperPsiEleme
 
     open val elementText: String
         get() {
-            val node: ASTNode = getNode()
+
             val children = node.getChildren(TEXT_FILTER)
             return StringUtil.join(children, { astNode: ASTNode -> astNode.text }, " ").trim { it <= ' ' }
         }
 
     override fun getPresentation(): ItemPresentation? {
-       return object : ItemPresentation {
+        val fileName = this.containingFile.name
+        return object : ItemPresentation {
 
             override fun getPresentableText(): String? {
-                return toString()
+                return elementText
             }
 
             override fun getLocationString(): String? {
-                TODO("Not yet implemented")
+                return fileName
             }
 
             override fun getIcon(open: Boolean): Icon? {
-                return getIcon(Iconable.ICON_FLAG_VISIBILITY)
+                return getIcon(Iconable.ICON_FLAG_READ_STATUS)
             }
         }
     }
 
     protected open fun getPresentableText(): String? {
-        return toString()
+        return elementText
     }
 
     protected fun buildPresentableText(prefix: String?): String {

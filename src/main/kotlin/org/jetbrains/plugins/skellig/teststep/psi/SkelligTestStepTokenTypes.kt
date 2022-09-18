@@ -75,5 +75,12 @@ interface SkelligTestStepTokenTypes {
             EXPRESSION_OPEN_BRACKET, EXPRESSION, EXPRESSION_CLOSE_BRACKET,
             DOT, STRING_TEXT
         )
+
+        val PROPERTY_TOKENS = TokenSet.create(
+            PROPERTY, TEXT,
+            PARAMETER_OPEN_BRACKET, PARAMETER, COLON, PARAMETER_CLOSE_BRACKET,
+            OPEN_BRACKET, CLOSE_BRACKET,
+            DOT, STRING_TEXT
+        )
     }
 }

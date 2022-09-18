@@ -32,7 +32,7 @@ abstract class GherkinPsiElementBase(node: ASTNode) : ASTWrapperPsiElement(node)
             }
 
             override fun getLocationString(): String? {
-                TODO("Not yet implemented")
+                return toString()
             }
 
             override fun getIcon(open: Boolean): Icon? {

@@ -7,15 +7,15 @@ import org.jetbrains.plugins.skellig.teststep.psi.SkelligTestStepElementVisitor
 
 interface SkelligTestStepFieldValuePair : PsiElement {
 
-    val property: SkelligTestStepProperty?
+    val property: PsiElement?
     val value: PsiElement?
 }
 
 open class SkelligTestStepFieldValuePairImpl(node: ASTNode) : SkelligTestStepPsiElementBase(node), SkelligTestStepFieldValuePair {
 
-    override val property: SkelligTestStepProperty?
+    override val property: PsiElement?
         get() {
-            return node.findChildByType(SkelligTestStepElementTypes.PROPERTY)?.psi as SkelligTestStepProperty?
+            return node.findChildByType(SkelligTestStepElementTypes.PROPERTY)?.psi
         }
 
     override val value: PsiElement?
@@ -25,7 +25,7 @@ open class SkelligTestStepFieldValuePairImpl(node: ASTNode) : SkelligTestStepPsi
                 return value
             }
 
-             value = node.findChildByType(SkelligTestStepElementTypes.ARRAY)?.psi
+            value = node.findChildByType(SkelligTestStepElementTypes.ARRAY)?.psi
             if (value != null) {
                 return value
             }

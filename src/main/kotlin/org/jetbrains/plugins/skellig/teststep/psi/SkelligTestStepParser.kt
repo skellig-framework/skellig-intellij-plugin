@@ -51,9 +51,13 @@ class SkelligTestStepParser : PsiParser {
                         parseTestStepComponent(builder, SkelligTestStepElementTypes.REQUEST)
                     } else if (SkelligTestStepTokenTypes.VALIDATIONS.contains(tokenType)) {
                         parseTestStepComponent(builder, SkelligTestStepElementTypes.VALIDATION)
-                    } else if (tokenType == SkelligTestStepTokenTypes.PROPERTY) {
+                    } else if (tokenType == SkelligTestStepTokenTypes.PROPERTY ||
+                        tokenType == SkelligTestStepTokenTypes.STRING_TEXT ||
+                        tokenType == SkelligTestStepTokenTypes.PARAMETER_OPEN_BRACKET) {
                         if (parseFieldValue(builder)) continue
                         else false
+                    } else if (tokenType == SkelligTestStepTokenTypes.ID) {
+                        parseTestStepComponent(builder, SkelligTestStepElementTypes.ID)
                     } else tokenType == SkelligTestStepTokenTypes.OBJECT_CLOSE_BRACKET
                             || tokenType == TokenType.WHITE_SPACE || tokenType == TokenType.NEW_LINE_INDENT
                 }
@@ -177,13 +181,18 @@ class SkelligTestStepParser : PsiParser {
         } else {
             val marker = builder.mark()
 
-            if (!SkelligTestStepElementTypes.elementsForToken.containsKey(builder.tokenType)) {
+            if (!(SkelligTestStepElementTypes.elementsForToken.containsKey(builder.tokenType) ||
+                builder.tokenType == SkelligTestStepTokenTypes.PARAMETER_OPEN_BRACKET)) {
                 marker.error("Invalid character found instead of a property declaration")
                 return false
             } else {
-                val fieldName = builder.tokenText
+                var fieldName = builder.tokenText
                 advanceLexer(builder)
 
+                while (SkelligTestStepTokenTypes.PROPERTY_TOKENS.contains(builder.tokenType)) {
+                    fieldName += builder.tokenText
+                    advanceLexer(builder)
+                }
                 if (!parseValue(fieldName, builder, marker)) {
                     advanceLexer(builder)
                     return false

@@ -60,6 +60,8 @@
         <colorSettingsPage implementation="org.jetbrains.plugins.skellig.teststep.psi.highlighter.SkelligTestStepColorsPage"/>
         <lang.formatter language="SkelligTestStep"
                         implementationClass="org.jetbrains.plugins.skellig.teststep.psi.formatter.SkelligTestStepFormattingModelBuilder"/>
+        <lang.foldingBuilder language="SkelligTestStep"
+                             implementationClass="org.jetbrains.plugins.skellig.teststep.psi.folding.SkelligTestStepFoldingBuilder"/>
 
         <!--<fileType name="Skellig Feature File" implementationClass="org.skellig.plugin.language.feature.SkelligFeatureFileType"
                   fieldName="INSTANCE" language="SkelligFeature" extensions="sf"/>
