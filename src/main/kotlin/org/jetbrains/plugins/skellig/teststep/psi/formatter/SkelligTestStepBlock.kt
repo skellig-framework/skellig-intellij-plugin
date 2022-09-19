@@ -82,6 +82,7 @@ class SkelligTestStepBlock @JvmOverloads constructor(
             }
 
             val indent = if (
+                child.elementType == SkelligTestStepElementTypes.ID ||
                 child.elementType == SkelligTestStepElementTypes.FIELD_VALUE ||
                 child.elementType == SkelligTestStepElementTypes.OBJECT ||
                 child.elementType == SkelligTestStepElementTypes.VARIABLES ||

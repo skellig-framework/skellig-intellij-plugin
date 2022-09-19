@@ -179,7 +179,7 @@ class SkelligTestStepParser : PsiParser {
         if (builder.tokenType == TokenType.NEW_LINE_INDENT) {
             advanceLexer(builder)
         } else {
-            val marker = builder.mark()
+            var marker = builder.mark()
 
             if (!(SkelligTestStepElementTypes.elementsForToken.containsKey(builder.tokenType) ||
                 builder.tokenType == SkelligTestStepTokenTypes.PARAMETER_OPEN_BRACKET)) {
@@ -191,6 +191,7 @@ class SkelligTestStepParser : PsiParser {
 
                 while (SkelligTestStepTokenTypes.PROPERTY_TOKENS.contains(builder.tokenType)) {
                     fieldName += builder.tokenText
+                    marker = checkIfPropertyAndMark(builder, marker, SkelligTestStepElementTypes.PROPERTY)
                     advanceLexer(builder)
                 }
                 if (!parseValue(fieldName, builder, marker)) {
@@ -296,10 +297,11 @@ class SkelligTestStepParser : PsiParser {
     }
 
     private fun parseSingleValue(builder: PsiBuilder): Boolean {
-        val valueMarker = builder.mark()
+        var valueMarker = builder.mark()
         var valueCounter = 0
         while (SkelligTestStepTokenTypes.VALUE_TOKENS.contains(builder.tokenType)) {
             valueCounter++
+            valueMarker = checkIfPropertyAndMark(builder, valueMarker, SkelligTestStepElementTypes.VALUE)
             if (!SkelligTestStepTokenTypes.VALUE_CLOSING_BRACKETS.contains(builder.lookAhead(1))) advanceLexer(builder)
             else break
         }
@@ -318,6 +320,20 @@ class SkelligTestStepParser : PsiParser {
             true
         } else {
             false
+        }
+    }
+
+    private fun checkIfPropertyAndMark(builder: PsiBuilder, marker: PsiBuilder.Marker, currentType: SkelligTestStepElementType): PsiBuilder.Marker {
+        return when (builder.tokenType) {
+            SkelligTestStepTokenTypes.PARAMETER -> {
+                marker.done(currentType)
+                builder.mark()
+            }
+            SkelligTestStepTokenTypes.PARAMETER_CLOSE_BRACKET -> {
+                marker.done(SkelligTestStepElementTypes.PARAMETER)
+                builder.mark()
+            }
+            else -> marker
         }
     }
 
