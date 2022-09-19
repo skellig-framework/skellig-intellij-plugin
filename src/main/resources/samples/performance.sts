@@ -1,0 +1,19 @@
+name ('^check performance of balance transfer$') {
+    rps = 1
+    timeToRun = 00:01:00
+
+    before [
+        Get current status
+    ]
+
+    run [
+        Send transfer balance 10 from node 0 to node 1
+    ]
+}
+
+name ('check performance of status request') {
+    rps = ${rps_value:100}
+    timeToRun = ${ttr : 00:00:10}
+
+    run [ Get current status ]
+}

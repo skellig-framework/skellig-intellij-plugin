@@ -1,11 +1,17 @@
-name ( request ) {
-    f4 = ${key : ${dd : ${fff_21 : 44}}}
+name ("test (.*) errors (\d+)" ) {
+    s${1}s [
+        ${dd}
+        "fd"
+        #[get(${sd}).a]
+    ]
+}
 
-    // inner parameter here is not a string, but its value will be one
-    // so it will be highlighted as a parameter key
-    a = ${_'${b}'_ }
+name ("some \w+" ) {
+    a = 100
+}
 
-    b = ${a "bb"d\'d }
-    f = ${a${b}:'${311:12}'}
-    sd = '1' "gg\"\'# g \'" \"\"\' 21
+name ( blah ) {
+    request {
+
+    }
 }

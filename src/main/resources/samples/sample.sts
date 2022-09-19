@@ -1,5 +1,5 @@
-name ( request ) {
-    i = test 1
+name (request ) {
+    id = test 1
 
     //// asfd as
     // asf
@@ -10,7 +10,7 @@ name ( request ) {
         {
             b [
                 {
-                    a = "=" 10
+                    a = "=" 10 ${key14}-${key2}
                 }
                 {
                     a = 100
@@ -25,7 +25,7 @@ name ( request ) {
 
     request {
 
-        a = 1
+        a = func()
         b [
             1
             2
@@ -36,7 +36,15 @@ name ( request ) {
     }
 
     message {
-
+        body.get(a) = "contains(c)"
+        ${ds}_ = 1
+        ${a}_() {
+            ${b: c}_ = "lol"
+        }
+        a [ 1 ${ds} ]
+        body.get (${cc}).toString() {
+            ${c} = 2
+        }
     }
 
     validate {
