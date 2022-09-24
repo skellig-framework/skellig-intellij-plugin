@@ -34,9 +34,8 @@ class SkelligParserDefinition : ParserDefinition {
     override fun createElement(node: ASTNode): PsiElement {
         if (node.elementType === SkelligElementTypes.FEATURE) return SkelligFeatureImpl(node)
         if (node.elementType === SkelligElementTypes.FEATURE_HEADER) return SkelligFeatureHeaderImpl(node)
-        if (node.elementType === SkelligElementTypes.SCENARIO) return SkelligScenarioImpl(node)
         if (node.elementType === SkelligElementTypes.STEP) return SkelligFeatureStepImpl(node)
-        if (node.elementType === SkelligElementTypes.SCENARIO_OUTLINE) return SkelligScenarioOutlineImpl(node)
+        if (node.elementType === SkelligElementTypes.SCENARIO) return SkelligScenarioOutlineImpl(node)
         if (node.elementType === SkelligElementTypes.RULE) return SkelligRuleImpl(node)
         if (node.elementType === SkelligElementTypes.EXAMPLES_BLOCK) return SkelligExamplesBlockImpl(node)
         if (node.elementType === SkelligElementTypes.TABLE) return SkelligTableImpl(node)

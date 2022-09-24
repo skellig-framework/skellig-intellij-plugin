@@ -22,7 +22,7 @@ class SkelligStepReferenceProvider : PsiReferenceProvider() {
     override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
         if (element is SkelligFeatureStepImpl) {
             var textNode = element.node.findChildByType(TEXT_AND_PARAM_SET)
-            if (textNode != null && !element.text.contains("Idea")) {
+            if (textNode != null) {
                 val start = textNode.textRange.startOffset
                 var end = textNode.textRange.endOffset
                 var endBeforeSpace = end

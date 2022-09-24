@@ -39,8 +39,6 @@ class SkelligKeywordTable {
         val keywords: MutableSet<String> = HashSet()
         val scenarios: Collection<String> = getKeywords(SkelligTokenTypes.Companion.SCENARIO_KEYWORD)!!
         keywords.addAll(scenarios)
-        val scenarioOutline: Collection<String> = getKeywords(SkelligTokenTypes.Companion.SCENARIO_OUTLINE_KEYWORD)!!
-        keywords.addAll(scenarioOutline)
         return keywords
     }
 
@@ -54,7 +52,7 @@ class SkelligKeywordTable {
     }
 
     fun getScenarioOutlineKeywords(): Collection<String>? {
-        return getKeywords(SkelligTokenTypes.Companion.SCENARIO_OUTLINE_KEYWORD)!!
+        return getKeywords(SkelligTokenTypes.Companion.SCENARIO_KEYWORD)!!
     }
 
     fun getBackgroundKeywords(): Collection<String>? {

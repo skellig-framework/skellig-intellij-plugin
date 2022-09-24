@@ -16,10 +16,6 @@ abstract class SkelligElementVisitor : PsiElementVisitor() {
         visitElement(header)
     }
 
-    fun visitScenario(scenario: SkelligScenario?) {
-        visitElement(scenario)
-    }
-
     fun visitScenarioOutline(outline: SkelligScenarioOutline?) {
         visitElement(outline)
     }

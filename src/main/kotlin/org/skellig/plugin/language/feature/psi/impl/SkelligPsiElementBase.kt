@@ -25,14 +25,15 @@ abstract class SkelligPsiElementBase(node: ASTNode) : ASTWrapperPsiElement(node)
         }
 
     override fun getPresentation(): ItemPresentation? {
+        val fileName = this.containingFile.name
        return object : ItemPresentation {
 
-            override fun getPresentableText(): String? {
-                return toString()
+            override fun getPresentableText(): String {
+                return node.text
             }
 
-            override fun getLocationString(): String? {
-                return toString()
+            override fun getLocationString(): String {
+                return fileName
             }
 
             override fun getIcon(open: Boolean): Icon? {

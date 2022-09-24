@@ -71,41 +71,41 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
                 advanceOverWhitespace()
             }
         } else if (c == '|' && myState != STATE_INSIDE_PYSTRING) {
-            myCurrentToken = SkelligTokenTypes.Companion.PIPE
+            myCurrentToken = SkelligTokenTypes.PIPE
             myPosition++
             myState = STATE_TABLE
         } else if (myState == STATE_PARAMETER_INSIDE_PYSTRING) {
             if (c == '>') {
                 myState = STATE_INSIDE_PYSTRING
                 myPosition++
-                myCurrentToken = SkelligTokenTypes.Companion.STEP_PARAMETER_BRACE
+                myCurrentToken = SkelligTokenTypes.STEP_PARAMETER_BRACE
             } else {
                 advanceToParameterEnd(PYSTRING_MARKER)
-                myCurrentToken = SkelligTokenTypes.Companion.STEP_PARAMETER_TEXT
+                myCurrentToken = SkelligTokenTypes.STEP_PARAMETER_TEXT
             }
         } else if (myState == STATE_INSIDE_PYSTRING) {
             if (isStringAtPosition(PYSTRING_MARKER)) {
                 myPosition += 3 /* marker length */
-                myCurrentToken = SkelligTokenTypes.Companion.PYSTRING
+                myCurrentToken = SkelligTokenTypes.PYSTRING
                 myState = STATE_DEFAULT
             } else {
                 if (myBuffer[myPosition] == '<') {
                     if (isStepParameter(PYSTRING_MARKER)) {
                         myPosition++
                         myState = STATE_PARAMETER_INSIDE_PYSTRING
-                        myCurrentToken = SkelligTokenTypes.Companion.STEP_PARAMETER_BRACE
+                        myCurrentToken = SkelligTokenTypes.STEP_PARAMETER_BRACE
                     } else {
                         myPosition++
                         advanceToParameterOrSymbol(PYSTRING_MARKER, STATE_INSIDE_PYSTRING, false)
-                        myCurrentToken = SkelligTokenTypes.Companion.PYSTRING_TEXT
+                        myCurrentToken = SkelligTokenTypes.PYSTRING_TEXT
                     }
                 } else {
                     advanceToParameterOrSymbol(PYSTRING_MARKER, STATE_INSIDE_PYSTRING, false)
-                    myCurrentToken = SkelligTokenTypes.Companion.PYSTRING_TEXT
+                    myCurrentToken = SkelligTokenTypes.PYSTRING_TEXT
                 }
             }
         } else if (myState == STATE_TABLE) {
-            myCurrentToken = SkelligTokenTypes.Companion.TABLE_CELL
+            myCurrentToken = SkelligTokenTypes.TABLE_CELL
             while (myPosition < myEndOffset) {
                 // Cucumber: 0.7.3 Table cells can now contain escaped bars - \| and escaped backslashes - \\
                 if (myBuffer[myPosition] == '\\') {
@@ -127,22 +127,22 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
                 myPosition--
             }
         } else if (c == '#') {
-            myCurrentToken = SkelligTokenTypes.Companion.COMMENT
+            myCurrentToken = SkelligTokenTypes.COMMENT
             advanceToEOL()
             val commentText = myBuffer.subSequence(myCurrentTokenStart + 1, myPosition).toString().trim { it <= ' ' }
             val language = fetchLocationLanguage(commentText)
             language?.let { updateLanguage(it) }
         } else if (c == ':' && myState != STATE_AFTER_STEP_KEYWORD) {
-            myCurrentToken = SkelligTokenTypes.Companion.COLON
+            myCurrentToken = SkelligTokenTypes.COLON
             myPosition++
         } else if (c == '@') {
-            myCurrentToken = SkelligTokenTypes.Companion.TAG
+            myCurrentToken = SkelligTokenTypes.TAG
             myPosition++
             while (myPosition < myEndOffset && isValidTagChar(myBuffer[myPosition])) {
                 myPosition++
             }
         } else if (isStringAtPosition(PYSTRING_MARKER)) {
-            myCurrentToken = SkelligTokenTypes.Companion.PYSTRING
+            myCurrentToken = SkelligTokenTypes.PYSTRING
             myState = STATE_INSIDE_PYSTRING
             myPosition += 3
         } else {
@@ -157,16 +157,16 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
                         }
                         val followedByChar: Char = if (myPosition + length < myEndOffset) myBuffer[myPosition + length] else Char.MIN_VALUE
                         myCurrentToken = myKeywordProvider.getTokenType(myCurLanguage, keyword)
-                        if (myCurrentToken === SkelligTokenTypes.Companion.STEP_KEYWORD) {
+                        if (myCurrentToken === SkelligTokenTypes.STEP_KEYWORD) {
                             val followedByWhitespace = Character.isWhitespace(followedByChar) && followedByChar != '\n'
                             if (followedByWhitespace != myKeywordProvider.isSpaceRequiredAfterKeyword(myCurLanguage, keyword)) {
-                                myCurrentToken = SkelligTokenTypes.Companion.TEXT
+                                myCurrentToken = SkelligTokenTypes.TEXT
                             }
                         }
                         myPosition += length
-                        myState = if (myCurrentToken === SkelligTokenTypes.Companion.STEP_KEYWORD) {
+                        myState = if (myCurrentToken === SkelligTokenTypes.STEP_KEYWORD) {
                             STATE_AFTER_STEP_KEYWORD
-                        } else if (myCurrentToken === SkelligTokenTypes.Companion.SCENARIO_OUTLINE_KEYWORD) {
+                        } else if (myCurrentToken === SkelligTokenTypes.SCENARIO_KEYWORD) {
                             STATE_AFTER_SCENARIO_KEYWORD
                         } else {
                             STATE_AFTER_KEYWORD
@@ -179,24 +179,24 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
                 if (c == '>') {
                     myState = STATE_AFTER_STEP_KEYWORD
                     myPosition++
-                    myCurrentToken = SkelligTokenTypes.Companion.STEP_PARAMETER_BRACE
+                    myCurrentToken = SkelligTokenTypes.STEP_PARAMETER_BRACE
                 } else {
                     advanceToParameterEnd("\n")
-                    myCurrentToken = SkelligTokenTypes.Companion.STEP_PARAMETER_TEXT
+                    myCurrentToken = SkelligTokenTypes.STEP_PARAMETER_TEXT
                 }
                 return
             } else if (isParameterAllowed()) {
                 if (myPosition < myEndOffset && myBuffer[myPosition] == '<' && isStepParameter("\n")) {
                     myState = STATE_PARAMETER_INSIDE_STEP
                     myPosition++
-                    myCurrentToken = SkelligTokenTypes.Companion.STEP_PARAMETER_BRACE
+                    myCurrentToken = SkelligTokenTypes.STEP_PARAMETER_BRACE
                 } else {
-                    myCurrentToken = SkelligTokenTypes.Companion.TEXT
+                    myCurrentToken = SkelligTokenTypes.TEXT
                     advanceToParameterOrSymbol("\n", STATE_AFTER_STEP_KEYWORD, true)
                 }
                 return
             }
-            myCurrentToken = SkelligTokenTypes.Companion.TEXT
+            myCurrentToken = SkelligTokenTypes.TEXT
             advanceToEOL()
         }
     }

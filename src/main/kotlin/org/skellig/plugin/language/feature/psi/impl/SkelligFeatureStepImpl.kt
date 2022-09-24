@@ -2,7 +2,10 @@ package org.skellig.plugin.language.feature.psi.impl
 
 import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.text.StringUtil
-import com.intellij.psi.*
+import com.intellij.psi.PsiCheckedRenameElement
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiReference
+import com.intellij.psi.TokenType
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.CachedValueProvider

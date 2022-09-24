@@ -12,11 +12,11 @@ import org.skellig.plugin.language.feature.psi.SkelligScenarioOutline
 
 class SkelligScenarioOutlineImpl(node: ASTNode) : SkelligStepsHolderBase(node), SkelligScenarioOutline {
     override fun toString(): String {
-        return "SkelligScenarioOutline:$elementText"
+        return "SkelligScenario:$elementText"
     }
 
     override fun getPresentableText(): String? {
-        return buildPresentableText("Scenario Outline")
+        return buildPresentableText("Scenario")
     }
 
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {

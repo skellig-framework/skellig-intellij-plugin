@@ -51,15 +51,26 @@ object SkelligUtil {
     private val OPTIONAL_PATTERN = Pattern.compile("(\\\\\\\\)?\\(([^)]+)\\)")
     var STANDARD_PARAMETER_TYPES: Map<String, String>? = null
 
+    init {
+        val standardParameterTypes = mapOf(
+            kotlin.Pair("int", "-?\\d+"),
+            kotlin.Pair("float", "-?\\d*[.,]?\\d+"),
+            kotlin.Pair("word", "[^\\s]+"),
+            kotlin.Pair("string", "\"(?:[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|'(?:[^'\\\\]*(?:\\\\.[^'\\\\]*)*)'"),
+            kotlin.Pair("", "(.*)")
+        )
+        STANDARD_PARAMETER_TYPES = Collections.unmodifiableMap(standardParameterTypes)
+    }
+
     fun getTheBiggestWordToSearchByIndex(regexp: String): String {
         var result = ""
         var start = 0
-        if (regexp.startsWith(org.skellig.plugin.language.feature.SkelligUtil.PREFIX_CHAR)) {
-            start += org.skellig.plugin.language.feature.SkelligUtil.PREFIX_CHAR.length
+        if (regexp.startsWith(PREFIX_CHAR)) {
+            start += PREFIX_CHAR.length
         }
         var end = regexp.length
-        if (regexp.endsWith(org.skellig.plugin.language.feature.SkelligUtil.SUFFIX_CHAR)) {
-            end -= org.skellig.plugin.language.feature.SkelligUtil.SUFFIX_CHAR.length
+        if (regexp.endsWith(SUFFIX_CHAR)) {
+            end -= SUFFIX_CHAR.length
         }
         var sb: StringBuilder? = StringBuilder()
         for (i in start until end) {
@@ -85,7 +96,7 @@ object SkelligUtil {
 
     fun prepareStepRegexp(stepName: String): String {
         var result = stepName
-        for (rule in org.skellig.plugin.language.feature.SkelligUtil.ARR) {
+        for (rule in ARR) {
             result = result.replace(rule[0].toRegex(), rule[1])
         }
         return result
@@ -148,15 +159,15 @@ object SkelligUtil {
      */
     fun buildRegexpFromCucumberExpression(
         cucumberExpression: String,
-        parameterTypeManager: org.skellig.plugin.language.feature.ParameterTypeManager
+        parameterTypeManager: ParameterTypeManager
     ): String {
         var cucumberExpression = cucumberExpression
-        cucumberExpression = org.skellig.plugin.language.feature.SkelligUtil.escapeCucumberExpression(cucumberExpression)
-        cucumberExpression = org.skellig.plugin.language.feature.SkelligUtil.replaceNotNecessaryTextTemplateByRegexp(cucumberExpression)
-        cucumberExpression = org.skellig.plugin.language.feature.SkelligUtil.processExpressionOrOperator(cucumberExpression)
+        cucumberExpression = escapeCucumberExpression(cucumberExpression)
+        cucumberExpression = replaceNotNecessaryTextTemplateByRegexp(cucumberExpression)
+        cucumberExpression = processExpressionOrOperator(cucumberExpression)
         val escapedCucumberExpression = cucumberExpression
         val parameterTypeValues: MutableList<Pair<TextRange, String?>?> = ArrayList()
-        org.skellig.plugin.language.feature.SkelligUtil.processParameterTypesInCucumberExpression(escapedCucumberExpression) { range: TextRange ->
+        processParameterTypesInCucumberExpression(escapedCucumberExpression) { range: TextRange ->
             val parameterTypeName = escapedCucumberExpression.substring(range.startOffset + 1, range.endOffset - 1)
             val parameterTypeValue = parameterTypeManager.getParameterTypeValue(parameterTypeName)
             parameterTypeValues.add(Pair.create(range, parameterTypeValue))
@@ -182,7 +193,7 @@ object SkelligUtil {
      * `I have \d+ cucumber(?:s)? in my belly`
      */
     fun replaceNotNecessaryTextTemplateByRegexp(cucumberExpression: String): String {
-        val matcher = org.skellig.plugin.language.feature.SkelligUtil.OPTIONAL_PATTERN.matcher(cucumberExpression)
+        val matcher = OPTIONAL_PATTERN.matcher(cucumberExpression)
         val result = StringBuilder()
         while (matcher.find()) {
             val parameterPart = matcher.group(2)
@@ -247,7 +258,7 @@ object SkelligUtil {
             return false
         }
         val containsParameterTypes = booleanArrayOf(false)
-        org.skellig.plugin.language.feature.SkelligUtil.processParameterTypesInCucumberExpression(stepDefinitionPattern) { textRange: TextRange ->
+        processParameterTypesInCucumberExpression(stepDefinitionPattern) { textRange: TextRange ->
             if (textRange.length < 2) {
                 // at least "{}" expected here
                 return@processParameterTypesInCucumberExpression true
@@ -262,8 +273,8 @@ object SkelligUtil {
     }
 
     /**
-     * Substitutes scenario outline parameters into step. For example step from
-     * Scenario Outline
+     * Substitutes scenario parameters into step. For example step from
+     * Scenario
      * Given project with <count> participants
      * Example
      * | count |
@@ -276,9 +287,9 @@ object SkelligUtil {
      * @param outlineTableMap mapping from header to the first data row
      * @return OutlineStepSubstitution that contains result step name and can calculate offsets
     </count> */
-    fun substituteTableReferences(stepName: String, outlineTableMap: Map<String, String>?): org.skellig.plugin.language.feature.OutlineStepSubstitution {
+    fun substituteTableReferences(stepName: String, outlineTableMap: Map<String, String>?): OutlineStepSubstitution {
         if (outlineTableMap == null) {
-            return org.skellig.plugin.language.feature.OutlineStepSubstitution(stepName, emptyList())
+            return OutlineStepSubstitution(stepName, emptyList())
         }
         val offsets: MutableList<Pair<Int, Int>> = ArrayList()
         val result = StringBuilder()
@@ -293,7 +304,7 @@ object SkelligUtil {
                 break
             }
             val columnName = stepName.substring(start + 1, end)
-            val value = outlineTableMap[columnName] ?: return org.skellig.plugin.language.feature.OutlineStepSubstitution(stepName)
+            val value = outlineTableMap[columnName] ?: return OutlineStepSubstitution(stepName)
             result.append(stepName.subSequence(currentOffset, start))
             val replaceOffset = result.length
             result.append(value)
@@ -303,11 +314,11 @@ object SkelligUtil {
             currentOffset = end + 1
         }
         result.append(stepName.subSequence(currentOffset, stepName.length))
-        return org.skellig.plugin.language.feature.OutlineStepSubstitution(result.toString(), offsets)
+        return OutlineStepSubstitution(result.toString(), offsets)
     }
 
     fun escapeCucumberExpression(stepPattern: String): String {
-        return org.skellig.plugin.language.feature.SkelligUtil.ESCAPE_PATTERN.matcher(stepPattern).replaceAll("\\\\$1")
+        return ESCAPE_PATTERN.matcher(stepPattern).replaceAll("\\\\$1")
     }
 
     fun getLineNumber(element: PsiElement): Int? {
@@ -358,15 +369,5 @@ object SkelligUtil {
             }
             return true
         }
-    }
-
-    init {
-        val standardParameterTypes = mapOf(
-          kotlin.Pair("int", "-?\\d+"),
-          kotlin.Pair("float", "-?\\d*[.,]?\\d+"),
-          kotlin.Pair("word", "[^\\s]+"),
-          kotlin.Pair("string", "\"(?:[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|'(?:[^'\\\\]*(?:\\\\.[^'\\\\]*)*)'"),
-          kotlin.Pair("", "(.*)"))
-        org.skellig.plugin.language.feature.SkelligUtil.STANDARD_PARAMETER_TYPES = Collections.unmodifiableMap(standardParameterTypes)
     }
 }

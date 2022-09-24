@@ -46,7 +46,7 @@ class SkelligBlock @JvmOverloads constructor(
                 continue
             }
             val isTagInsideScenario =
-                child.elementType === SkelligElementTypes.TAG && myNode.elementType === SkelligElementTypes.SCENARIO_OUTLINE && child.startOffset > myNode.startOffset
+                child.elementType === SkelligElementTypes.TAG && myNode.elementType === SkelligElementTypes.SCENARIO && child.startOffset > myNode.startOffset
             var indent: Indent?
             indent = if (BLOCKS_TO_INDENT.contains(child.elementType) || isTagInsideScenario) {
                 Indent.getNormalIndent()
@@ -136,8 +136,7 @@ class SkelligBlock @JvmOverloads constructor(
             node!!.getChildren(
                 TokenSet.create(
                     SkelligElementTypes.FEATURE_HEADER,
-                    SkelligElementTypes.SCENARIO,
-                    SkelligElementTypes.SCENARIO_OUTLINE
+                    SkelligElementTypes.SCENARIO
                 )
             ).size == 0
         } else false
@@ -152,7 +151,6 @@ class SkelligBlock @JvmOverloads constructor(
             SkelligElementTypes.FEATURE_HEADER,
             SkelligElementTypes.RULE,
             SkelligElementTypes.SCENARIO,
-            SkelligElementTypes.SCENARIO_OUTLINE,
             SkelligElementTypes.STEP,
             SkelligElementTypes.TABLE,
             SkelligElementTypes.EXAMPLES_BLOCK
@@ -160,9 +158,8 @@ class SkelligBlock @JvmOverloads constructor(
         private val BLOCKS_TO_INDENT_CHILDREN = TokenSet.create(
             SkelligElementTypes.SKELLIG_FILE,
             SkelligElementTypes.FEATURE,
-            SkelligElementTypes.SCENARIO,
             SkelligElementTypes.RULE,
-            SkelligElementTypes.SCENARIO_OUTLINE
+            SkelligElementTypes.SCENARIO
         )
         private val READ_ONLY_BLOCKS = TokenSet.create(SkelligElementTypes.PYSTRING, SkelligTokenTypes.COMMENT)
         private fun getTableCellColumnIndex(node: ASTNode?): Int {

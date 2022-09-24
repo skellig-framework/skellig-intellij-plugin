@@ -14,7 +14,6 @@ class PlainSkelligKeywordProvider : SkelligKeywordProvider {
             DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.SCENARIO_KEYWORD, "Scenario")
             DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.RULE_KEYWORD, "Rule")
             DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.SCENARIO_KEYWORD, "Example")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.SCENARIO_OUTLINE_KEYWORD, "Scenario Outline")
             DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.EXAMPLES_KEYWORD, "Examples")
             DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.EXAMPLES_KEYWORD, "Scenarios")
             DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.STEP_KEYWORD, "Given")

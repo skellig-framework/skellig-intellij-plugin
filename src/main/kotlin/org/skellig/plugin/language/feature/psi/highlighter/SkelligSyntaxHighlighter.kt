@@ -4,9 +4,10 @@ import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
+import org.skellig.plugin.language.feature.psi.SkelligElementTypes
 import org.skellig.plugin.language.feature.psi.SkelligKeywordProvider
-import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
 import org.skellig.plugin.language.feature.psi.SkelligLexer
+import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
 
 class SkelligSyntaxHighlighter(private val myKeywordProvider: SkelligKeywordProvider) : SyntaxHighlighterBase() {
     companion object {
@@ -21,6 +22,7 @@ class SkelligSyntaxHighlighter(private val myKeywordProvider: SkelligKeywordProv
             ATTRIBUTES[SkelligTokenTypes.PYSTRING_TEXT] = SkelligHighlighter.PYSTRING
             ATTRIBUTES[SkelligTokenTypes.TABLE_CELL] = SkelligHighlighter.TABLE_CELL
             ATTRIBUTES[SkelligTokenTypes.PIPE] = SkelligHighlighter.PIPE
+            ATTRIBUTES[SkelligTokenTypes.STEP_PARAMETER_TEXT] = SkelligHighlighter.OUTLINE_PARAMETER_SUBSTITUTION
         }
     }
 

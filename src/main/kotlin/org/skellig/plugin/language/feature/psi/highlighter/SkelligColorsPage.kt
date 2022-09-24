@@ -14,7 +14,7 @@ import javax.swing.Icon
 class SkelligColorsPage : ColorSettingsPage {
     companion object {
 
-        private val ATTRS: Array<AttributesDescriptor> = arrayOf<AttributesDescriptor>(
+        private val ATTRS: Array<AttributesDescriptor> = arrayOf(
             AttributesDescriptor("text", SkelligHighlighter.TEXT),
             AttributesDescriptor("comment", SkelligHighlighter.COMMENT),
             AttributesDescriptor("keyword", SkelligHighlighter.KEYWORD),
@@ -23,7 +23,7 @@ class SkelligColorsPage : ColorSettingsPage {
             AttributesDescriptor("table.header.cell", SkelligHighlighter.TABLE_HEADER_CELL),
             AttributesDescriptor("table.cell", SkelligHighlighter.TABLE_CELL),
             AttributesDescriptor("table.pipe", SkelligHighlighter.PIPE),
-            AttributesDescriptor("outline.param.substitution", SkelligHighlighter.OUTLINE_PARAMETER_SUBSTITUTION),
+            AttributesDescriptor("parameter", SkelligHighlighter.OUTLINE_PARAMETER_SUBSTITUTION),
             AttributesDescriptor("regexp.param", SkelligHighlighter.REGEXP_PARAMETER)
         )
 
