@@ -11,25 +11,25 @@ class SkelligParser : PsiParser {
     override fun parse(root: IElementType, builder: PsiBuilder): ASTNode {
         val marker = builder.mark()
         parseFileTopLevel(builder)
-        marker.done(GherkinElementTypes.Companion.GHERKIN_FILE)
+        marker.done(SkelligElementTypes.Companion.SKELLIG_FILE)
         return builder.treeBuilt
     }
 
     companion object {
         private val SCENARIO_END_TOKENS = TokenSet.create(
-            GherkinTokenTypes.Companion.BACKGROUND_KEYWORD,
-            GherkinTokenTypes.Companion.SCENARIO_KEYWORD,
-            GherkinTokenTypes.Companion.SCENARIO_OUTLINE_KEYWORD,
-            GherkinTokenTypes.Companion.RULE_KEYWORD,
-            GherkinTokenTypes.Companion.FEATURE_KEYWORD
+            SkelligTokenTypes.Companion.BACKGROUND_KEYWORD,
+            SkelligTokenTypes.Companion.SCENARIO_KEYWORD,
+            SkelligTokenTypes.Companion.SCENARIO_OUTLINE_KEYWORD,
+            SkelligTokenTypes.Companion.RULE_KEYWORD,
+            SkelligTokenTypes.Companion.FEATURE_KEYWORD
         )
 
         private fun parseFileTopLevel(builder: PsiBuilder) {
             while (!builder.eof()) {
                 val tokenType = builder.tokenType
-                if (tokenType === GherkinTokenTypes.Companion.FEATURE_KEYWORD) {
+                if (tokenType === SkelligTokenTypes.Companion.FEATURE_KEYWORD) {
                     parseFeature(builder)
-                } else if (tokenType === GherkinTokenTypes.Companion.TAG) {
+                } else if (tokenType === SkelligTokenTypes.Companion.TAG) {
                     parseTags(builder)
                 } else {
                     builder.advanceLexer()
@@ -39,31 +39,31 @@ class SkelligParser : PsiParser {
 
         private fun parseFeature(builder: PsiBuilder) {
             val marker = builder.mark()
-            assert(builder.tokenType === GherkinTokenTypes.Companion.FEATURE_KEYWORD)
+            assert(builder.tokenType === SkelligTokenTypes.Companion.FEATURE_KEYWORD)
             val featureEnd = builder.currentOffset + getTokenLength(builder.tokenText)
             var descMarker: PsiBuilder.Marker? = null
             while (true) {
                 val tokenType = builder.tokenType
-                if (tokenType === GherkinTokenTypes.Companion.TEXT && descMarker == null) {
+                if (tokenType === SkelligTokenTypes.Companion.TEXT && descMarker == null) {
                     if (hadLineBreakBefore(builder, featureEnd)) {
                         descMarker = builder.mark()
                     }
                 }
-                if (GherkinTokenTypes.Companion.SCENARIOS_KEYWORDS.contains(tokenType) || tokenType === GherkinTokenTypes.Companion.RULE_KEYWORD || tokenType === GherkinTokenTypes.Companion.BACKGROUND_KEYWORD || tokenType === GherkinTokenTypes.Companion.TAG) {
+                if (SkelligTokenTypes.Companion.SCENARIOS_KEYWORDS.contains(tokenType) || tokenType === SkelligTokenTypes.Companion.RULE_KEYWORD || tokenType === SkelligTokenTypes.Companion.BACKGROUND_KEYWORD || tokenType === SkelligTokenTypes.Companion.TAG) {
                     if (descMarker != null) {
-                        descMarker.done(GherkinElementTypes.Companion.FEATURE_HEADER)
+                        descMarker.done(SkelligElementTypes.Companion.FEATURE_HEADER)
                         descMarker = null
                     }
                     parseFeatureElements(builder)
-                    if (builder.tokenType === GherkinTokenTypes.Companion.FEATURE_KEYWORD) {
+                    if (builder.tokenType === SkelligTokenTypes.Companion.FEATURE_KEYWORD) {
                         break
                     }
                 }
                 builder.advanceLexer()
                 if (builder.eof()) break
             }
-            descMarker?.done(GherkinElementTypes.Companion.FEATURE_HEADER)
-            marker.done(GherkinElementTypes.Companion.FEATURE)
+            descMarker?.done(SkelligElementTypes.Companion.FEATURE_HEADER)
+            marker.done(SkelligElementTypes.Companion.FEATURE)
         }
 
         private fun hadLineBreakBefore(builder: PsiBuilder, prevTokenEnd: Int): Boolean {
@@ -73,26 +73,26 @@ class SkelligParser : PsiParser {
         }
 
         private fun parseTags(builder: PsiBuilder) {
-            while (builder.tokenType === GherkinTokenTypes.Companion.TAG) {
+            while (builder.tokenType === SkelligTokenTypes.Companion.TAG) {
                 val tagMarker = builder.mark()
                 builder.advanceLexer()
-                tagMarker.done(GherkinElementTypes.Companion.TAG)
+                tagMarker.done(SkelligElementTypes.Companion.TAG)
             }
         }
 
         private fun parseFeatureElements(builder: PsiBuilder) {
             var ruleMarker: PsiBuilder.Marker? = null
-            while (builder.tokenType !== GherkinTokenTypes.Companion.FEATURE_KEYWORD && !builder.eof()) {
-                if (builder.tokenType === GherkinTokenTypes.Companion.RULE_KEYWORD) {
-                    ruleMarker?.done(GherkinElementTypes.Companion.RULE)
+            while (builder.tokenType !== SkelligTokenTypes.Companion.FEATURE_KEYWORD && !builder.eof()) {
+                if (builder.tokenType === SkelligTokenTypes.Companion.RULE_KEYWORD) {
+                    ruleMarker?.done(SkelligElementTypes.Companion.RULE)
                     ruleMarker = builder.mark()
                     builder.advanceLexer()
-                    if (builder.tokenType === GherkinTokenTypes.Companion.COLON) {
+                    if (builder.tokenType === SkelligTokenTypes.Companion.COLON) {
                         builder.advanceLexer()
                     } else {
                         break
                     }
-                    while (builder.tokenType === GherkinTokenTypes.Companion.TEXT) {
+                    while (builder.tokenType === SkelligTokenTypes.Companion.TEXT) {
                         builder.advanceLexer()
                     }
                 }
@@ -102,17 +102,17 @@ class SkelligParser : PsiParser {
 
                 // scenarios
                 val startTokenType = builder.tokenType
-                val outline = startTokenType === GherkinTokenTypes.Companion.SCENARIO_OUTLINE_KEYWORD
+                val outline = startTokenType === SkelligTokenTypes.Companion.SCENARIO_OUTLINE_KEYWORD
                 builder.advanceLexer()
                 parseScenario(builder)
-                marker.done(if (outline) GherkinElementTypes.Companion.SCENARIO_OUTLINE else GherkinElementTypes.Companion.SCENARIO)
+                marker.done(if (outline) SkelligElementTypes.Companion.SCENARIO_OUTLINE else SkelligElementTypes.Companion.SCENARIO)
             }
-            ruleMarker?.done(GherkinElementTypes.Companion.RULE)
+            ruleMarker?.done(SkelligElementTypes.Companion.RULE)
         }
 
         private fun parseScenario(builder: PsiBuilder) {
             while (!atScenarioEnd(builder)) {
-                if (builder.tokenType === GherkinTokenTypes.Companion.TAG) {
+                if (builder.tokenType === SkelligTokenTypes.Companion.TAG) {
                     val marker = builder.mark()
                     parseTags(builder)
                     if (atScenarioEnd(builder)) {
@@ -125,9 +125,9 @@ class SkelligParser : PsiParser {
                 if (parseStepParameter(builder)) {
                     continue
                 }
-                if (builder.tokenType === GherkinTokenTypes.Companion.STEP_KEYWORD) {
+                if (builder.tokenType === SkelligTokenTypes.Companion.STEP_KEYWORD) {
                     parseStep(builder)
-                } else if (builder.tokenType === GherkinTokenTypes.Companion.EXAMPLES_KEYWORD) {
+                } else if (builder.tokenType === SkelligTokenTypes.Companion.EXAMPLES_KEYWORD) {
                     parseExamplesBlock(builder)
                 } else {
                     builder.advanceLexer()
@@ -137,7 +137,7 @@ class SkelligParser : PsiParser {
 
         private fun atScenarioEnd(builder: PsiBuilder): Boolean {
             var i = 0
-            while (builder.lookAhead(i) === GherkinTokenTypes.Companion.TAG) {
+            while (builder.lookAhead(i) === SkelligTokenTypes.Companion.TAG) {
                 i++
             }
             val tokenType = builder.lookAhead(i)
@@ -145,10 +145,10 @@ class SkelligParser : PsiParser {
         }
 
         private fun parseStepParameter(builder: PsiBuilder): Boolean {
-            if (builder.tokenType === GherkinTokenTypes.Companion.STEP_PARAMETER_TEXT) {
+            if (builder.tokenType === SkelligTokenTypes.Companion.STEP_PARAMETER_TEXT) {
                 val stepParameterMarker = builder.mark()
                 builder.advanceLexer()
-                stepParameterMarker.done(GherkinElementTypes.Companion.STEP_PARAMETER)
+                stepParameterMarker.done(SkelligElementTypes.Companion.STEP_PARAMETER)
                 return true
             }
             return false
@@ -158,7 +158,7 @@ class SkelligParser : PsiParser {
             val marker = builder.mark()
             builder.advanceLexer()
             var prevTokenEnd = -1
-            while (builder.tokenType === GherkinTokenTypes.Companion.TEXT || builder.tokenType === GherkinTokenTypes.Companion.STEP_PARAMETER_BRACE || builder.tokenType === GherkinTokenTypes.Companion.STEP_PARAMETER_TEXT) {
+            while (builder.tokenType === SkelligTokenTypes.Companion.TEXT || builder.tokenType === SkelligTokenTypes.Companion.STEP_PARAMETER_BRACE || builder.tokenType === SkelligTokenTypes.Companion.STEP_PARAMETER_TEXT) {
                 val tokenText = builder.tokenText
                 if (hadLineBreakBefore(builder, prevTokenEnd)) {
                     break
@@ -169,19 +169,19 @@ class SkelligParser : PsiParser {
                 }
             }
             val tokenTypeAfterName = builder.tokenType
-            if (tokenTypeAfterName === GherkinTokenTypes.Companion.PIPE) {
+            if (tokenTypeAfterName === SkelligTokenTypes.Companion.PIPE) {
                 parseTable(builder)
-            } else if (tokenTypeAfterName === GherkinTokenTypes.Companion.PYSTRING) {
+            } else if (tokenTypeAfterName === SkelligTokenTypes.Companion.PYSTRING) {
                 parsePystring(builder)
             }
-            marker.done(GherkinElementTypes.Companion.STEP)
+            marker.done(SkelligElementTypes.Companion.STEP)
         }
 
         private fun parsePystring(builder: PsiBuilder) {
             if (!builder.eof()) {
                 val marker = builder.mark()
                 builder.advanceLexer()
-                while (!builder.eof() && builder.tokenType !== GherkinTokenTypes.Companion.PYSTRING) {
+                while (!builder.eof() && builder.tokenType !== SkelligTokenTypes.Companion.PYSTRING) {
                     if (!parseStepParameter(builder)) {
                         builder.advanceLexer()
                     }
@@ -189,21 +189,21 @@ class SkelligParser : PsiParser {
                 if (!builder.eof()) {
                     builder.advanceLexer()
                 }
-                marker.done(GherkinElementTypes.Companion.PYSTRING)
+                marker.done(SkelligElementTypes.Companion.PYSTRING)
             }
         }
 
         private fun parseExamplesBlock(builder: PsiBuilder) {
             val marker = builder.mark()
             builder.advanceLexer()
-            if (builder.tokenType === GherkinTokenTypes.Companion.COLON) builder.advanceLexer()
-            while (builder.tokenType === GherkinTokenTypes.Companion.TEXT) {
+            if (builder.tokenType === SkelligTokenTypes.Companion.COLON) builder.advanceLexer()
+            while (builder.tokenType === SkelligTokenTypes.Companion.TEXT) {
                 builder.advanceLexer()
             }
-            if (builder.tokenType === GherkinTokenTypes.Companion.PIPE) {
+            if (builder.tokenType === SkelligTokenTypes.Companion.PIPE) {
                 parseTable(builder)
             }
-            marker.done(GherkinElementTypes.Companion.EXAMPLES_BLOCK)
+            marker.done(SkelligElementTypes.Companion.EXAMPLES_BLOCK)
         }
 
         private fun parseTable(builder: PsiBuilder) {
@@ -213,19 +213,19 @@ class SkelligParser : PsiParser {
             var isHeaderRow = true
             var cellMarker: PsiBuilder.Marker? = null
             var prevToken: IElementType? = null
-            while (builder.tokenType === GherkinTokenTypes.Companion.PIPE || builder.tokenType === GherkinTokenTypes.Companion.TABLE_CELL) {
+            while (builder.tokenType === SkelligTokenTypes.Companion.PIPE || builder.tokenType === SkelligTokenTypes.Companion.TABLE_CELL) {
                 val tokenType = builder.tokenType
                 val hasLineBreakBefore = hadLineBreakBefore(builder, prevCellEnd)
 
                 // cell - is all between pipes
-                if (prevToken === GherkinTokenTypes.Companion.PIPE) {
+                if (prevToken === SkelligTokenTypes.Companion.PIPE) {
                     // Don't start new cell if prev was last in the row
                     // it's not a cell, we just need to close a row
                     if (!hasLineBreakBefore) {
                         cellMarker = builder.mark()
                     }
                 }
-                if (tokenType === GherkinTokenTypes.Companion.PIPE) {
+                if (tokenType === SkelligTokenTypes.Companion.PIPE) {
                     if (cellMarker != null) {
                         closeCell(cellMarker)
                         cellMarker = null
@@ -244,15 +244,15 @@ class SkelligParser : PsiParser {
                 closeCell(cellMarker)
             }
             closeRowMarker(rowMarker, isHeaderRow)
-            marker.done(GherkinElementTypes.Companion.TABLE)
+            marker.done(SkelligElementTypes.Companion.TABLE)
         }
 
         private fun closeCell(cellMarker: PsiBuilder.Marker) {
-            cellMarker.done(GherkinElementTypes.Companion.TABLE_CELL)
+            cellMarker.done(SkelligElementTypes.Companion.TABLE_CELL)
         }
 
         private fun closeRowMarker(rowMarker: PsiBuilder.Marker, headerRow: Boolean) {
-            rowMarker.done(if (headerRow) GherkinElementTypes.Companion.TABLE_HEADER_ROW else GherkinElementTypes.Companion.TABLE_ROW)
+            rowMarker.done(if (headerRow) SkelligElementTypes.Companion.TABLE_HEADER_ROW else SkelligElementTypes.Companion.TABLE_ROW)
         }
 
         private fun getTokenLength(tokenText: String?): Int {

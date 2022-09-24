@@ -7,7 +7,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import org.skellig.plugin.language.feature.psi.GherkinFile
+import org.skellig.plugin.language.feature.psi.SkelligFile
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 
 abstract class AbstractExtension : SkelligExtensionPoint {
@@ -23,9 +23,9 @@ abstract class AbstractExtension : SkelligExtensionPoint {
         return rootForFile != null
     }
 
-    override fun getStepDefinitionContainers(file: GherkinFile): Collection<PsiFile> {
+    override fun getStepDefinitionContainers(file: SkelligFile): Collection<PsiFile> {
         val module: Module = ModuleUtilCore.findModuleForPsiElement(file) ?: return emptySet()
-        val stepDefs: List<AbstractStepDefinition> = org.skellig.plugin.language.feature.CucumberUtil.loadFrameworkSteps(this, file, module)
+        val stepDefs: List<AbstractStepDefinition> = org.skellig.plugin.language.feature.SkelligUtil.loadFrameworkSteps(this, file, module)
         val result = mutableSetOf<PsiFile>()
         for (stepDef in stepDefs) {
             val stepDefElement: PsiElement? = stepDef.getElement()

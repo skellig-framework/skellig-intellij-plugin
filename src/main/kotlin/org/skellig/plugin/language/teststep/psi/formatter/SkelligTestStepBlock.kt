@@ -94,7 +94,6 @@ class SkelligTestStepBlock @JvmOverloads constructor(
             ) {
                 Indent.getNormalIndent()
             } else Indent.getNoneIndent()
-
             result.add(SkelligTestStepBlock(child, indent))
         }
         return result

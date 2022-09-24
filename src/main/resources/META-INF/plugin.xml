@@ -12,13 +12,16 @@
         <lang.parserDefinition language="Skellig"
                                implementationClass="org.skellig.plugin.language.feature.psi.SkelligParserDefinition"/>
         <lang.formatter language="Skellig"
-                        implementationClass="org.skellig.plugin.language.feature.psi.formatter.GherkinFormattingModelBuilder"/>
+                        implementationClass="org.skellig.plugin.language.feature.psi.formatter.SkelligFormattingModelBuilder"/>
         <lang.syntaxHighlighterFactory language="Skellig"
                                        implementationClass="org.skellig.plugin.language.feature.psi.highlighter.SkelligSyntaxHighlighterFactory"/>
         <colorSettingsPage implementation="org.skellig.plugin.language.feature.psi.highlighter.SkelligColorsPage"/>
         <psi.referenceContributor language="Skellig"
-                                  implementation="org.skellig.plugin.language.feature.steps.reference.CucumberReferenceContributor"/>
+                                  implementation="org.skellig.plugin.language.feature.steps.reference.SkelligReferenceContributor"/>
         <fileBasedIndex implementation="org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepStepIndex"/>
+        <lang.commenter language="Skellig"
+                        implementationClass="org.skellig.plugin.language.feature.psi.commenter.SkelligFeatureCommenter"/>
+
 
         <fileType name="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepFileType"
                   fieldName="INSTANCE" language="SkelligTestStep" extensions="sts"/>

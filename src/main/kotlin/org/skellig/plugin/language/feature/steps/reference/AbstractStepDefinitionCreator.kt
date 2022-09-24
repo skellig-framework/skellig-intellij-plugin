@@ -10,7 +10,7 @@ import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
-import org.skellig.plugin.language.feature.psi.GherkinStep
+import org.skellig.plugin.language.feature.psi.SkelligFeatureStep
 import java.io.File
 import java.util.*
 
@@ -22,12 +22,12 @@ abstract class AbstractStepDefinitionCreator : StepDefinitionCreator {
             var featureDir: VirtualFile? = psiFeatureDir.virtualFile
             val contentRoot = ProjectRootManager.getInstance(featureFile.project).fileIndex.getContentRootForFile(featureDir!!)
             while (featureDir != null &&
-                !Comparing.equal(featureDir, contentRoot) && featureDir.findChild(org.skellig.plugin.language.feature.CucumberUtil.STEP_DEFINITIONS_DIR_NAME) == null
+                !Comparing.equal(featureDir, contentRoot) && featureDir.findChild(org.skellig.plugin.language.feature.SkelligUtil.STEP_DEFINITIONS_DIR_NAME) == null
             ) {
                 featureDir = featureDir.parent
             }
             if (featureDir != null) {
-                val stepsDir = featureDir.findChild(org.skellig.plugin.language.feature.CucumberUtil.STEP_DEFINITIONS_DIR_NAME)
+                val stepsDir = featureDir.findChild(org.skellig.plugin.language.feature.SkelligUtil.STEP_DEFINITIONS_DIR_NAME)
                 if (stepsDir != null) {
                     return featureFile.manager.findDirectory(stepsDir)
                 }
@@ -40,7 +40,7 @@ abstract class AbstractStepDefinitionCreator : StepDefinitionCreator {
         val file = psiFile.virtualFile!!
         var parent = file.parent
         // if file is direct child of step definitions dir
-        if (parent != null && org.skellig.plugin.language.feature.CucumberUtil.STEP_DEFINITIONS_DIR_NAME == parent.name) {
+        if (parent != null && org.skellig.plugin.language.feature.SkelligUtil.STEP_DEFINITIONS_DIR_NAME == parent.name) {
             return file.name
         }
 
@@ -48,7 +48,7 @@ abstract class AbstractStepDefinitionCreator : StepDefinitionCreator {
         val dirsReversed: MutableList<String> = ArrayList()
         while (parent != null) {
             val name = parent.name
-            if (org.skellig.plugin.language.feature.CucumberUtil.STEP_DEFINITIONS_DIR_NAME == name) {
+            if (org.skellig.plugin.language.feature.SkelligUtil.STEP_DEFINITIONS_DIR_NAME == name) {
                 break
             }
             dirsReversed.add(name)
@@ -62,12 +62,12 @@ abstract class AbstractStepDefinitionCreator : StepDefinitionCreator {
         return buf.toString()
     }
 
-    override fun getDefaultStepDefinitionFolderPath(step: GherkinStep): String {
+    override fun getDefaultStepDefinitionFolderPath(step: SkelligFeatureStep): String {
         val featureFile = step.containingFile
         val dir = findStepDefinitionDirectory(featureFile)
         return dir?.virtualFile?.path ?: FileUtil.join(
             featureFile.containingDirectory.virtualFile.path,
-            org.skellig.plugin.language.feature.CucumberUtil.STEP_DEFINITIONS_DIR_NAME
+            org.skellig.plugin.language.feature.SkelligUtil.STEP_DEFINITIONS_DIR_NAME
         )
     }
 

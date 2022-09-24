@@ -8,7 +8,7 @@ import com.intellij.openapi.options.colors.ColorSettingsPage
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import org.skellig.plugin.language.SkelligFileIcons
-import org.skellig.plugin.language.feature.psi.PlainGherkinKeywordProvider
+import org.skellig.plugin.language.feature.psi.PlainSkelligKeywordProvider
 import javax.swing.Icon
 
 class SkelligColorsPage : ColorSettingsPage {
@@ -44,17 +44,17 @@ class SkelligColorsPage : ColorSettingsPage {
 
     @NotNull
     override fun getHighlighter(): SyntaxHighlighter {
-        return SkelligSyntaxHighlighter(PlainGherkinKeywordProvider())
+        return SkelligSyntaxHighlighter(PlainSkelligKeywordProvider())
     }
 
     override fun getDemoText(): String =
         "# language: en\n" +
-                "Feature: Cucumber Colors Settings Page\n" +
-                "  In order to customize Gherkin language (*.feature files) highlighting\n" +
+                "Feature: Skellig Colors Settings Page\n" +
+                "  In order to customize Skellig language (*.feature files) highlighting\n" +
                 "  Our users can use this settings preview pane\n" +
                 "\n" +
                 "  @wip\n" +
-                "  Scenario Outline: Different Gherkin language structures\n" +
+                "  Scenario: Different Skellig language structures\n" +
                 "    Given Some feature file with content\n" +
                 "    \"\"\"\n" +
                 "    Feature: Some feature\n" +

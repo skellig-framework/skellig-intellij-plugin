@@ -46,9 +46,7 @@ class SkelligTestStepImpl(node: ASTNode) : SkelligTestStepPsiElementBase(node), 
 
     @Throws(IncorrectOperationException::class)
     override fun setName(@NonNls name: String): PsiElement {
-        val newStep: SkelligTestStep? = null //GherkinChangeUtil.createStep(getKeyword().getText() + " " + name, getProject());
-        //        replace(newStep);
-        return newStep!!
+        return this
     }
 
     override fun acceptTestStep(visitor: SkelligTestStepElementVisitor) {

@@ -3,7 +3,7 @@ package org.skellig.plugin.language.feature.steps.reference
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
-import org.skellig.plugin.language.feature.psi.GherkinStep
+import org.skellig.plugin.language.feature.psi.SkelligFeatureStep
 
 interface StepDefinitionCreator {
     /**
@@ -22,7 +22,7 @@ interface StepDefinitionCreator {
      * number of templates in case of "Create All Step Definitions" action invoked
      * @return true if success, false otherwise
      */
-    fun createStepDefinition(step: GherkinStep, file: PsiFile, withTemplate: Boolean): Boolean {
+    fun createStepDefinition(step: SkelligFeatureStep, file: PsiFile, withTemplate: Boolean): Boolean {
         return false
     }
 
@@ -35,7 +35,7 @@ interface StepDefinitionCreator {
         return true
     }
 
-    fun getDefaultStepDefinitionFolderPath(step: GherkinStep): String
+    fun getDefaultStepDefinitionFolderPath(step: SkelligFeatureStep): String
 
     /**
      * @return step definition file path relative to step definition folder
@@ -47,5 +47,5 @@ interface StepDefinitionCreator {
      * @param step step we want to create definition container for
      * @return String representing default name of step definition file
      */
-    fun getDefaultStepFileName(step: GherkinStep): String
+    fun getDefaultStepFileName(step: SkelligFeatureStep): String
 }

@@ -18,53 +18,53 @@ import org.skellig.plugin.language.feature.psi.impl.*
 class SkelligParserDefinition : ParserDefinition {
 
     override fun createLexer(project: Project): Lexer {
-        return SkelligLexer(PlainGherkinKeywordProvider())
+        return SkelligLexer(PlainSkelligKeywordProvider())
     }
 
     override fun createParser(project: Project): PsiParser {
         return SkelligParser()
     }
 
-    override fun getFileNodeType(): IFileElementType =  GherkinElementTypes.GHERKIN_FILE
+    override fun getFileNodeType(): IFileElementType =  SkelligElementTypes.SKELLIG_FILE
 
     override fun getCommentTokens(): TokenSet = COMMENTS
 
     override fun getStringLiteralElements(): TokenSet = TokenSet.EMPTY
 
     override fun createElement(node: ASTNode): PsiElement {
-        if (node.elementType === GherkinElementTypes.FEATURE) return GherkinFeatureImpl(node)
-        if (node.elementType === GherkinElementTypes.FEATURE_HEADER) return GherkinFeatureHeaderImpl(node)
-        if (node.elementType === GherkinElementTypes.SCENARIO) return GherkinScenarioImpl(node)
-        if (node.elementType === GherkinElementTypes.STEP) return GherkinStepImpl(node)
-        if (node.elementType === GherkinElementTypes.SCENARIO_OUTLINE) return GherkinScenarioOutlineImpl(node)
-        if (node.elementType === GherkinElementTypes.RULE) return GherkinRuleImpl(node)
-        if (node.elementType === GherkinElementTypes.EXAMPLES_BLOCK) return GherkinExamplesBlockImpl(node)
-        if (node.elementType === GherkinElementTypes.TABLE) return GherkinTableImpl(node)
-        if (node.elementType === GherkinElementTypes.TABLE_ROW) return GherkinTableRowImpl(node)
-        if (node.elementType === GherkinElementTypes.TABLE_CELL) return GherkinTableCellImpl(node)
-        if (node.elementType === GherkinElementTypes.TABLE_HEADER_ROW) return GherkinTableHeaderRowImpl(node)
-        if (node.elementType === GherkinElementTypes.TAG) return GherkinTagImpl(node)
-        if (node.elementType === GherkinElementTypes.STEP_PARAMETER) return GherkinStepParameterImpl(node)
-        return if (node.elementType === GherkinElementTypes.PYSTRING) GherkinPystringImpl(node) else PsiUtilCore.NULL_PSI_ELEMENT
+        if (node.elementType === SkelligElementTypes.FEATURE) return SkelligFeatureImpl(node)
+        if (node.elementType === SkelligElementTypes.FEATURE_HEADER) return SkelligFeatureHeaderImpl(node)
+        if (node.elementType === SkelligElementTypes.SCENARIO) return SkelligScenarioImpl(node)
+        if (node.elementType === SkelligElementTypes.STEP) return SkelligFeatureStepImpl(node)
+        if (node.elementType === SkelligElementTypes.SCENARIO_OUTLINE) return SkelligScenarioOutlineImpl(node)
+        if (node.elementType === SkelligElementTypes.RULE) return SkelligRuleImpl(node)
+        if (node.elementType === SkelligElementTypes.EXAMPLES_BLOCK) return SkelligExamplesBlockImpl(node)
+        if (node.elementType === SkelligElementTypes.TABLE) return SkelligTableImpl(node)
+        if (node.elementType === SkelligElementTypes.TABLE_ROW) return SkelligTableRowImpl(node)
+        if (node.elementType === SkelligElementTypes.TABLE_CELL) return SkelligTableCellImpl(node)
+        if (node.elementType === SkelligElementTypes.TABLE_HEADER_ROW) return SkelligTableHeaderRowImpl(node)
+        if (node.elementType === SkelligElementTypes.TAG) return SkelligTagImpl(node)
+        if (node.elementType === SkelligElementTypes.STEP_PARAMETER) return SkelligStepParameterImpl(node)
+        return if (node.elementType === SkelligElementTypes.PYSTRING) SkelligPystringImpl(node) else PsiUtilCore.NULL_PSI_ELEMENT
     }
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile {
-        return GherkinFileImpl(viewProvider)
+        return SkelligFileImpl(viewProvider)
     }
 
     override fun spaceExistenceTypeBetweenTokens(left: ASTNode, right: ASTNode): ParserDefinition.SpaceRequirements {
         // Line break between line comment and other elements
         val leftElementType: IElementType = left.elementType
-        if (leftElementType === GherkinTokenTypes.COMMENT) {
+        if (leftElementType === SkelligTokenTypes.COMMENT) {
             return ParserDefinition.SpaceRequirements.MUST_LINE_BREAK
         }
-        return if (right.elementType === GherkinTokenTypes.EXAMPLES_KEYWORD) {
+        return if (right.elementType === SkelligTokenTypes.EXAMPLES_KEYWORD) {
             ParserDefinition.SpaceRequirements.MUST_LINE_BREAK
         } else ParserDefinition.SpaceRequirements.MAY
     }
 
     companion object {
         private val WHITESPACE: TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
-        private val COMMENTS: TokenSet = TokenSet.create(GherkinTokenTypes.COMMENT)
+        private val COMMENTS: TokenSet = TokenSet.create(SkelligTokenTypes.COMMENT)
     }
 }

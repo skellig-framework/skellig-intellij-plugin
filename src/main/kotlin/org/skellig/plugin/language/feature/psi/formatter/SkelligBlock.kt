@@ -6,9 +6,9 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.TokenType
 import com.intellij.psi.impl.source.tree.TreeUtil
 import com.intellij.psi.tree.TokenSet
-import org.skellig.plugin.language.feature.psi.GherkinElementTypes
-import org.skellig.plugin.language.feature.psi.GherkinTable
-import org.skellig.plugin.language.feature.psi.GherkinTokenTypes
+import org.skellig.plugin.language.feature.psi.SkelligElementTypes
+import org.skellig.plugin.language.feature.psi.SkelligTable
+import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
 
 class SkelligBlock @JvmOverloads constructor(
     private val myNode: ASTNode,
@@ -46,7 +46,7 @@ class SkelligBlock @JvmOverloads constructor(
                 continue
             }
             val isTagInsideScenario =
-                child.elementType === GherkinElementTypes.TAG && myNode.elementType === GherkinElementTypes.SCENARIO_OUTLINE && child.startOffset > myNode.startOffset
+                child.elementType === SkelligElementTypes.TAG && myNode.elementType === SkelligElementTypes.SCENARIO_OUTLINE && child.startOffset > myNode.startOffset
             var indent: Indent?
             indent = if (BLOCKS_TO_INDENT.contains(child.elementType) || isTagInsideScenario) {
                 Indent.getNormalIndent()
@@ -54,12 +54,12 @@ class SkelligBlock @JvmOverloads constructor(
                 Indent.getNoneIndent()
             }
             // skip epmty cells
-            if (child.elementType === GherkinElementTypes.TABLE_CELL) {
+            if (child.elementType === SkelligElementTypes.TABLE_CELL) {
                 if (child.getChildren(null).size == 0) {
                     continue
                 }
             }
-            if (child.elementType === GherkinTokenTypes.COMMENT) {
+            if (child.elementType === SkelligTokenTypes.COMMENT) {
                 val commentIndentElement = child.treePrev
                 if (commentIndentElement != null && (commentIndentElement.text.contains("\n") || commentIndentElement.treePrev == null)) {
                     val whiteSpaceText = commentIndentElement.text
@@ -98,23 +98,23 @@ class SkelligBlock @JvmOverloads constructor(
         if (READ_ONLY_BLOCKS.contains(elementType2)) {
             return Spacing.getReadOnlySpacing()
         }
-        if (GherkinElementTypes.SCENARIOS.contains(elementType2) && elementType1 !== GherkinTokenTypes.COMMENT && parent1 !== GherkinElementTypes.RULE) {
+        if (SkelligElementTypes.SCENARIOS.contains(elementType2) && elementType1 !== SkelligTokenTypes.COMMENT && parent1 !== SkelligElementTypes.RULE) {
             return Spacing.createSpacing(0, 0, 2, true, 2)
         }
-        if (elementType1 === GherkinTokenTypes.PIPE &&
-            elementType2 === GherkinElementTypes.TABLE_CELL
+        if (elementType1 === SkelligTokenTypes.PIPE &&
+            elementType2 === SkelligElementTypes.TABLE_CELL
         ) {
             return Spacing.createSpacing(1, 1, 0, false, 0)
         }
-        if ((elementType1 === GherkinElementTypes.TABLE_CELL || elementType1 === GherkinTokenTypes.PIPE) &&
-            elementType2 === GherkinTokenTypes.PIPE
+        if ((elementType1 === SkelligElementTypes.TABLE_CELL || elementType1 === SkelligTokenTypes.PIPE) &&
+            elementType2 === SkelligTokenTypes.PIPE
         ) {
-            val tableNode = TreeUtil.findParent(node1, GherkinElementTypes.TABLE)
+            val tableNode = TreeUtil.findParent(node1, SkelligElementTypes.TABLE)
             if (tableNode != null) {
                 val columnIndex = getTableCellColumnIndex(node1)
-                val maxWidth = (tableNode.psi as GherkinTable).getColumnWidth(columnIndex)
+                val maxWidth = (tableNode.psi as SkelligTable).getColumnWidth(columnIndex)
                 var spacingWidth = maxWidth - node1.text.trim { it <= ' ' }.length + 1
-                if (elementType1 === GherkinTokenTypes.PIPE) {
+                if (elementType1 === SkelligTokenTypes.PIPE) {
                     spacingWidth += 2
                 }
                 return Spacing.createSpacing(spacingWidth, spacingWidth, 0, false, 0)
@@ -129,15 +129,15 @@ class SkelligBlock @JvmOverloads constructor(
     }
 
     override fun isIncomplete(): Boolean {
-        if (GherkinElementTypes.SCENARIOS.contains(node!!.elementType)) {
+        if (SkelligElementTypes.SCENARIOS.contains(node!!.elementType)) {
             return true
         }
-        return if (node!!.elementType === GherkinElementTypes.FEATURE) {
+        return if (node!!.elementType === SkelligElementTypes.FEATURE) {
             node!!.getChildren(
                 TokenSet.create(
-                    GherkinElementTypes.FEATURE_HEADER,
-                    GherkinElementTypes.SCENARIO,
-                    GherkinElementTypes.SCENARIO_OUTLINE
+                    SkelligElementTypes.FEATURE_HEADER,
+                    SkelligElementTypes.SCENARIO,
+                    SkelligElementTypes.SCENARIO_OUTLINE
                 )
             ).size == 0
         } else false
@@ -149,27 +149,27 @@ class SkelligBlock @JvmOverloads constructor(
 
     companion object {
         private val BLOCKS_TO_INDENT = TokenSet.create(
-            GherkinElementTypes.FEATURE_HEADER,
-            GherkinElementTypes.RULE,
-            GherkinElementTypes.SCENARIO,
-            GherkinElementTypes.SCENARIO_OUTLINE,
-            GherkinElementTypes.STEP,
-            GherkinElementTypes.TABLE,
-            GherkinElementTypes.EXAMPLES_BLOCK
+            SkelligElementTypes.FEATURE_HEADER,
+            SkelligElementTypes.RULE,
+            SkelligElementTypes.SCENARIO,
+            SkelligElementTypes.SCENARIO_OUTLINE,
+            SkelligElementTypes.STEP,
+            SkelligElementTypes.TABLE,
+            SkelligElementTypes.EXAMPLES_BLOCK
         )
         private val BLOCKS_TO_INDENT_CHILDREN = TokenSet.create(
-            GherkinElementTypes.GHERKIN_FILE,
-            GherkinElementTypes.FEATURE,
-            GherkinElementTypes.SCENARIO,
-            GherkinElementTypes.RULE,
-            GherkinElementTypes.SCENARIO_OUTLINE
+            SkelligElementTypes.SKELLIG_FILE,
+            SkelligElementTypes.FEATURE,
+            SkelligElementTypes.SCENARIO,
+            SkelligElementTypes.RULE,
+            SkelligElementTypes.SCENARIO_OUTLINE
         )
-        private val READ_ONLY_BLOCKS = TokenSet.create(GherkinElementTypes.PYSTRING, GherkinTokenTypes.COMMENT)
+        private val READ_ONLY_BLOCKS = TokenSet.create(SkelligElementTypes.PYSTRING, SkelligTokenTypes.COMMENT)
         private fun getTableCellColumnIndex(node: ASTNode?): Int {
             var node = node
             var pipeCount = 0
             while (node != null) {
-                if (node.elementType === GherkinTokenTypes.PIPE) {
+                if (node.elementType === SkelligTokenTypes.PIPE) {
                     pipeCount++
                 }
                 node = node.treePrev
