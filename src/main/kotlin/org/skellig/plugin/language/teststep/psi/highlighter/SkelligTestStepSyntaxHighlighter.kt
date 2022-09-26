@@ -5,7 +5,7 @@ import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepKeywordProvider
-import org.skellig.plugin.language.teststep.psi.SkelligTestStepLexer
+import org.skellig.plugin.language.teststep.psi.lexer.SkelligTestStepLexer
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTokenTypes
 
 class SkelligTestStepSyntaxHighlighter(private val myKeywordProvider: SkelligTestStepKeywordProvider) : SyntaxHighlighterBase() {

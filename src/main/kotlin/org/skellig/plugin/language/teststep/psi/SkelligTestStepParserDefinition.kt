@@ -14,6 +14,7 @@ import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiUtilCore
 import org.skellig.plugin.language.teststep.psi.impl.*
+import org.skellig.plugin.language.teststep.psi.lexer.SkelligTestStepLexer
 
 class SkelligTestStepParserDefinition : ParserDefinition {
 
