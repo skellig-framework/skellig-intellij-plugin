@@ -1,0 +1,157 @@
+name ('Send transfer balance (.+) from node (.+) to node (.+)') {
+    url = '/'
+    http_method = POST
+    http_headers { Content-type = 'application/json' }
+
+    variables {
+        id = inc(transfer_id)
+        tx {
+            signer_id = node${2}
+            public_key {
+                keyType = 0.toShort()
+                data = ${node.${2}.pk}.base58()
+            }
+            nonce = long(${id: 12})
+            receiver_id = node${3}
+            hash = get(status_result).body.jsonPath(sync_info.hash).base58()
+            actions [
+                {
+                    transfer {
+                        deposit = ${1}.toBigDecimal()
+                    }
+                }
+            ]
+        }
+
+        tx_hash {
+            serialize {
+                data = ${tx}
+            }
+        }
+
+        signature {
+            sign {
+                data = ${tx_hash}
+                key = ${node.${2}.secret}
+            }
+        }
+
+        request {
+            serialize {
+                data {
+                    transaction = ${tx}
+                    signature {
+                        keyType = 0.toShort()
+                        data = ${signature}
+                    }
+                }
+            }
+        }
+    }
+
+    request {
+        json {
+            jsonrpc = '\'2.0\''
+            method = send_tx
+            params [
+                {
+                    data = ${request}
+                }
+            ]
+        }
+    }
+
+    assert {
+        statusCode = int(200)
+        body.jsonPath(result) = "match(\'[\w]{44}\')"
+    }
+}
+
+name ('Get current status') {
+    id = status
+    url = '/status'
+    http_method = GET
+    http_headers { Content-type = 'application/json'}
+
+    assert {
+        body {
+            jsonPath(sync_info.hash) = not(null)
+        }
+    }
+}
+
+name ('Get latest balance for account (.+)') {
+    id = ${1}-balance
+    url = '/'
+    http_method = POST
+    http_headers { Content-type = 'application/json' }
+
+    request {
+        json {
+            jsonrpc = '\'2.0\''
+            method = query
+            params {
+                account_id = ${1}
+            }
+        }
+    }
+}
+
+name ('Check account (.+) balance increased to (.+)') {
+    url = '/'
+    http_method = POST
+    http_headers { Content-type = 'application/json' }
+    delay = 500
+    attempts = 10
+
+    request {
+        json {
+            jsonrpc = '\'2.0\''
+            method = query
+            params {
+                account_id = ${1}
+            }
+        }
+    }
+
+    validate {
+        body.jsonToMap() {
+            result {
+                amount = get(${1}-balance_result).body.jsonPath(result.amount).toBigDecimal().plus(${2}).toString()
+            }
+        }
+    }
+}
+
+name ('Check account node(.+) balance decreased to (.+)') {
+    url = '/'
+    http_method = POST
+    http_headers { Content-type = 'application/json' }
+    delay = 500
+    attempts = 10
+
+    variables {
+        total_cost = 111
+        refund = 111
+        previousAmount = 111
+        expectedAmount = #[${previousAmount}.plus(${refund}).minus(${total_cost}).minus(${2}).toString()]
+    }
+
+    request {
+        json {
+            jsonrpc = '\'2.0\''
+            method = query
+            params {
+                account_id = node${1}
+            }
+        }
+    }
+
+    validate {
+        body.jsonToMap() {
+            result {
+                amount = ${expectedAmount}
+            }
+        }
+    }
+}
