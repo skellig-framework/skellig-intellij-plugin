@@ -4,55 +4,55 @@ import com.intellij.psi.PsiElementVisitor
 import org.skellig.plugin.language.feature.psi.impl.*
 
 abstract class SkelligElementVisitor : PsiElementVisitor() {
-    fun visitFeature(feature: SkelligFeature?) {
+    fun visitFeature(feature: SkelligFeature) {
         visitElement(feature)
     }
 
-    fun visitRule(rule: SkelligRule?) {
+    fun visitRule(rule: SkelligRule) {
         visitElement(rule)
     }
 
-    fun visitFeatureHeader(header: SkelligFeatureHeaderImpl?) {
+    fun visitFeatureHeader(header: SkelligFeatureHeaderImpl) {
         visitElement(header)
     }
 
-    fun visitScenarioOutline(outline: SkelligScenarioOutline?) {
+    fun visitScenarioOutline(outline: SkelligScenarioOutline) {
         visitElement(outline)
     }
 
-    fun visitExamplesBlock(block: SkelligExamplesBlockImpl?) {
+    fun visitExamplesBlock(block: SkelligExamplesBlockImpl) {
         visitElement(block)
     }
 
-    fun visitStep(step: SkelligFeatureStep?) {
+    fun visitStep(step: SkelligFeatureStep) {
         visitElement(step)
     }
 
-    fun visitTable(table: SkelligTableImpl?) {
+    fun visitTable(table: SkelligTableImpl) {
         visitElement(table)
     }
 
-    fun visitTableRow(row: SkelligTableRowImpl?) {
+    fun visitTableRow(row: SkelligTableRowImpl) {
         visitElement(row)
     }
 
-    fun visitTableHeaderRow(row: SkelligTableHeaderRowImpl?) {
+    fun visitTableHeaderRow(row: SkelligTableHeaderRowImpl) {
         visitElement(row)
     }
 
-    fun visitTag(skelligTag: SkelligTagImpl?) {
+    fun visitTag(skelligTag: SkelligTagImpl) {
         visitElement(skelligTag)
     }
 
-    fun visitStepParameter(skelligStepParameter: SkelligStepParameterImpl?) {
+    fun visitStepParameter(skelligStepParameter: SkelligStepParameterImpl) {
         visitElement(skelligStepParameter)
     }
 
-    fun visitSkelligTableCell(cell: SkelligTableCell?) {
+    fun visitSkelligTableCell(cell: SkelligTableCell) {
         visitElement(cell)
     }
 
-    fun visitPystring(phstring: SkelligPystring?) {
+    fun visitPystring(phstring: SkelligPystring) {
         visitElement(phstring)
     }
 }

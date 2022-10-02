@@ -5,7 +5,7 @@ import com.intellij.lang.Commenter
 class SkelligFeatureCommenter : Commenter {
 
     override fun getLineCommentPrefix(): String {
-        return "#"
+        return "//"
     }
 
     override fun getBlockCommentPrefix(): String? {
