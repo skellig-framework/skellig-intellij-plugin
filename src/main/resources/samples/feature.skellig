@@ -1,5 +1,5 @@
 Feature: sample
-# sds
+// sds
     Scenario Outline: A
         Given test 2
         Given test 70 errors <key>
@@ -8,4 +8,4 @@ Feature: sample
         * check performance of status request
         Examples:
             | key | a |
-            | 0  | 1 |
+            | 0   | 1 |

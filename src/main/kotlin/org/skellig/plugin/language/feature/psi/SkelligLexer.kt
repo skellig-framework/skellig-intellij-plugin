@@ -18,7 +18,6 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
     private fun updateLanguage(language: String) {
         myCurLanguage = language
         myKeywords = ArrayList(myKeywordProvider.getAllKeywords(language))
-//        myKeywords.sort(java.util.Comparator { o1: String, o2: String -> o2.length - o1.length })
     }
 
     override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
@@ -126,7 +125,7 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
             while (myPosition > 0 && Character.isWhitespace(myBuffer[myPosition - 1])) {
                 myPosition--
             }
-        } else if (c == '#') {
+        } else if (isCommentAtPosition()) {
             myCurrentToken = SkelligTokenTypes.COMMENT
             advanceToEOL()
             val commentText = myBuffer.subSequence(myCurrentTokenStart + 1, myPosition).toString().trim { it <= ' ' }
@@ -266,6 +265,10 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
             }
         }
         returnWhitespace(mark)
+    }
+
+    private fun isCommentAtPosition(): Boolean {
+        return myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '/' && myBuffer[myPosition + 1] == '/'
     }
 
     override fun getBufferSequence(): CharSequence {
