@@ -14,7 +14,7 @@ class SkelligFileType private constructor() : LanguageFileType(SkelligLanguage.I
     }
 
     override fun getDefaultExtension(): String {
-        return "skellig"
+        return "skellig;sf;sfeature"
     }
 
     override fun getIcon(): Icon {

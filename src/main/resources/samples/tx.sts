@@ -4,7 +4,7 @@ name ('Send transfer balance (.+) from node (.+) to node (.+)') {
     http_headers { Content-type = 'application/json' }
 
     variables {
-        id = inc(transfer_id)
+        'id' = inc(transfer_id)
         tx {
             signer_id = node${2}
             public_key {

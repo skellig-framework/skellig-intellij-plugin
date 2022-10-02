@@ -14,7 +14,7 @@ class SkelligTestStepFileType private constructor() : LanguageFileType(SkelligTe
     }
 
     override fun getDefaultExtension(): String {
-        return "sts"
+        return "sts;ts"
     }
 
     override fun getIcon(): Icon {

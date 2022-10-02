@@ -8,7 +8,7 @@
     <extensions defaultExtensionNs="com.intellij">
 
         <fileType name="Skellig" implementationClass="org.skellig.plugin.language.feature.psi.SkelligFileType"
-                  fieldName="INSTANCE" language="Skellig" extensions="skellig"/>
+                  fieldName="INSTANCE" language="Skellig" extensions="skellig;sf;sfeature"/>
         <lang.parserDefinition language="Skellig"
                                implementationClass="org.skellig.plugin.language.feature.psi.SkelligParserDefinition"/>
         <lang.formatter language="Skellig"
@@ -24,7 +24,7 @@
 
 
         <fileType name="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepFileType"
-                  fieldName="INSTANCE" language="SkelligTestStep" extensions="sts"/>
+                  fieldName="INSTANCE" language="SkelligTestStep" extensions="sts;ts"/>
         <lang.parserDefinition language="SkelligTestStep"
                                implementationClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepParserDefinition"/>
         <lang.syntaxHighlighterFactory language="SkelligTestStep"
