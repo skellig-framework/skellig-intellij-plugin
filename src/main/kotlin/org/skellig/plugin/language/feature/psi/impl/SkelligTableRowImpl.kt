@@ -27,7 +27,7 @@ open class SkelligTableRowImpl(node: ASTNode) : SkelligPsiElementBase(node), Ske
             return 0
         }
         val cell: PsiElement = cells[columnIndex]
-        return if (cell != null && cell.text != null) {
+        return if (cell.text != null) {
             cell.text.trim { it <= ' ' }.length
         } else 0
     }
@@ -48,7 +48,6 @@ open class SkelligTableRowImpl(node: ASTNode) : SkelligPsiElementBase(node), Ske
     }
 
     companion object {
-        // ToDo: Andrey Vokin, remove code duplication
         fun <T : PsiElement?> getChildrenByFilter(psiElement: PsiElement, c: Class<T>): List<T> {
             val list = LinkedList<T>()
             for (element in psiElement.children) {

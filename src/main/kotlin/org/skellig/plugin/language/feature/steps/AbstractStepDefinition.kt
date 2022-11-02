@@ -68,14 +68,14 @@ abstract class AbstractStepDefinition(element: PsiElement) {
     @Contract("null -> null")
     protected abstract fun getCucumberRegexFromElement(element: PsiElement?): String?
 
-    protected val isCaseSensitive: Boolean
-        protected get() = true
+    private val isCaseSensitive: Boolean
+        get() = true
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as AbstractStepDefinition
-        return if (myElementPointer != that.myElementPointer) false else true
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || javaClass != other.javaClass) return false
+        val that = other as AbstractStepDefinition
+        return myElementPointer == that.myElementPointer
     }
 
     override fun hashCode(): Int {

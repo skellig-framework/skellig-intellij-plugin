@@ -22,7 +22,7 @@ class SkelligTagImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligTag {
     }
 
     private val referencesInner: Array<PsiReference>
-        private get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
+        get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
 
     override val tagName: String?
         get() = text

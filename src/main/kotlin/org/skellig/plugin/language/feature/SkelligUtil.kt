@@ -161,11 +161,11 @@ object SkelligUtil {
         cucumberExpression: String,
         parameterTypeManager: ParameterTypeManager
     ): String {
-        var cucumberExpression = cucumberExpression
-        cucumberExpression = escapeCucumberExpression(cucumberExpression)
-        cucumberExpression = replaceNotNecessaryTextTemplateByRegexp(cucumberExpression)
-        cucumberExpression = processExpressionOrOperator(cucumberExpression)
-        val escapedCucumberExpression = cucumberExpression
+        var expression = cucumberExpression
+        expression = escapeCucumberExpression(expression)
+        expression = replaceNotNecessaryTextTemplateByRegexp(expression)
+        expression = processExpressionOrOperator(expression)
+        val escapedCucumberExpression = expression
         val parameterTypeValues: MutableList<Pair<TextRange, String?>?> = ArrayList()
         processParameterTypesInCucumberExpression(escapedCucumberExpression) { range: TextRange ->
             val parameterTypeName = escapedCucumberExpression.substring(range.startOffset + 1, range.endOffset - 1)

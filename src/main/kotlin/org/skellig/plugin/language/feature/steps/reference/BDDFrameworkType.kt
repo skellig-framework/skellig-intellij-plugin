@@ -22,12 +22,12 @@ class BDDFrameworkType
                 '}'
     }
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o !is BDDFrameworkType) return false
-        val type = o
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is BDDFrameworkType) return false
+        val type = other
         if (if (additionalInfo != null) additionalInfo != type.additionalInfo else type.additionalInfo != null) return false
-        return if (fileType != type.fileType) false else true
+        return fileType == type.fileType
     }
 
     override fun hashCode(): Int {

@@ -2,6 +2,7 @@ package org.skellig.plugin.language.feature.psi
 
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.util.IconLoader
+import org.skellig.plugin.language.SkelligFileIcons
 import javax.swing.Icon
 
 class SkelligFileType private constructor() : LanguageFileType(SkelligLanguage.INSTANCE) {
@@ -18,7 +19,7 @@ class SkelligFileType private constructor() : LanguageFileType(SkelligLanguage.I
     }
 
     override fun getIcon(): Icon {
-        return IconLoader.getIcon("/icons/jar-gray.png")
+        return  SkelligFileIcons.FEATURE_FILE
     }
 
     companion object {

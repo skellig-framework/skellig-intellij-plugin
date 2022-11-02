@@ -23,7 +23,7 @@ class SkelligTestStepLexer(internal val myKeywordProvider: SkelligTestStepKeywor
     }
 
     private var charProcessors = mutableListOf<LexerCharProcessor>()
-    internal var myBuffer = ArrayUtil.EMPTY_CHAR_SEQUENCE
+    internal var myBuffer : CharSequence = ""
     private var myStartOffset = 0
     internal var myEndOffset = 0
     internal var myPosition = 0

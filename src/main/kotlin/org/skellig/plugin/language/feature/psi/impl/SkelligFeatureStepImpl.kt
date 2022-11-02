@@ -58,7 +58,7 @@ class SkelligFeatureStepImpl(node: ASTNode) : SkelligPsiElementBase(node), Skell
     }
 
     private val referencesInner: Array<PsiReference>
-        private get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
+        get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
 
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {
         skelligElementVisitor.visitStep(this)
