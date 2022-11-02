@@ -3,12 +3,11 @@ package org.skellig.plugin.language.feature.psi
 import com.intellij.lexer.LexerBase
 import com.intellij.psi.*
 import com.intellij.psi.tree.IElementType
-import com.intellij.util.ArrayUtil
 
 class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : LexerBase() {
-    protected var myBuffer = ArrayUtil.EMPTY_CHAR_SEQUENCE
-    protected var myStartOffset = 0
-    protected var myEndOffset = 0
+    private var myBuffer : CharSequence = ""
+    private var myStartOffset = 0
+    private var myEndOffset = 0
     private var myPosition = 0
     private var myCurrentToken: IElementType? = null
     private var myCurrentTokenStart = 0

@@ -2,6 +2,7 @@ package org.skellig.plugin.language.teststep.psi
 
 import com.intellij.openapi.fileTypes.LanguageFileType
 import com.intellij.openapi.util.IconLoader
+import org.skellig.plugin.language.SkelligFileIcons
 import javax.swing.Icon
 
 class SkelligTestStepFileType private constructor() : LanguageFileType(SkelligTestStepLanguage.INSTANCE) {
@@ -18,7 +19,7 @@ class SkelligTestStepFileType private constructor() : LanguageFileType(SkelligTe
     }
 
     override fun getIcon(): Icon {
-        return IconLoader.getIcon("/icons/jar-gray.png")
+        return SkelligFileIcons.TEST_DATA_FILE
     }
 
     companion object {

@@ -100,7 +100,6 @@ class SkelligParser : PsiParser {
                 parseTags(builder)
 
                 // scenarios
-                val startTokenType = builder.tokenType
                 builder.advanceLexer()
                 parseScenario(builder)
                 marker.done(SkelligElementTypes.SCENARIO)

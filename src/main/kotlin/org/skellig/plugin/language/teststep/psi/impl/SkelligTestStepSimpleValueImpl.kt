@@ -82,7 +82,7 @@ class SkelligTestStepSimpleValueImpl(node: ASTNode) : SkelligTestStepPsiElementB
     }
 
     private val referencesInner: Array<PsiReference>
-        private get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
+        get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
 
     override fun acceptTestStep(visitor: SkelligTestStepElementVisitor) {
         visitor.visit(this)

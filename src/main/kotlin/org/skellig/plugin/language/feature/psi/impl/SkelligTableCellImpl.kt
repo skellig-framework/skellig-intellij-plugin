@@ -55,5 +55,5 @@ class SkelligTableCellImpl(node: ASTNode) : SkelligPsiElementBase(node), Skellig
     }
 
     private val referencesInner: Array<PsiReference>
-        private get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
+        get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
 }

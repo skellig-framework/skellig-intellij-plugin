@@ -163,13 +163,13 @@ class SkelligBlock @JvmOverloads constructor(
         )
         private val READ_ONLY_BLOCKS = TokenSet.create(SkelligElementTypes.PYSTRING, SkelligTokenTypes.COMMENT)
         private fun getTableCellColumnIndex(node: ASTNode?): Int {
-            var node = node
+            var astNode = node
             var pipeCount = 0
-            while (node != null) {
-                if (node.elementType === SkelligTokenTypes.PIPE) {
+            while (astNode != null) {
+                if (astNode.elementType === SkelligTokenTypes.PIPE) {
                     pipeCount++
                 }
-                node = node.treePrev
+                astNode = astNode.treePrev
             }
             return pipeCount - 1
         }

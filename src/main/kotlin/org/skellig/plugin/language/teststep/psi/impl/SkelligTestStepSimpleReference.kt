@@ -26,7 +26,7 @@ open class SkelligTestStepSimpleReference(private val myElement: PsiElement) : P
     @Throws(IncorrectOperationException::class)
     override fun handleElementRename(newElementName: String): PsiElement {
         if (myElement is PsiNamedElement) {
-            (myElement as PsiNamedElement).setName(newElementName)
+            myElement.setName(newElementName)
         }
         return myElement
     }
