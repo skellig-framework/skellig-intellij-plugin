@@ -1,1 +1,1 @@
-rootProject.name = "Skellig Intellij Plugin"
+rootProject.name = "Skellig Framework Intellij Plugin"

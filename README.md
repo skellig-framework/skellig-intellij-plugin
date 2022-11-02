@@ -1,6 +1,12 @@
 <!-- Plugin description -->
-**Skellig IntelliJ Plugin** 
-Provides support for Skellig test data and feature files
+**Skellig Framework Plugin (BETA)** 
 
-[gh:template]: https://help.github.com/en/enterprise/2.20/user/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template
+Provides integration with Skellig test steps (.sts) and feature files (.skellig):
+* References to test steps from Skellig feature files
+* Code format
+* Syntax highlighter with colour customization
+* Syntax check for .sts files
+* Expand/Collapse blocks of code in .sts files
+* Comment code
+
 <!-- Plugin description end -->
