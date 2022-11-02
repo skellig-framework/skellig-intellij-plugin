@@ -1,6 +1,6 @@
 <idea-plugin>
     <id>org.skellig.plugin.language</id>
-    <name>Skellig IntelliJ</name>
+    <name>Skellig Framework</name>
     <vendor>Skellig</vendor>
 
     <depends>com.intellij.modules.platform</depends>
