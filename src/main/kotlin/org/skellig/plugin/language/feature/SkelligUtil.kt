@@ -194,7 +194,7 @@ object SkelligUtil {
      */
     fun replaceNotNecessaryTextTemplateByRegexp(cucumberExpression: String): String {
         val matcher = OPTIONAL_PATTERN.matcher(cucumberExpression)
-        val result = StringBuilder()
+        val result = StringBuffer()
         while (matcher.find()) {
             val parameterPart = matcher.group(2)
             if ("\\\\" == matcher.group(1)) {

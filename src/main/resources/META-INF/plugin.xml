@@ -2,6 +2,7 @@
     <id>org.skellig.plugin.language</id>
     <name>Skellig Framework</name>
     <vendor>Skellig</vendor>
+    <description>Provides integration with Skellig Framework test steps (.sts) and feature files (.skellig):</description>
 
     <depends>com.intellij.modules.platform</depends>
 

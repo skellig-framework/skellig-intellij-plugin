@@ -90,7 +90,7 @@ class SkelligStepReference(step: PsiElement, range: TextRange) : PsiPolyVariantR
                 }
             }
         }
-        return resolvedElements.map2Array { PsiElementResolveResult(it) }
+        return resolvedElements.map { PsiElementResolveResult(it) }.toTypedArray()
     }
 
     /**

@@ -17,7 +17,7 @@ class SkelligCodeStyleSettingsProvider : CodeStyleSettingsProvider() {
         }
     }
 
-    override fun getConfigurableDisplayName(): String? {
+    override fun getConfigurableDisplayName(): String {
         return "Skellig Feature"
     }
 }
