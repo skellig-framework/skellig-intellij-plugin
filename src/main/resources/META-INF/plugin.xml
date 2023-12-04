@@ -37,7 +37,7 @@
                              implementationClass="org.skellig.plugin.language.teststep.psi.folding.SkelligTestStepFoldingBuilder"/>
         <lang.commenter language="SkelligTestStep"
                         implementationClass="org.skellig.plugin.language.teststep.psi.commenter.SkelligTestDataCommenter"/>
-
+        <annotator language="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.highlighter.SkelligTestStepFunctionAnnotator"/>
     </extensions>
 
     <extensionPoints>

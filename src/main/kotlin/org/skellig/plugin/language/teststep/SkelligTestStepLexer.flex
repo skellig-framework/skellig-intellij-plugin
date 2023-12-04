@@ -25,8 +25,7 @@ import static org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes.*;
 FLOAT=[0-9]+'.'[0-9]+
 INT=[0-9]+
 ID=[a-zA-Z0-9\-_]+
-KEY_SYMBOLS=[._\-&'%$£!?`¬#~@\\:]+
-KEYWORDS=(variables | validate | payload | body | request | message)
+KEY_SYMBOLS=[_\-&'%$£!?`¬#~@\\:]+
 VALUE_SYMBOLS=[><|+/*]+
 STRING=\"[^\"\\]*(\\.[^\"\\]*)*\"
 NEWLINE=\r?\n
@@ -41,6 +40,7 @@ COMMENT="//".*
   "=="                  { return EQUAL; }
   "!="                  { return NOT_EQUAL; }
   ","                   { return COMMA; }
+  "."                   { return DOT; }
   "${"                  { return REFERENCE_BRACKET; }
   "{"                   { return OBJECT_L_BRACKET; }
   "}"                   { return OBJECT_R_BRACKET; }
@@ -48,17 +48,24 @@ COMMENT="//".*
   ")"                   { return FUNCTION_R_BRACKET; }
   "["                   { return ARRAY_L_BRACKET; }
   "]"                   { return ARRAY_R_BRACKET; }
+  "values"              { return VALUES_KEYWORD; }
+  "validate"            { return VALIDATE; }
+  "where"               { return WHERE; }
+  "payload"             { return PAYLOAD; }
+  "body"                { return BODY; }
+  "message"             { return MESSAGE; }
+  "request"             { return REQUEST; }
   " "                   { return WHITE_SPACE; }
 
   {FLOAT}               { return FLOAT; }
   {INT}                 { return INT; }
   {ID}                  { return ID; }
   {KEY_SYMBOLS}         { return KEY_SYMBOLS; }
-  {KEYWORDS}            { return KEYWORDS; }
   {VALUE_SYMBOLS}       { return VALUE_SYMBOLS; }
   {STRING}              { return STRING; }
   {NEWLINE}             { return NEWLINE; }
   {COMMENT}             { return COMMENT; }
+  {ID}             { return COMMENT; }
 
 }
 
