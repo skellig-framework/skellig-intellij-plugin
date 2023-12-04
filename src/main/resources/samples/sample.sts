@@ -1,4 +1,4 @@
-name (request ) {
+name ("request" ) {
     id = test 1
 
     //// asfd as
@@ -6,54 +6,54 @@ name (request ) {
     variables {
     }
 // wewwewe
-    a [
-        {
-            b [
-                {
-                    a = "=" 10 ${key14}-${key2}
-                }
-                {
-                    a = 100
-                    b {
-                        c = 1 + 1
-                    }
-                }
-            ]
-            c = "12"
-        }
-    ]
+a [
+{
+b [
+    {
+        a = "=" + (10 + ${key14} - ${key2})
+    },
+{
+a = 100
+b {
+c = 1 + 1
+}
+}
+]
+c = "12"
+}
+]
 
-    request {
+request {
 
-        a = func()
-        b [
-            1
-            2
-        ]
-        c {
-            f [ 1, 2]
-        }
-    }
+a = func()
+b [
+1,
+2
+]
+c {
+f [ 1, 2]
+}
+}
 
-    message {
-        body.get(a) = "contains(c)"
-        ${ds}_ = 1
-        ${a}_() {
-            ${b: c}_ = "lol"
-        }
-        a [ 1 ${ds} ]
-        body.get (${cc}).toString() {
-            ${c} = 2
-        }
-    }
+message {
+body.get(a) = "contains(c)"
+${ds}_ = 1
+${a}_() {
+${b, c}_ = "lol"
+}
+a [ 1, ${ds} ]
+body.get (${cc}).toString() {
+${c} = 2
+}
+}
 
-    validate {
-        a [
-            contains
-            ff
-        ]
+validate {
+a [
+contains,
+ff
+]
 
-    }
+}
 
 
 }

@@ -1,11 +1,11 @@
-name ('Get status') {
-    url = '/'
+name ("Get status") {
+    url = "/"
     http_method = POST
-    http_headers { Content-type = 'application/json'}
+    http_headers { Content-type = "application/json"}
 
     request {
         json {
-            jsonrpc = '\'2.0\''
+            jsonrpc = "'2.0'"
             method = status
             params []
         }
@@ -13,25 +13,25 @@ name ('Get status') {
 
     assert {
         body.jsonToMap() {
-            jsonrpc = '\'2.0\''
+            jsonrpc = "'2.0'"
             result {
                 version {
                     version = trunk
                     build = not(null)
                 }
-                rpc_addr = "\'0.0.0.0:9999\'"
+                rpc_addr = "'0.0.0.0:9999'"
                 validators {
                     any_match [
                         {
                             account_id = node0
-                        }
+                        },
                         {
                             account_id = node1
                         }
                     ]
                 }
                 sync_info {
-                    hash = "match(\'[\w]{44}\')"
+                    hash = match("[\w]{44}")
                     time = not(null)
                 }
                 account_id = node0
@@ -40,14 +40,14 @@ name ('Get status') {
     }
 }
 
-name ('View state (\d+)') {
-    url = '/'
+name ("View state (\d+)") {
+    url = "/"
     http_method = POST
-    http_headers { Content-type = 'application/json' }
+    http_headers { Content-type = "'application/json' "}
 
     request {
         json {
-            jsonrpc${1} = '\'2.0\''
+            jsonrpc${1} = "'2.0'"
             method = state
             params {
                 id = int(${1})
@@ -60,21 +60,21 @@ name ('View state (\d+)') {
             result {
                 author = node${1}
                 header {
-                    epoch_id = "match(\'[\d]{32}\')"
-                    next_epoch_id = "match(\'[\d]{32}\')"
-                    hash = "match(\'[\w]{44}\')"
-                    prev_hash = "match(\'[\d]{32}\')"
+                    epoch_id = match("[\d]{32}")
+                    next_epoch_id = match("[\d]{32}")
+                    hash = match("[\w]{44}")
+                    prev_hash = match("[\d]{32}")
                     timestamp = not(null)
                     timestamp_nanosec = not(null)
                     reward = 0
                     supply = 5000000000000000000000000000000000
-                    signature = 'ed25519:1111111111111111111111111111111111111111111111111111111111111111'
+                    signature = "ed25519:1111111111111111111111111111111111111111111111111111111111111111"
                     version = int(1)
                 }
                 data [
                     {
-                        hash = "match(\'[\w]{44}\')"
-                        signature = 'ed25519:1111111111111111111111111111111111111111111111111111111111111111'
+                        hash = match("[\w]{44}")
+                        signature = "ed25519:1111111111111111111111111111111111111111111111111111111111111111"
                     }
                 ]
             }
@@ -82,14 +82,14 @@ name ('View state (\d+)') {
     }
 }
 
-name ('Get final state') {
-    url = '/'
+name ("Get final state") {
+    url = "/"
     http_method = POST
-    http_headers { Content-type = 'application/json'}
+    http_headers { Content-type = "application/json"}
 
     request {
         json {
-            jsonrpc = '\'2.0\''
+            jsonrpc = "'2.0'"
             params {
                 finality = final
             }
@@ -97,6 +97,6 @@ name ('Get final state') {
     }
 
     assert {
-        body.jsonPath('result.header.hash').toString() = "match(\'[\w]+\')"
+        body.jsonPath("result.header.hash").toString() = match("[\w]+")
     }
 }
