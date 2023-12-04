@@ -17,12 +17,14 @@
       INT= "regexp:[0-9]+"
       NAME= "name"
       ID= "regexp:[a-zA-Z0-9\-_]+"
+      FUNCTION_NAME='regexp:[a-zA-Z_][a-zA-Z0-9_]*'
       VALUE_ASSIGN = "="
       LESSER_EQUAL= "<="
       GREATER_EQUAL= ">="
       EQUAL= "=="
       NOT_EQUAL= "!="
       COMMA= ","
+      DOT= "."
       REFERENCE_BRACKET= "${"
       OBJECT_L_BRACKET= "{"
       OBJECT_R_BRACKET= "}"
@@ -30,13 +32,19 @@
       FUNCTION_R_BRACKET= ")"
       ARRAY_L_BRACKET= "["
       ARRAY_R_BRACKET= "]"
-      KEY_SYMBOLS= "regexp:[._\-&'%$£!?`¬#~@\\:]+"
-      KEYWORDS= "regexp:(variables | validate | payload | body | request | message)"
+      KEY_SYMBOLS= "regexp:[_\-&'%$£!?`¬#~@\\:]+"
+      VALUES_KEYWORD= "values"
+      VALIDATE= "validate"
+      WHERE= "where"
+      PAYLOAD= "payload"
+      BODY= "body"
+      MESSAGE= "message"
+      REQUEST= "request"
       VALUE_SYMBOLS= "regexp:[><|+/*]+"
       STRING= 'regexp:"[^"\\]*(\\.[^"\\]*)*"'
       NEWLINE= "regexp:\r?\n"
       COMMENT = "regexp://.*"  // Skip comments
-      WS=" " // Skip whitespace
+      WHITE_SPACE=" " // Skip whitespace
     ]
 }
 
@@ -47,14 +55,14 @@ testStepName ::= STRING
 pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE*
 key ::= keyExpression+
 value ::= expression+
-values ::= value | map | array
-array ::= NEWLINE* ARRAY_L_BRACKET NEWLINE* (values (COMMA NEWLINE? values)*)? NEWLINE* ARRAY_R_BRACKET NEWLINE*
+allValues ::= value | map | array
+array ::= NEWLINE* ARRAY_L_BRACKET NEWLINE* (allValues (COMMA NEWLINE? allValues)*)? NEWLINE* ARRAY_R_BRACKET NEWLINE*
 map ::= NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET
 
-keyExpression ::= propertyExpression | functionExpression | KEYWORDS | KEY_SYMBOLS | STRING | ID | NAME
+keyExpression ::= propertyExpression | functionExpression | testStepPropertyKeywords | KEY_SYMBOLS | STRING | ID | NAME | DOT
 expression ::= keyExpression | FUNCTION_L_BRACKET expression+ FUNCTION_R_BRACKET | VALUE_SYMBOLS | LESSER_EQUAL | GREATER_EQUAL | EQUAL | NOT_EQUAL | number
-functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION_R_BRACKET
-functionName ::= ID
+functionExpression ::= FUNCTION_NAME FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION_R_BRACKET
+testStepPropertyKeywords ::= (VALUES | VALIDATE | WHERE | PAYLOAD | BODY | MESSAGE | REQUEST)
 arg ::= expression*
 propertyExpression ::= REFERENCE_BRACKET referenceKey (COMMA expression*)? OBJECT_R_BRACKET
 referenceKey ::= (ID|INT)
