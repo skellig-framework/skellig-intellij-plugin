@@ -1,8 +1,17 @@
 package org.skellig.plugin.language.teststep.psi
 
-import com.intellij.psi.PsiFile
-import org.skellig.plugin.language.teststep.psi.impl.SkelligTestStep
+import com.intellij.extapi.psi.PsiFileBase
+import com.intellij.openapi.fileTypes.FileType
+import com.intellij.psi.FileViewProvider
 
-interface SkelligTestStepFile : PsiFile {
-    fun getTestSteps(): Array<SkelligTestStep?>
+class SkelligTestStepFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, SkelligTestStepLanguage.INSTANCE) {
+
+    override fun getFileType(): FileType {
+        return SkelligTestStepFileType.INSTANCE
+    }
+
+    override fun toString(): String {
+        return "Skellig Test Step File"
+    }
+
 }

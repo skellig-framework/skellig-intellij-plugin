@@ -1,7 +1,7 @@
-name ('Send transfer balance (.+) from node (.+) to node (.+)') {
-    url = '/'
+name ("Send transfer balance (.+) from node (.+) to node (.+)") {
+    url = "/"
     http_method = POST
-    http_headers { Content-type = 'application/json' }
+    http_headers { Content-type = "application/json" }
 
     variables {
         'id' = inc(transfer_id)

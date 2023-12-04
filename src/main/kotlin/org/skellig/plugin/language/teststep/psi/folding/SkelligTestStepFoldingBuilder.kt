@@ -11,6 +11,9 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepArray
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepMap
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName
 import org.skellig.plugin.language.teststep.psi.impl.*
 
 
@@ -24,7 +27,7 @@ class SkelligTestStepFoldingBuilder : FoldingBuilderEx(), DumbAware {
         // Initialize the list of folding regions
         val descriptors = mutableListOf<FoldingDescriptor>()
         // Get a collection of the literal expressions in the document below root
-        val literalExpressions = PsiTreeUtil.findChildrenOfType(root, SkelligTestStep::class.java)
+        val literalExpressions = PsiTreeUtil.findChildrenOfType(root, SkelligTestStepTestStepName::class.java)
         // Evaluate the collection
         for (literalExpression in literalExpressions) {
             addDescriptor(literalExpression, descriptors, 0)
@@ -74,11 +77,8 @@ class SkelligTestStepFoldingBuilder : FoldingBuilderEx(), DumbAware {
     }
 
     private fun isElementWithBrackets(element: PsiElement?): Boolean {
-        return element is SkelligTestStep ||
-                element is SkelligTestStepObject ||
-                element is SkelligTestStepArray ||
-                element is SkelligTestStepVariables ||
-                element is SkelligTestStepRequest ||
-                element is SkelligTestStepValidation
+        return element is SkelligTestStepTestStepName ||
+                element is SkelligTestStepMap ||
+                element is SkelligTestStepArray
     }
 }

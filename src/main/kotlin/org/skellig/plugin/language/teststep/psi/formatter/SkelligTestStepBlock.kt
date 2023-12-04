@@ -5,8 +5,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.TokenSet
-import org.skellig.plugin.language.teststep.psi.SkelligTestStepElementTypes
-import org.skellig.plugin.language.teststep.psi.SkelligTestStepTokenTypes
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
 
 class SkelligTestStepBlock @JvmOverloads constructor(
     private val myNode: ASTNode,
@@ -17,39 +16,34 @@ class SkelligTestStepBlock @JvmOverloads constructor(
 
     companion object {
         private val BLOCKS_TO_INDENT = TokenSet.create(
-//            SkelligTestStepElementTypes.FIELD_VALUE,
-            SkelligTestStepElementTypes.PROPERTY,
-            SkelligTestStepElementTypes.VARIABLES,
-            SkelligTestStepElementTypes.REQUEST,
-            SkelligTestStepElementTypes.VALIDATION
+            SkelligTestStepTypes.MAP,
+            SkelligTestStepTypes.ARRAY,
         )
 
         private val BLOCKS_TO_INDENT_CHILDREN = TokenSet.create(
-            SkelligTestStepElementTypes.FILE,
-            SkelligTestStepElementTypes.STEP,
-            SkelligTestStepElementTypes.VARIABLES,
-            SkelligTestStepElementTypes.REQUEST,
-            SkelligTestStepElementTypes.VALIDATION
+
         )
 
         private val BRACKET_TO_TEXT_BLOCKS_TO_SPACE = TokenSet.create(
-            SkelligTestStepTokenTypes.EQUAL
+            SkelligTestStepTypes.EQUAL
         )
 
         private val TEXT_TO_BRACKET_BLOCKS_TO_SPACE = TokenSet.create(
-            SkelligTestStepTokenTypes.EQUAL,
-            SkelligTestStepTokenTypes.OBJECT_OPEN_BRACKET,
-            SkelligTestStepTokenTypes.ARRAY_OPEN_BRACKET
+            SkelligTestStepTypes.EQUAL,
+            SkelligTestStepTypes.OBJECT_L_BRACKET,
+            SkelligTestStepTypes.OBJECT_R_BRACKET,
+            SkelligTestStepTypes.ARRAY_L_BRACKET,
+            SkelligTestStepTypes.ARRAY_R_BRACKET
         )
 
         private val TEXT_BLOCKS_TO_SPACE = TokenSet.create(
-            SkelligTestStepTokenTypes.NAME,
-            SkelligTestStepTokenTypes.TEXT,
-            SkelligTestStepTokenTypes.PARAMETER,
-            SkelligTestStepElementTypes.VALUE
+            SkelligTestStepTypes.NAME,
+            SkelligTestStepTypes.VALUE_SYMBOLS,
+            SkelligTestStepTypes.KEY,
+            SkelligTestStepTypes.VALUE
         )
 
-        private val READ_ONLY_BLOCKS = TokenSet.create(SkelligTestStepTokenTypes.STRING_TEXT, SkelligTestStepTokenTypes.COMMENT)
+        private val READ_ONLY_BLOCKS = TokenSet.create(SkelligTestStepTypes.STRING)
     }
 
     private var myChildren: List<Block>? = null
@@ -82,15 +76,10 @@ class SkelligTestStepBlock @JvmOverloads constructor(
             }
 
             val indent = if (
-                child.elementType == SkelligTestStepElementTypes.ID ||
-                child.elementType == SkelligTestStepElementTypes.FIELD_VALUE ||
-                child.elementType == SkelligTestStepElementTypes.OBJECT ||
-                child.elementType == SkelligTestStepElementTypes.VARIABLES ||
-                child.elementType == SkelligTestStepElementTypes.REQUEST ||
-                child.elementType == SkelligTestStepElementTypes.VALUE ||
-                child.elementType == SkelligTestStepElementTypes.TEXT ||
-                child.elementType == SkelligTestStepElementTypes.STRING_TEXT ||
-                child.elementType == SkelligTestStepElementTypes.VALIDATION
+                child.elementType == SkelligTestStepTypes.ID ||
+                child.elementType == SkelligTestStepTypes.MAP ||
+                child.elementType == SkelligTestStepTypes.VALUE ||
+                child.elementType == SkelligTestStepTypes.ARRAY
             ) {
                 Indent.getNormalIndent()
             } else Indent.getNoneIndent()
@@ -126,9 +115,9 @@ class SkelligTestStepBlock @JvmOverloads constructor(
 
         if (TEXT_TO_BRACKET_BLOCKS_TO_SPACE.contains(elementType2) ||
             BRACKET_TO_TEXT_BLOCKS_TO_SPACE.contains(elementType1) ||
-            (elementType1 == SkelligTestStepTokenTypes.PROPERTY && elementType2 == SkelligTestStepElementTypes.ARRAY) ||
-            (elementType1 == SkelligTestStepTokenTypes.PROPERTY && elementType2 == SkelligTestStepElementTypes.OBJECT) ||
-            (elementType1 == SkelligTestStepTokenTypes.NAME && elementType2 == SkelligTestStepTokenTypes.OPEN_BRACKET)) {
+            (elementType1 == SkelligTestStepTypes.KEY && elementType2 == SkelligTestStepTypes.ARRAY) ||
+            (elementType1 == SkelligTestStepTypes.KEY && elementType2 == SkelligTestStepTypes.MAP) ||
+            (elementType1 == SkelligTestStepTypes.NAME && elementType2 == SkelligTestStepTypes.OBJECT_L_BRACKET)) {
             return Spacing.createSpacing(1, 1, 0, false, 0)
         }
 

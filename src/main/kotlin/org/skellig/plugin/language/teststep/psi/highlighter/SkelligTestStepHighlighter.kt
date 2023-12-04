@@ -29,9 +29,9 @@ object SkelligTestStepHighlighter {
     )
 
     @NonNls
-    val TEST_STEP_REGEXP_PARAMETER_ID = "TEST_STEP_REGEXP_PARAMETER"
-    val PARAMETER = TextAttributesKey.createTextAttributesKey(
-        TEST_STEP_REGEXP_PARAMETER_ID,
+    val REFERENCE_ID = "REFERENCE"
+    val REFERENCE = TextAttributesKey.createTextAttributesKey(
+        REFERENCE_ID,
         DefaultLanguageHighlighterColors.PARAMETER
     )
 
@@ -41,7 +41,24 @@ object SkelligTestStepHighlighter {
         TEST_STEP_STRING_ID,
         DefaultLanguageHighlighterColors.STRING
     )
+
     val TEXT = TextAttributesKey.createTextAttributesKey("TEST_STEP_TEXT", HighlighterColors.TEXT)
 
-    val PROPERTY = TextAttributesKey.createTextAttributesKey("TEST_STEP_PROPERTY", DefaultLanguageHighlighterColors.PARAMETER)
+    val FUNCTION_ID = "FUNCTION"
+    val FUNCTION = TextAttributesKey.createTextAttributesKey(
+        FUNCTION_ID,
+        DefaultLanguageHighlighterColors.FUNCTION_CALL
+    )
+
+    val OPERATION_ID = "OPERATION"
+    val OPERATION = TextAttributesKey.createTextAttributesKey(
+        OPERATION_ID,
+        DefaultLanguageHighlighterColors.OPERATION_SIGN
+    )
+
+    val NUMBER_ID = "NUMBER"
+    val NUMBER = TextAttributesKey.createTextAttributesKey(
+        NUMBER_ID,
+        DefaultLanguageHighlighterColors.NUMBER
+    )
 }

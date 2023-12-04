@@ -7,21 +7,23 @@ import com.intellij.openapi.options.colors.ColorDescriptor
 import com.intellij.openapi.options.colors.ColorSettingsPage
 import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
-import org.skellig.plugin.language.teststep.psi.PlainSkelligTestStepKeywordProvider
 import org.skellig.plugin.language.SkelligFileIcons
 import javax.swing.Icon
 
 
 class SkelligTestStepColorsPage : ColorSettingsPage {
+
     companion object {
         private val ATTRS: Array<AttributesDescriptor> = arrayOf(
-            AttributesDescriptor("text", SkelligTestStepHighlighter.TEXT),
-            AttributesDescriptor("comment", SkelligTestStepHighlighter.COMMENT),
-            AttributesDescriptor("keyword", SkelligTestStepHighlighter.KEYWORD),
-            AttributesDescriptor("string", SkelligTestStepHighlighter.STRING),
-            AttributesDescriptor("brackets", SkelligTestStepHighlighter.BRACKETS),
-            AttributesDescriptor("property", SkelligTestStepHighlighter.PROPERTY),
-            AttributesDescriptor("parameter", SkelligTestStepHighlighter.PARAMETER),
+            AttributesDescriptor("TEXT", SkelligTestStepHighlighter.TEXT),
+            AttributesDescriptor("COMMENT", SkelligTestStepHighlighter.COMMENT),
+            AttributesDescriptor("KEYWORD", SkelligTestStepHighlighter.KEYWORD),
+            AttributesDescriptor("STRING", SkelligTestStepHighlighter.STRING),
+            AttributesDescriptor("BRACKETS", SkelligTestStepHighlighter.BRACKETS),
+            AttributesDescriptor("REFERENCE", SkelligTestStepHighlighter.REFERENCE),
+            AttributesDescriptor("FUNCTION", SkelligTestStepHighlighter.FUNCTION),
+            AttributesDescriptor("OPERATION", SkelligTestStepHighlighter.OPERATION),
+            AttributesDescriptor("NUMBER", SkelligTestStepHighlighter.NUMBER),
         )
     }
 
@@ -32,26 +34,26 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
 
     @NotNull
     override fun getHighlighter(): SyntaxHighlighter {
-        return SkelligTestStepSyntaxHighlighter(PlainSkelligTestStepKeywordProvider())
+        return SkelligTestStepSyntaxHighlighter()
     }
 
     override fun getDemoText(): String =
         """
            // comment
-           name ('test 1') {
+           name ("test 1") {
               id = test1
               
               variables {
                  a = "string value"
                  b [
-                   1
+                   1,
                    2
                  ]
                  c = $\{property1}
               }
               
               assert {
-                 body.jsonPath(a.b.c) = #[contains(text)]
+                 body.jsonPath(a.b.c) = contains(text)
                  status = $\{status}
               }
            }

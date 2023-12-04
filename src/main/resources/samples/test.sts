@@ -1,4 +1,4 @@
-name ( blah ) {
+name ( "blah" ) {
     c { }
     b = 1
 }
