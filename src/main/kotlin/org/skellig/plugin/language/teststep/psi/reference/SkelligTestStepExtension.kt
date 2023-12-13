@@ -12,6 +12,7 @@ import org.skellig.plugin.language.feature.steps.reference.AbstractExtension
 import org.skellig.plugin.language.feature.steps.reference.BDDFrameworkType
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepFileType
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepNameExpression
 
 class SkelligTestStepExtension : AbstractExtension() {
 
@@ -29,7 +30,7 @@ class SkelligTestStepExtension : AbstractExtension() {
                 ProgressManager.checkCanceled()
                 val psiFile: PsiFile = PsiManager.getInstance(project).findFile(file) ?: return@processValues true
                 for (testStep in psiFile.children) {
-                    if (testStep is SkelligTestStepTestStepName) {
+                    if (testStep is SkelligTestStepTestStepNameExpression) {
                         result.add(SkelligTestStepDefinition(testStep))
                     }
                 }

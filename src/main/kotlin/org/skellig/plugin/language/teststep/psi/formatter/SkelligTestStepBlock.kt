@@ -2,20 +2,20 @@ package org.skellig.plugin.language.teststep.psi.formatter
 
 import com.intellij.formatting.*
 import com.intellij.lang.ASTNode
-import com.intellij.openapi.util.TextRange
 import com.intellij.psi.TokenType
+import com.intellij.psi.formatter.common.AbstractBlock
 import com.intellij.psi.tree.TokenSet
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
 
-class SkelligTestStepBlock @JvmOverloads constructor(
-    private val myNode: ASTNode,
-    private val myIndent: Indent? = Indent.getAbsoluteNoneIndent(),
-    private val myTextRange: TextRange = myNode.textRange,
-    private val myLeaf: Boolean = false
-) : ASTBlock {
+class SkelligTestStepBlock(
+    node: ASTNode, wrap: Wrap, alignment: Alignment,
+    val blockIndent: Indent = Indent.getNoneIndent(),
+    val spacingBuilder: SpacingBuilder
+) : AbstractBlock(node, wrap, alignment) {
 
     companion object {
         private val BLOCKS_TO_INDENT = TokenSet.create(
+            SkelligTestStepTypes.TEST_STEP_NAME_EXPRESSION,
             SkelligTestStepTypes.MAP,
             SkelligTestStepTypes.ARRAY,
         )
@@ -46,7 +46,45 @@ class SkelligTestStepBlock @JvmOverloads constructor(
         private val READ_ONLY_BLOCKS = TokenSet.create(SkelligTestStepTypes.STRING)
     }
 
-    private var myChildren: List<Block>? = null
+    override fun buildChildren(): List<Block> {
+        val children = myNode.getChildren(null)
+        if (children.isEmpty()) {
+            return emptyList()
+        }
+        val blocks = mutableListOf<Block>()
+        for (child in children) {
+            if (child.elementType != TokenType.WHITE_SPACE && child.elementType != SkelligTestStepTypes.NEWLINE) {
+                val indent = if (child.elementType == SkelligTestStepTypes.PAIR) {
+                    Indent.getNormalIndent(true)
+                } else Indent.getNoneIndent()
+
+                blocks.add(
+                    SkelligTestStepBlock(
+                        child,
+                        Wrap.createWrap(WrapType.NONE, false),
+                        Alignment.createAlignment(),
+                        indent,
+                        spacingBuilder
+                    )
+                )
+            }
+        }
+        return blocks
+    }
+
+    override fun getIndent(): Indent {
+        return blockIndent
+    }
+
+    override fun getSpacing(child1: Block?, child2: Block): Spacing? {
+        return spacingBuilder.getSpacing(this, child1, child2)
+    }
+
+    override fun isLeaf(): Boolean {
+        return myNode.firstChildNode == null
+    }
+
+    /*private var myChildren: List<Block>? = null
 
     override fun getNode(): ASTNode {
         return myNode
@@ -117,7 +155,8 @@ class SkelligTestStepBlock @JvmOverloads constructor(
             BRACKET_TO_TEXT_BLOCKS_TO_SPACE.contains(elementType1) ||
             (elementType1 == SkelligTestStepTypes.KEY && elementType2 == SkelligTestStepTypes.ARRAY) ||
             (elementType1 == SkelligTestStepTypes.KEY && elementType2 == SkelligTestStepTypes.MAP) ||
-            (elementType1 == SkelligTestStepTypes.NAME && elementType2 == SkelligTestStepTypes.OBJECT_L_BRACKET)) {
+            (elementType1 == SkelligTestStepTypes.NAME && elementType2 == SkelligTestStepTypes.OBJECT_L_BRACKET)
+        ) {
             return Spacing.createSpacing(1, 1, 0, false, 0)
         }
 
@@ -135,6 +174,6 @@ class SkelligTestStepBlock @JvmOverloads constructor(
 
     override fun isLeaf(): Boolean {
         return myLeaf || subBlocks.isEmpty()
-    }
+    }*/
 
 }
