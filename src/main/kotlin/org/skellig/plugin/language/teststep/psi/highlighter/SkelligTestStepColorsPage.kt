@@ -43,7 +43,7 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
            name ("test 1") {
               id = test1
               
-              variables {
+              values {
                  a = "string value"
                  b [
                    1,
