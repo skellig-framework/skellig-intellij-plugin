@@ -17,6 +17,11 @@ import org.skellig.plugin.language.feature.psi.impl.*
 
 class SkelligParserDefinition : ParserDefinition {
 
+    companion object {
+        private val WHITESPACE = TokenSet.create(TokenType.WHITE_SPACE)
+        private val COMMENTS = TokenSet.create(SkelligTokenTypes.COMMENT)
+    }
+
     override fun createLexer(project: Project): Lexer {
         return SkelligLexer(PlainSkelligKeywordProvider())
     }
@@ -60,10 +65,5 @@ class SkelligParserDefinition : ParserDefinition {
         return if (right.elementType === SkelligTokenTypes.EXAMPLES_KEYWORD) {
             ParserDefinition.SpaceRequirements.MUST_LINE_BREAK
         } else ParserDefinition.SpaceRequirements.MAY
-    }
-
-    companion object {
-        private val WHITESPACE: TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
-        private val COMMENTS: TokenSet = TokenSet.create(SkelligTokenTypes.COMMENT)
     }
 }
