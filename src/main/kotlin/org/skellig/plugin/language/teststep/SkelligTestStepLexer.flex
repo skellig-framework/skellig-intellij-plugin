@@ -29,7 +29,7 @@ KEY_SYMBOLS=[_\-&'%$£!?`¬#~@\\:]+
 VALUE_SYMBOLS=[><|+/*]+
 STRING=\"[^\"\\]*(\\.[^\"\\]*)*\"
 NEWLINE=\r?\n
-COMMENT="//".*
+COMMENT="//"[^\n]*
 
 %%
 <YYINITIAL> {
@@ -48,7 +48,7 @@ COMMENT="//".*
   ")"                   { return FUNCTION_R_BRACKET; }
   "["                   { return ARRAY_L_BRACKET; }
   "]"                   { return ARRAY_R_BRACKET; }
-  "values"              { return VALUES_KEYWORD; }
+  "values"              { return VALUES; }
   "validate"            { return VALIDATE; }
   "where"               { return WHERE; }
   "payload"             { return PAYLOAD; }
@@ -65,8 +65,6 @@ COMMENT="//".*
   {STRING}              { return STRING; }
   {NEWLINE}             { return NEWLINE; }
   {COMMENT}             { return COMMENT; }
-  {ID}             { return COMMENT; }
-
 }
 
 [^] { return BAD_CHARACTER; }

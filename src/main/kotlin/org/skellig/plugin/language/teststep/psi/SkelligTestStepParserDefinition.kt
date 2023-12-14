@@ -9,6 +9,7 @@ import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.TokenType
+import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import org.skellig.plugin.language.teststep.SkelligTestStepLexerAdapter
@@ -16,20 +17,14 @@ import org.skellig.plugin.language.teststep.SkelligTestStepParser
 
 class SkelligTestStepParserDefinition : ParserDefinition {
 
-    companion object {
-        private val WHITESPACE: TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
-//        private val COMMENTS: TokenSet = TokenSet.create(SkelligTestStepTokenTypes.COMMENT)
-    }
-
-    private val FILE = IFileElementType(SkelligTestStepLanguage.INSTANCE)
+    private val file = IFileElementType(SkelligTestStepLanguage.INSTANCE)
 
     override fun createLexer(project: Project?): Lexer {
         return SkelligTestStepLexerAdapter()
     }
 
     override fun getCommentTokens(): TokenSet {
-//        return COMMENTS
-        return TokenSet.EMPTY
+        return COMMENTS
     }
 
     override fun getStringLiteralElements(): TokenSet {
@@ -41,7 +36,7 @@ class SkelligTestStepParserDefinition : ParserDefinition {
     }
 
     override fun getFileNodeType(): IFileElementType {
-        return FILE
+        return file
     }
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile {
@@ -52,18 +47,18 @@ class SkelligTestStepParserDefinition : ParserDefinition {
         return SkelligTestStepTypes.Factory.createElement(node)
     }
 
-    /*override fun spaceExistenceTypeBetweenTokens(left: ASTNode, right: ASTNode): ParserDefinition.SpaceRequirements {
+    override fun spaceExistenceTypeBetweenTokens(left: ASTNode, right: ASTNode): ParserDefinition.SpaceRequirements {
         // Line break between line comment and other elements
         val leftElementType: IElementType = left.elementType
-        if (leftElementType === SkelligTestStepTokenTypes.COMMENT) {
+        if (leftElementType === SkelligTestStepTypes.COMMENT) {
             return ParserDefinition.SpaceRequirements.MUST_LINE_BREAK
         }
-        return if (right.elementType === SkelligTestStepTokenTypes.PARAMETER ||
-            right.elementType === SkelligTestStepTokenTypes.EXPRESSION ||
-            right.elementType === SkelligTestStepTokenTypes.FUNCTION
-        ) {
+        return if (right.elementType === SkelligTestStepTypes.VALUE_ASSIGN) {
             ParserDefinition.SpaceRequirements.MUST_LINE_BREAK
         } else ParserDefinition.SpaceRequirements.MAY
-    }*/
+    }
 
 }
+
+private val WHITESPACE: TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
+private val COMMENTS: TokenSet = TokenSet.create(SkelligTestStepTypes.COMMENT)

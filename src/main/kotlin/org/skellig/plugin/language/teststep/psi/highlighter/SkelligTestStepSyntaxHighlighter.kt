@@ -11,65 +11,13 @@ import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
 
 class SkelligTestStepSyntaxHighlighter() : SyntaxHighlighterBase() {
     companion object {
-        val COMMENT = arrayOf(
-            TextAttributesKey.createTextAttributesKey(
-                "TEST_STEP_COMMENT",
-                DefaultLanguageHighlighterColors.DOC_COMMENT
-            )
-        )
-
-        val KEYWORD = arrayOf(
-            TextAttributesKey.createTextAttributesKey(
-                "TEST_STEP_KEYWORD",
-                DefaultLanguageHighlighterColors.KEYWORD
-            )
-        )
-
-        val BRACKETS = arrayOf(
-            TextAttributesKey.createTextAttributesKey(
-                "TEST_STEP_BRACKETS",
-                DefaultLanguageHighlighterColors.BRACKETS
-            )
-        )
-
-        val REFERENCE = arrayOf(
-            TextAttributesKey.createTextAttributesKey(
-                "REFERENCE",
-                DefaultLanguageHighlighterColors.PARAMETER
-            )
-        )
-
-        val STRING = arrayOf(
-            TextAttributesKey.createTextAttributesKey(
-                "TEST_STEP_STRING",
-                DefaultLanguageHighlighterColors.STRING
-            )
-        )
-
+        val COMMENT = arrayOf(SkelligTestStepHighlighter.COMMENT)
+        val KEYWORD = arrayOf(SkelligTestStepHighlighter.KEYWORD)
+        val BRACKETS = arrayOf(SkelligTestStepHighlighter.BRACKETS)
+        val STRING = arrayOf(SkelligTestStepHighlighter.STRING)
+        val OPERATION = arrayOf(SkelligTestStepHighlighter.OPERATION)
+        val NUMBER = arrayOf(SkelligTestStepHighlighter.NUMBER)
         val TEXT = arrayOf(TextAttributesKey.createTextAttributesKey("TEST_STEP_TEXT", HighlighterColors.TEXT))
-
-        val FUNCTION = arrayOf(
-            TextAttributesKey.createTextAttributesKey(
-                "FUNCTION",
-                DefaultLanguageHighlighterColors.FUNCTION_CALL
-            )
-        )
-
-        val OPERATION = arrayOf(
-            TextAttributesKey.createTextAttributesKey(
-                "OPERATION",
-                DefaultLanguageHighlighterColors.OPERATION_SIGN
-            )
-        )
-
-        val NUMBER = arrayOf(
-            TextAttributesKey.createTextAttributesKey(
-                "NUMBER",
-                DefaultLanguageHighlighterColors.NUMBER
-            )
-        )
-
-//        private val BAD_CHAR = arrayOf(TextAttributesKey.createTextAttributesKey("BAD_CHARACTER", HighlighterColors.BAD_CHARACTER))
     }
 
     override fun getHighlightingLexer(): Lexer {
@@ -79,7 +27,7 @@ class SkelligTestStepSyntaxHighlighter() : SyntaxHighlighterBase() {
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
         return when (tokenType) {
             SkelligTestStepTypes.NAME -> KEYWORD
-            SkelligTestStepTypes.VALUES_KEYWORD -> KEYWORD
+            SkelligTestStepTypes.VALUES -> KEYWORD
             SkelligTestStepTypes.VALIDATE -> KEYWORD
             SkelligTestStepTypes.BODY -> KEYWORD
             SkelligTestStepTypes.MESSAGE -> KEYWORD
@@ -90,6 +38,8 @@ class SkelligTestStepSyntaxHighlighter() : SyntaxHighlighterBase() {
             SkelligTestStepTypes.KEY_SYMBOLS -> TEXT
 
             SkelligTestStepTypes.STRING -> STRING
+
+            SkelligTestStepTypes.COMMENT -> COMMENT
 
             SkelligTestStepTypes.VALUE_SYMBOLS -> OPERATION
             SkelligTestStepTypes.LESSER_EQUAL -> OPERATION
@@ -107,6 +57,7 @@ class SkelligTestStepSyntaxHighlighter() : SyntaxHighlighterBase() {
             SkelligTestStepTypes.ARRAY_R_BRACKET -> BRACKETS
             SkelligTestStepTypes.FUNCTION_L_BRACKET -> BRACKETS
             SkelligTestStepTypes.FUNCTION_R_BRACKET -> BRACKETS
+
             SkelligTestStepTypes.INT -> NUMBER
             SkelligTestStepTypes.FLOAT -> NUMBER
             else -> emptyArray()
