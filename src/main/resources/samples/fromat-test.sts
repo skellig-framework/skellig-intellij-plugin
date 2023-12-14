@@ -1,18 +1,18 @@
-name ( tests 1 ) {
+name ( "tests 1" ) {
     a2 [
-        1
-        2
-    ]
+       1,
+       2
+       ]
 }
 
-name ( '^test 2$' ) {
+name ( "^test 2$" ) {
 }
 
-name ( test 3 ) {
+name ( "test 3") {
 }
 
-name ( test step 4 ) {
-    a {
-        b [1 2 3]
-    }
+name ( "test step 4" ) {
+    a{
+         b [1 2 3]
+     }
 }

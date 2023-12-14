@@ -73,7 +73,7 @@ map ::= NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET {
    name = "Map declaration"
 }
 
-keyExpression ::= propertyExpression | functionExpression | testStepPropertyKeywords | KEY_SYMBOLS | STRING | ID | NAME | DOT {
+keyExpression ::= referenceExpression | functionExpression | testStepPropertyKeywords | KEY_SYMBOLS | VALUE_SYMBOLS | STRING | ID | NAME | DOT {
   name = "Property declaration"
 }
 expression ::= keyExpression | FUNCTION_L_BRACKET expression+ FUNCTION_R_BRACKET | VALUE_SYMBOLS | LESSER_EQUAL | GREATER_EQUAL | EQUAL | NOT_EQUAL | number {
@@ -91,8 +91,8 @@ testStepPropertyKeywords ::= (VALUES | VALIDATE | WHERE | PAYLOAD | BODY | MESSA
 arg ::= expression* {
   name = "Function arguments"
 }
-propertyExpression ::= REFERENCE_BRACKET referenceKey (COMMA expression*)? OBJECT_R_BRACKET
-referenceKey ::= (ID|INT) {
+referenceExpression ::= REFERENCE_BRACKET referenceKey+ (COMMA expression*)? OBJECT_R_BRACKET
+referenceKey ::= (referenceExpression | ID| INT | STRING |'+') {
   name = "Reference name"
 }
 number ::= FLOAT | INT

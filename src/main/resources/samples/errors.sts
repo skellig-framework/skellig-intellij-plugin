@@ -1,8 +1,8 @@
 name ("test (.*) errors (\d+)" ) {
-    s${1}s [
-        ${dd}
-        "fd"
-        #[get(${sd}).a]
+   "s" + ${1} + "s" [
+        ${dd},
+        "fd",
+        get(${sd}).a
     ]
 }
 
@@ -10,7 +10,7 @@ name ("some \w+" ) {
     a = 100
 }
 
-name ( blah ) {
+name ( "blah" ) {
     request {
 
     }

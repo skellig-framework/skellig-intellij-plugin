@@ -9,9 +9,9 @@ name ("Send transfer balance (.+) from node (.+) to node (.+)") {
             signer_id = node${2}
             public_key {
                 keyType = 0.toShort()
-                data = ${node.${2}.pk}.base58()
+                data = ${"node." + ${2} + ".pk"}.base58()
             }
-            nonce = long(${id: 12})
+            nonce = long(${id, 12})
             receiver_id = node${3}
             hash = get(status_result).body.jsonPath(sync_info.hash).base58()
             actions [
@@ -32,7 +32,7 @@ name ("Send transfer balance (.+) from node (.+) to node (.+)") {
         signature {
             sign {
                 data = ${tx_hash}
-                key = ${node.${2}.secret}
+                key = ${node + ${2} + secret}
             }
         }
 
@@ -51,11 +51,11 @@ name ("Send transfer balance (.+) from node (.+) to node (.+)") {
 
     request {
         json {
-            jsonrpc = '\'2.0\''
+            jsonrpc = "'2.0'"
             method = send_tx
             params [
                 {
-                    data = ${request}
+                    data = ${"request"}
                 }
             ]
         }
@@ -63,15 +63,15 @@ name ("Send transfer balance (.+) from node (.+) to node (.+)") {
 
     assert {
         statusCode = int(200)
-        body.jsonPath(result) = "match(\'[\w]{44}\')"
+        body.jsonPath(result) = match("[\w]{44}")
     }
 }
 
-name ('Get current status') {
+name ("Get current status") {
     id = status
     url = '/status'
     http_method = GET
-    http_headers { Content-type = 'application/json'}
+    http_headers { Content-type = "application/json"}
 
     assert {
         body {
@@ -80,15 +80,15 @@ name ('Get current status') {
     }
 }
 
-name ('Get latest balance for account (.+)') {
+name ("Get latest balance for account (.+)") {
     id = ${1}-balance
     url = '/'
     http_method = POST
-    http_headers { Content-type = 'application/json' }
+    http_headers { Content-type = "application/json" }
 
     request {
         json {
-            jsonrpc = '\'2.0\''
+            jsonrpc = "2.0"
             method = query
             params {
                 account_id = ${1}
@@ -97,7 +97,7 @@ name ('Get latest balance for account (.+)') {
     }
 }
 
-name ('Check account (.+) balance increased to (.+)') {
+name ("Check account (.+) balance increased to (.+)") {
     url = '/'
     http_method = POST
     http_headers { Content-type = 'application/json' }
@@ -123,7 +123,7 @@ name ('Check account (.+) balance increased to (.+)') {
     }
 }
 
-name ('Check account node(.+) balance decreased to (.+)') {
+name ("Check account node(.+) balance decreased to (.+)") {
     url = '/'
     http_method = POST
     http_headers { Content-type = 'application/json' }
@@ -134,7 +134,7 @@ name ('Check account node(.+) balance decreased to (.+)') {
         total_cost = 111
         refund = 111
         previousAmount = 111
-        expectedAmount = #[${previousAmount}.plus(${refund}).minus(${total_cost}).minus(${2}).toString()]
+        expectedAmount = ${previousAmount}.plus(${refund}).minus(${total_cost}).minus(${2}).toString()
     }
 
     request {
