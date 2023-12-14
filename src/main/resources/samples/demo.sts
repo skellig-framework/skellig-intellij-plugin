@@ -1,0 +1,18 @@
+
+name( "test step (.+) and (.+)") {
+//    comment
+
+    a = ggg
+    b.size() = 200
+    c = "text"
+    d {
+          f = func("0", 1).d
+          content = convert(" t1
+                        t2
+                        t3").toString(get(A))
+      }
+    validate
+    {
+        a = ${f1, 0}
+    }
+}

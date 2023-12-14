@@ -1,4 +1,4 @@
-name ('^check performance of balance transfer$') {
+name ("^check performance of balance transfer$") {
     rps = 1
     timeToRun = 00:01:00
 
@@ -11,9 +11,9 @@ name ('^check performance of balance transfer$') {
     ]
 }
 
-name ('check performance of status request') {
-    rps = ${rps_value:100}
-    timeToRun = ${ttr : 00:00:10}
+name ("check performance of status request") {
+    rps = ${rps_value,100}
+    timeToRun = ${ttr , 00:00:10}
 
     run [ Get current status ]
 }
