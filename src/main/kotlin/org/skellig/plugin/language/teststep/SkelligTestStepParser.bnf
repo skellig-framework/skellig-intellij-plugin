@@ -48,22 +48,51 @@
 }
 
 file ::= testStepNameExpression*
-testStepNameExpression ::= NEWLINE* testNameKeyword FUNCTION_L_BRACKET testStepName FUNCTION_R_BRACKET NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET NEWLINE*
-testNameKeyword ::= NAME
-testStepName ::= STRING
-pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE*
+testStepNameExpression ::= NEWLINE* testNameKeyword FUNCTION_L_BRACKET testStepName FUNCTION_R_BRACKET NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET NEWLINE* {
+ name = "Test Step declaration"
+}
+testNameKeyword ::= NAME {
+  name = "name"
+}
+testStepName ::= STRING {
+  name = "Test Step name"
+}
+pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE* {
+  name = "Property [= Value | { } | [ ] ] pair"
+}
 key ::= keyExpression+
 value ::= expression+
-allValues ::= value | map | array
-array ::= NEWLINE* ARRAY_L_BRACKET NEWLINE* (allValues (COMMA NEWLINE? allValues)*)? NEWLINE* ARRAY_R_BRACKET NEWLINE*
-map ::= NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET
+allValues ::= value | map | array {
+    name = "Value or Map or Array declaration"
+}
 
-keyExpression ::= propertyExpression | functionExpression | testStepPropertyKeywords | KEY_SYMBOLS | STRING | ID | NAME | DOT
-expression ::= keyExpression | FUNCTION_L_BRACKET expression+ FUNCTION_R_BRACKET | VALUE_SYMBOLS | LESSER_EQUAL | GREATER_EQUAL | EQUAL | NOT_EQUAL | number
-functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION_R_BRACKET
-functionName ::= ID
-testStepPropertyKeywords ::= (VALUES | VALIDATE | WHERE | PAYLOAD | BODY | MESSAGE | REQUEST)
-arg ::= expression*
+array ::= NEWLINE* ARRAY_L_BRACKET NEWLINE* (allValues (COMMA NEWLINE? allValues)*)? NEWLINE* ARRAY_R_BRACKET NEWLINE* {
+  name = "Array declaration"
+}
+map ::= NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET {
+   name = "Map declaration"
+}
+
+keyExpression ::= propertyExpression | functionExpression | testStepPropertyKeywords | KEY_SYMBOLS | STRING | ID | NAME | DOT {
+  name = "Property declaration"
+}
+expression ::= keyExpression | FUNCTION_L_BRACKET expression+ FUNCTION_R_BRACKET | VALUE_SYMBOLS | LESSER_EQUAL | GREATER_EQUAL | EQUAL | NOT_EQUAL | number {
+    name = "Value or expression"
+}
+functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION_R_BRACKET {
+ name = "Function declaration"
+}
+functionName ::= ID {
+ name = "Function name"
+}
+testStepPropertyKeywords ::= (VALUES | VALIDATE | WHERE | PAYLOAD | BODY | MESSAGE | REQUEST) {
+  name = "Test Step keywords"
+}
+arg ::= expression* {
+  name = "Function arguments"
+}
 propertyExpression ::= REFERENCE_BRACKET referenceKey (COMMA expression*)? OBJECT_R_BRACKET
-referenceKey ::= (ID|INT)
+referenceKey ::= (ID|INT) {
+  name = "Reference name"
+}
 number ::= FLOAT | INT
