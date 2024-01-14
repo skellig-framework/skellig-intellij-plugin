@@ -35,6 +35,7 @@ class SkelligTestStepSyntaxHighlighter() : SyntaxHighlighterBase() {
             SkelligTestStepTypes.WHERE -> KEYWORD
             SkelligTestStepTypes.PAYLOAD -> KEYWORD
 
+            SkelligTestStepTypes.ID -> TEXT
             SkelligTestStepTypes.KEY_SYMBOLS -> TEXT
 
             SkelligTestStepTypes.STRING -> STRING

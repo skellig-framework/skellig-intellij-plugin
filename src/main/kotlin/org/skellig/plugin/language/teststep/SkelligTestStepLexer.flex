@@ -29,7 +29,7 @@ KEY_SYMBOLS=[_\-&'%$£!?`¬#~@\\:]+
 VALUE_SYMBOLS=[><|+/*]+
 STRING=\"[^\"\\]*(\\.[^\"\\]*)*\"
 NEWLINE=\r?\n
-COMMENT="//"[^\n]*
+COMMENT="//"[^\n]*[\n\r]*
 
 %%
 <YYINITIAL> {
