@@ -11,3 +11,7 @@
 - Syntax check for .sts files
 - Expand/Collapse blocks of code in .sts files
 - Comment code
+
+## [1.1.0-beta]
+### Updated
+- Updated the plugin to support new parser for Skellig Test Steps

@@ -42,7 +42,7 @@
       VALUE_SYMBOLS= "regexp:[><|+/*]+"
       STRING= 'regexp:"[^"\\]*(\\.[^"\\]*)*"'
       NEWLINE= "regexp:\r?\n"
-      COMMENT = "regexp://[^\n]*" // Skip comments
+      COMMENT = "regexp://[^\n]*[\n\r]*" // Skip comments
       WHITE_SPACE=" " // Skip whitespace
     ]
 }
@@ -60,7 +60,7 @@ testStepName ::= STRING {
 pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE* {
   name = "Property [= Value | { } | [ ] ] pair"
 }
-key ::= keyExpression+
+key ::= expression+
 value ::= expression+
 allValues ::= value | map | array {
     name = "Value or Map or Array declaration"
@@ -73,11 +73,8 @@ map ::= NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET {
    name = "Map declaration"
 }
 
-keyExpression ::= referenceExpression | functionExpression | testStepPropertyKeywords | KEY_SYMBOLS | VALUE_SYMBOLS | STRING | ID | NAME | DOT {
-  name = "Property declaration"
-}
-expression ::= keyExpression | FUNCTION_L_BRACKET expression+ FUNCTION_R_BRACKET | VALUE_SYMBOLS | LESSER_EQUAL | GREATER_EQUAL | EQUAL | NOT_EQUAL | number {
-    name = "Value or expression"
+expression ::= referenceExpression | functionExpression | testStepPropertyKeywords | KEY_SYMBOLS | STRING | ID | NAME | DOT | FUNCTION_L_BRACKET expression+ FUNCTION_R_BRACKET | VALUE_SYMBOLS | LESSER_EQUAL | GREATER_EQUAL | EQUAL | NOT_EQUAL | number {
+    name = "Property, Value or Expression declaration"
 }
 functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION_R_BRACKET {
  name = "Function declaration"

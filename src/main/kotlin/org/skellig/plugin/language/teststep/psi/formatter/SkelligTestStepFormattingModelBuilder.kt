@@ -32,13 +32,14 @@ class SkelligTestStepFormattingModelBuilder : FormattingModelBuilder {
         return FormattingModelProvider
             .createFormattingModelForPsiFile(
                 formattingContext.containingFile,
-                SkelligTestStepBlock(
-                    formattingContext.node,
-                    Wrap.createWrap(WrapType.NONE, false),
-                    Alignment.createAlignment(),
-                    Indent.getNoneIndent(),
-                    createSpaceBuilder(codeStyleSettings)
-                ),
+                SkelligTestStepBlock(formattingContext.node),
+//                SkelligTestStepBlock(
+//                    formattingContext.node,
+//                    Wrap.createWrap(WrapType.NONE, false),
+//                    Alignment.createAlignment(),
+//                    Indent.getNoneIndent(),
+//                    createSpaceBuilder(codeStyleSettings)
+//                ),
                 codeStyleSettings
             )
     }

@@ -6,7 +6,7 @@ plugins {
     // Java support
     id("java")
     // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.7.20"
+    id("org.jetbrains.kotlin.jvm") version "1.9.0"
     // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
     id("org.jetbrains.intellij") version "1.13.1"
     // detekt linter - read more: https://detekt.github.io/detekt/gradle.html
@@ -88,7 +88,7 @@ tasks {
     patchPluginXml {
         version.set(pluginVersion)
         sinceBuild.set("203")
-        untilBuild.set("232.*")
+        untilBuild.set("233.*")
 
         changeNotes.set("""
             <b>Skellig Framework Plugin (BETA)</b>
