@@ -50,6 +50,7 @@
 file ::= testStepNameExpression*
 testStepNameExpression ::= NEWLINE* testNameKeyword FUNCTION_L_BRACKET testStepName FUNCTION_R_BRACKET NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET NEWLINE* {
  name = "Test Step declaration"
+  methods=[getName setName getNameIdentifier getPresentation]
 }
 testNameKeyword ::= NAME {
   name = "name"
@@ -60,7 +61,10 @@ testStepName ::= STRING {
 pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE* {
   name = "Property [= Value | { } | [ ] ] pair"
 }
-key ::= expression+
+key ::= expression+ {
+  methods=[getPresentation]
+}
+
 value ::= expression+
 allValues ::= value | map | array {
     name = "Value or Map or Array declaration"
@@ -78,6 +82,7 @@ expression ::= referenceExpression | functionExpression | testStepPropertyKeywor
 }
 functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION_R_BRACKET {
  name = "Function declaration"
+ methods=[getReference]
 }
 functionName ::= ID {
  name = "Function name"
@@ -88,7 +93,9 @@ testStepPropertyKeywords ::= (VALUES | VALIDATE | WHERE | PAYLOAD | BODY | MESSA
 arg ::= expression* {
   name = "Function arguments"
 }
-referenceExpression ::= REFERENCE_BRACKET referenceKey+ (COMMA expression*)? OBJECT_R_BRACKET
+referenceExpression ::= REFERENCE_BRACKET referenceKey+ (COMMA expression*)? OBJECT_R_BRACKET {
+    methods=[getReference]
+}
 referenceKey ::= (referenceExpression | ID| INT | STRING |'+') {
   name = "Reference name"
 }
