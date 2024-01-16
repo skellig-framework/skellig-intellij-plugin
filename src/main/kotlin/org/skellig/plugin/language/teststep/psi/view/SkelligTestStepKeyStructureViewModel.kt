@@ -8,7 +8,7 @@ import com.intellij.psi.PsiFile
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepKey
 
 
-class SimpleStructureViewModel(editor: Editor?, psiFile: PsiFile) :
+class SkelligTestStepKeyStructureViewModel(editor: Editor?, psiFile: PsiFile) :
     StructureViewModelBase(psiFile, editor, SkelligTestStepKeyViewElement(psiFile)), StructureViewModel.ElementInfoProvider {
 
     override fun isAlwaysShowsPlus(element: StructureViewTreeElement?): Boolean {

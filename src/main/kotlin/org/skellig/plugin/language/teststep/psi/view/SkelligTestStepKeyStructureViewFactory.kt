@@ -12,7 +12,7 @@ class SkelligTestStepKeyStructureViewFactory : PsiStructureViewFactory {
     override fun getStructureViewBuilder(file: PsiFile): StructureViewBuilder {
         return object : TreeBasedStructureViewBuilder() {
             override fun createStructureViewModel(editor: Editor?): StructureViewModel {
-                return SimpleStructureViewModel(editor, file)
+                return SkelligTestStepKeyStructureViewModel(editor, file)
             }
         }
     }

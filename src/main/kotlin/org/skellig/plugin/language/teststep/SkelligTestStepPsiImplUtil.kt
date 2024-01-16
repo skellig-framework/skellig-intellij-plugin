@@ -1,7 +1,5 @@
-// Copyright 2000-2022 JetBrains s.r.o. and other contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
 package org.skellig.plugin.language.teststep
 
-import com.intellij.lang.ASTNode
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
@@ -14,52 +12,52 @@ import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToValue
 import javax.swing.Icon
 
 object SkelligTestStepPsiImplUtil {
+
+    @JvmStatic
     fun getName(element: SkelligTestStepTestStepName): String {
-        return element.text
+        val node = element.node.findChildByType(SkelligTestStepTypes.TEST_STEP_NAME)
+        return node?.let { node.text.substring(1, node.text.length - 1) } ?: ""
     }
 
-    fun getName(element: SkelligTestStepTestStepName?): String {
-        val keyNode = element!!.node.findChildByType(SkelligTestStepTypes.TEST_STEP_NAME)
-        return keyNode?.let { keyNode.text.replace("\\\\".toRegex(), " ") } ?: ""
-    }
-
+    @JvmStatic
     fun setName(element: SkelligTestStepTestStepName, newName: String): PsiElement {
-        val keyNode = element.node.findChildByType(SkelligTestStepTypes.TEST_STEP_NAME)
-        keyNode?.let {
-            val property: SkelligTestStepTestStepName = createTestStep(element.getProject(), newName)
-            val newKeyNode: ASTNode = property.firstChild.node
-            element.node.replaceChild(keyNode, newKeyNode)
-        }
         return element
     }
 
+    @JvmStatic
     fun getNameIdentifier(element: SkelligTestStepTestStepName): PsiElement? {
         return element.node.findChildByType(SkelligTestStepTypes.TEST_STEP_NAME)?.psi
     }
 
+    @JvmStatic
     fun createTestStep(project: Project, name: String): SkelligTestStepTestStepName {
         val file: SkelligTestStepFile = createFile(project, name)
         return file.firstChild as SkelligTestStepTestStepName
     }
 
+    @JvmStatic
     fun createFile(project: Project, text: String): SkelligTestStepFile {
         val name = "test-steps-new.sts"
         return PsiFileFactory.getInstance(project).createFileFromText(name, SkelligTestStepFileType.INSTANCE, text) as SkelligTestStepFile
     }
 
+    @JvmStatic
     fun createTestStep(project: Project, name: String, value: String): SkelligTestStepTestStepName {
         val file: SkelligTestStepFile = createFile(project, "$name = $value")
         return file.firstChild as SkelligTestStepTestStepName
     }
 
+    @JvmStatic
     fun getReference(element: SkelligTestStepReferenceKey): PsiReference {
         return SkelligTestStepToValuesAndStateReference(element)
     }
 
+    @JvmStatic
     fun getReference(element: SkelligTestStepFunctionExpression): PsiReference {
         return SkelligTestStepRefReference(element)
     }
 
+    @JvmStatic
     fun getPresentation(element: SkelligTestStepKey): ItemPresentation {
         return object : ItemPresentation {
             override fun getPresentableText(): String? {
@@ -75,4 +73,5 @@ object SkelligTestStepPsiImplUtil {
             }
         }
     }
+
 }
