@@ -38,6 +38,8 @@
         <lang.commenter language="SkelligTestStep"
                         implementationClass="org.skellig.plugin.language.teststep.psi.commenter.SkelligTestDataCommenter"/>
         <annotator language="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.highlighter.SkelligTestStepFunctionAnnotator"/>
+        <lang.psiStructureViewFactory language="SkelligTestStep"
+                                      implementationClass="org.skellig.plugin.language.teststep.psi.view.SkelligTestStepKeyStructureViewFactory"/>
     </extensions>
 
     <extensionPoints>
