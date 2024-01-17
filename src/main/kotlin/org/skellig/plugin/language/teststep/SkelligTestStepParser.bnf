@@ -57,7 +57,7 @@ testNameKeyword ::= NAME {
 }
 testStepName ::= STRING {
   name = "Test Step name"
-  methods=[getName setName getNameIdentifier getPresentation]
+  methods=[getName setName getNameIdentifier]
 }
 pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE* {
   name = "Property [= Value | { } | [ ] ] pair"

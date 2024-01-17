@@ -56,6 +56,31 @@ dependencies {
 intellij {
     pluginName.set(pluginName_)
     version.set(platformVersion)
+    downloadSources.set(true)
+    instrumentCode.set(true)
+
+    val hoconPlugin = when (platformVersion) {
+        "IU-2020.2.1" -> "org.jetbrains.plugins.hocon:2020.1.0"
+        "IU-2020.3.1" -> "org.jetbrains.plugins.hocon:2020.1.0"
+        "IU-2021.1.1" -> "org.jetbrains.plugins.hocon:2021.1.0"
+        "IU-2021.2.1" -> "org.jetbrains.plugins.hocon:2021.1.0"
+        "IU-2021.3.1" -> "org.jetbrains.plugins.hocon:2021.1.0"
+        "IU-2022.1.1" -> "org.jetbrains.plugins.hocon:2022.1.0"
+        "IU-2022.2.1" -> "org.jetbrains.plugins.hocon:2022.1.0"
+        "IU-2022.3.1" -> "org.jetbrains.plugins.hocon:2022.1.0"
+        "IU-2023.1.1" -> "org.jetbrains.plugins.hocon:2023.1.0"
+        "IU-2023.2.1" -> "org.jetbrains.plugins.hocon:2023.1.0"
+        "IU-2023.3.1" -> "org.jetbrains.plugins.hocon:2023.1.0"
+        else -> ""
+    }
+
+    plugins.set(
+        listOf(
+            "com.intellij.java",
+            "org.jetbrains.kotlin",
+            hoconPlugin
+        )
+    )
 }
 
 // Configure detekt plugin.
