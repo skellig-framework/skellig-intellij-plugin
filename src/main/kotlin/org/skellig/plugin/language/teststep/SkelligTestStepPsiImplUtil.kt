@@ -7,8 +7,8 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiReference
 import org.skellig.plugin.language.SkelligFileIcons
 import org.skellig.plugin.language.teststep.psi.*
-import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepRefReference
-import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToValuesAndStateReference
+import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToStateReference
+import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToValuesAndPropertiesReference
 import javax.swing.Icon
 
 object SkelligTestStepPsiImplUtil {
@@ -49,12 +49,12 @@ object SkelligTestStepPsiImplUtil {
 
     @JvmStatic
     fun getReference(element: SkelligTestStepReferenceKey): PsiReference {
-        return SkelligTestStepToValuesAndStateReference(element)
+        return SkelligTestStepToValuesAndPropertiesReference(element)
     }
 
     @JvmStatic
     fun getReference(element: SkelligTestStepFunctionExpression): PsiReference {
-        return SkelligTestStepRefReference(element)
+        return SkelligTestStepToStateReference(element)
     }
 
     @JvmStatic
