@@ -11,7 +11,7 @@ import org.skellig.plugin.language.teststep.psi.impl.SkelligTestStepFunctionName
 class SkelligTestStepRefReferenceContributor : PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
         registrar.registerReferenceProvider(
-            PlatformPatterns.psiElement(SkelligTestStepFunctionNameImpl::class.java),
+            PlatformPatterns.psiElement(SkelligTestStepTestStepName::class.java),
             SkelligTestStepRefReferenceProvider()
         )
     }

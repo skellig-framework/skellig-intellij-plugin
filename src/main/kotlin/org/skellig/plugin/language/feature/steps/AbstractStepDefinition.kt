@@ -24,9 +24,9 @@ abstract class AbstractStepDefinition(element: PsiElement) {
         val pattern = getPattern() ?: return false
         val stepChars = StringUtil.newBombedCharSequence(stepName, TIME_TO_CHECK_STEP_BY_REGEXP_MILLIS.toLong())
         return try {
-            pattern.matcher(stepChars).find()
+            pattern.matcher(stepChars).matches()
         } catch (ignore: ProcessCanceledException) {
-            false
+             false
         }
     }
 
@@ -50,11 +50,11 @@ abstract class AbstractStepDefinition(element: PsiElement) {
             val cucumberRegex = getCucumberRegex() ?: return null
             if (myRegexText == null || cucumberRegex != myRegexText) {
                 val patternText = StringBuilder(ESCAPE_PATTERN.matcher(cucumberRegex).replaceAll("(.*)"))
-                if (patternText.toString().startsWith(CUCUMBER_START_PREFIX)) {
-                    patternText.replace(0, CUCUMBER_START_PREFIX.length, "^")
+                if (patternText.toString().startsWith(START_PREFIX)) {
+                    patternText.replace(0, START_PREFIX.length, "^")
                 }
-                if (patternText.toString().endsWith(CUCUMBER_END_SUFFIX)) {
-                    patternText.replace(patternText.length - CUCUMBER_END_SUFFIX.length, patternText.length, "$")
+                if (patternText.toString().endsWith(END_SUFFIX)) {
+                    patternText.replace(patternText.length - END_SUFFIX.length, patternText.length, "$")
                 }
                 myRegex = Pattern.compile(patternText.toString(), if (isCaseSensitive) 0 else Pattern.CASE_INSENSITIVE)
                 myRegexText = cucumberRegex
@@ -110,8 +110,8 @@ abstract class AbstractStepDefinition(element: PsiElement) {
 
     companion object {
         private val ESCAPE_PATTERN = Pattern.compile("(#\\{.+?})")
-        private const val CUCUMBER_START_PREFIX = "\\A"
-        private const val CUCUMBER_END_SUFFIX = "\\z"
+        private const val START_PREFIX = "\\A"
+        private const val END_SUFFIX = "\\z"
         private const val TIME_TO_CHECK_STEP_BY_REGEXP_MILLIS = 300
     }
 
