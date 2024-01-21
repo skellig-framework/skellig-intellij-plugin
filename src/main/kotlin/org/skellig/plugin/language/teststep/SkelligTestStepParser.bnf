@@ -51,13 +51,14 @@
 file ::= testStepNameExpression*
 testStepNameExpression ::= NEWLINE* testNameKeyword FUNCTION_L_BRACKET testStepName FUNCTION_R_BRACKET NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET NEWLINE* {
  name = "Test Step declaration"
+   methods=[getPresentation]
 }
 testNameKeyword ::= NAME {
   name = "name"
 }
 testStepName ::= STRING {
   name = "Test Step name"
-  methods=[getName setName getNameIdentifier]
+  methods=[getName setName getNameIdentifier getPresentation]
 }
 pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE* {
   name = "Property [= Value | { } | [ ] ] pair"
