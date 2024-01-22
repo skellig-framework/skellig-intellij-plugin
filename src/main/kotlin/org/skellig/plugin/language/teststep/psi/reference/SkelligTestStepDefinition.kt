@@ -13,7 +13,7 @@ class SkelligTestStepDefinition(element: PsiElement) : AbstractStepDefinition(el
             return emptyList()
         }
 
-    override fun getCucumberRegexFromElement(element: PsiElement?): String {
+    override fun getRegexFromElement(element: PsiElement?): String {
         val stepName = (element as SkelligTestStepTestStepNameExpression).testStepName.text
         if (stepName.isNotEmpty() && stepName.startsWith("\"")) {
             return stepName.substring(1, stepName.length - 1)

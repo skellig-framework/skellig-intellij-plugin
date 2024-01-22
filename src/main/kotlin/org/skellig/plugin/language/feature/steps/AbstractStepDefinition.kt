@@ -39,7 +39,7 @@ abstract class AbstractStepDefinition(element: PsiElement) {
     }
 
     open fun getExpression(): String? {
-        return getCucumberRegexFromElement(getElement());
+        return getRegexFromElement(getElement());
     }
 
     /**
@@ -66,7 +66,7 @@ abstract class AbstractStepDefinition(element: PsiElement) {
     }
 
     @Contract("null -> null")
-    protected abstract fun getCucumberRegexFromElement(element: PsiElement?): String?
+    protected abstract fun getRegexFromElement(element: PsiElement?): String?
 
     private val isCaseSensitive: Boolean
         get() = true

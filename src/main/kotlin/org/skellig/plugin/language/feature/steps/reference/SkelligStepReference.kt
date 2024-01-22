@@ -8,27 +8,18 @@ import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
-import com.intellij.util.containers.map2Array
 import org.skellig.plugin.language.feature.psi.impl.SkelligFeatureStepImpl
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 
-class SkelligStepReference(step: PsiElement, range: TextRange) : PsiPolyVariantReference {
+class SkelligStepReference(val step: PsiElement, private val range: TextRange) : PsiPolyVariantReference {
 
     companion object {
         private val RESOLVER = MyResolver()
     }
 
-    private val myStep: PsiElement
-    private val myRange: TextRange
+    override fun getElement(): PsiElement = step
 
-    init {
-        myStep = step
-        myRange = range
-    }
-
-    override fun getElement(): PsiElement = myStep
-
-    override fun getRangeInElement(): TextRange = myRange
+    override fun getRangeInElement(): TextRange = range
 
 
     override fun resolve(): PsiElement? {
@@ -36,14 +27,14 @@ class SkelligStepReference(step: PsiElement, range: TextRange) : PsiPolyVariantR
         return if (result.size == 1) result[0].element else null
     }
 
-    override fun getCanonicalText(): String = myStep.text
+    override fun getCanonicalText(): String = step.text
 
     override fun handleElementRename(newElementName: String): PsiElement {
-        return myStep
+        return step
     }
 
     override fun bindToElement(element: PsiElement): PsiElement {
-        return myStep
+        return step
     }
 
     override fun isReferenceTo(element: PsiElement): Boolean {
@@ -63,13 +54,17 @@ class SkelligStepReference(step: PsiElement, range: TextRange) : PsiPolyVariantR
     }
 
     private fun multiResolveInner(): Array<ResolveResult> {
-        val module: Module = ModuleUtilCore.findModuleForPsiElement(myStep) ?: return ResolveResult.EMPTY_ARRAY
+        val module: Module = ModuleUtilCore.findModuleForPsiElement(step) ?: return ResolveResult.EMPTY_ARRAY
         val frameworks = SkelligExtensionPoint.EP_NAME.extensionList
-        val stepVariants = frameworks.mapNotNull { e -> e.getStepName(myStep) }.toSet()
+        val stepVariants =
+            if (element is PsiLiteralExpression) {
+                val text = element.text
+                setOf(text.substring(1, text.length - 1))
+            } else frameworks.mapNotNull { f -> f.getStepName(step) }.toSet()
         if (stepVariants.isEmpty()) {
             return ResolveResult.EMPTY_ARRAY
         }
-        val featureFile: PsiFile = myStep.containingFile
+        val featureFile: PsiFile = step.containingFile
         val stepDefinitions: List<AbstractStepDefinition> =
             CachedValuesManager.getCachedValue(featureFile) {
                 val allStepDefinition = mutableListOf<AbstractStepDefinition>()
@@ -80,12 +75,12 @@ class SkelligStepReference(step: PsiElement, range: TextRange) : PsiPolyVariantR
             }
         val resolvedElements: MutableList<PsiElement> = mutableListOf()
         for (stepDefinition in stepDefinitions) {
-            if (stepDefinition.supportsStep(myStep)) {
+            if (stepDefinition.supportsStep(step)) {
                 for (stepVariant in stepVariants) {
                     val element: PsiElement? = stepDefinition.getElement()
                     if (stepDefinition.matches(stepVariant) && element != null && !resolvedElements.contains(element)) {
                         resolvedElements.add(element)
-                        break
+//                        break
                     }
                 }
             }
@@ -107,7 +102,7 @@ class SkelligStepReference(step: PsiElement, range: TextRange) : PsiPolyVariantR
      * @see .resolveToDefinition
      */
     private fun resolveToDefinitions(): Collection<AbstractStepDefinition> {
-        return SkelligStepHelper.findStepDefinitions(myStep.containingFile, myStep as SkelligFeatureStepImpl)
+        return SkelligStepHelper.findStepDefinitions(step.containingFile, step as SkelligFeatureStepImpl)
     }
 
     private class MyResolver : ResolveCache.PolyVariantResolver<SkelligStepReference?> {
