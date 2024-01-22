@@ -11,19 +11,17 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.indexing.FileBasedIndex
 import org.skellig.plugin.language.SkelligFileIcons
 import org.skellig.plugin.language.feature.psi.*
+import org.skellig.plugin.language.teststep.SkelligTestStepPsiImplUtil
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName
 import java.util.regex.Pattern
 
 
-open class SkelligTestStepToFeatureReference(stepParameter: SkelligTestStepTestStepName) : SkelligTestStepSimpleReference(stepParameter), PsiPolyVariantReference {
-
-    val element: SkelligTestStepTestStepName
-        get() = super.getElement() as SkelligTestStepTestStepName
+open class SkelligTestStepToFeatureReference(element: PsiElement) : SkelligTestStepSimpleReference(element), PsiPolyVariantReference {
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
         val module = ModuleUtilCore.findModuleForPsiElement(element)
         return module?.let {
-            val foundTestSteps = findAllUsagesInSkelligFeatureFiles(it, Pattern.compile(element.name))
+            val foundTestSteps = findAllUsagesInSkelligFeatureFiles(it, Pattern.compile(SkelligUtil.getTestStepName(element)))
             val results = mutableListOf<ResolveResult>()
             for (testStep in foundTestSteps) {
                 results.add(PsiElementResolveResult(testStep))
@@ -41,7 +39,7 @@ open class SkelligTestStepToFeatureReference(stepParameter: SkelligTestStepTestS
         val variants = mutableListOf<LookupElement>()
         val module = ModuleUtilCore.findModuleForPsiElement(element)
         module?.let {
-            val stateValues = findAllUsagesInSkelligFeatureFiles(module, Pattern.compile(element.name))
+            val stateValues = findAllUsagesInSkelligFeatureFiles(module, Pattern.compile(SkelligUtil.getTestStepName(element)))
             for (item in stateValues) {
                 variants.add(
                     LookupElementBuilder
