@@ -1,19 +1,20 @@
-package org.skellig.plugin.language.feature.steps.reference.java
+package org.skellig.plugin.language.feature.steps.reference.kotlin
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.*
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
+import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.skellig.plugin.language.feature.psi.SkelligUtil
 import org.skellig.plugin.language.feature.steps.reference.SkelligStepReference
 import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToFeatureReference
 
-class JavaToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
+class KotlinToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
     override fun registerReferenceProviders(registrar: PsiReferenceRegistrar) {
         registrar.registerReferenceProvider(
-            PlatformPatterns.psiElement(PsiLiteralExpression::class.java),
+            PlatformPatterns.psiElement(KtStringTemplateExpression::class.java),
             object : PsiReferenceProvider() {
                 override fun getReferencesByElement(
                     element: PsiElement,
@@ -24,8 +25,8 @@ class JavaToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
                         val textRange = TextRange(1, testStepName.length + 1)
                         return arrayOf(SkelligStepReference(element, textRange))
                     } else {
-                        PsiTreeUtil.getParentOfType(element, PsiAnnotation::class.java)?.let {
-                            if (it.nameReferenceElement?.text == "TestStep") {
+                        PsiTreeUtil.getParentOfType(element, KtAnnotationEntry::class.java)?.let {
+                            if (it.getChildOfType<KtConstructorCalleeExpression>()?.text == "TestStep") {
                                 val testStepDef = SkelligUtil.getTestStepName(it)
                                 if (testStepDef.isNotEmpty()) {
                                     val textRange = TextRange(1, testStepDef.length + 1)
@@ -40,11 +41,11 @@ class JavaToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
     }
 
     private fun getTestStepName(element: PsiElement): String? {
-        val literalExpression = element as PsiLiteralExpression
-        val value = literalExpression.value
-        return if (value is String && value.isNotEmpty()) {
-            PsiTreeUtil.getParentOfType(element, PsiMethodCallExpression::class.java)?.let {
-                if (it.children.isNotEmpty() && it.children[0].getChildOfType<PsiIdentifier>()?.text == "run")
+        val literalExpression = element as KtStringTemplateExpression
+        val value = literalExpression.getChildOfType<KtLiteralStringTemplateEntry>()?.text
+        return if (value?.isNotEmpty() == true) {
+            PsiTreeUtil.getParentOfType(element, KtCallExpression::class.java)?.let {
+                if (it.getChildOfType<KtNameReferenceExpression>()?.text == "run")
                     value
                 else null
             }

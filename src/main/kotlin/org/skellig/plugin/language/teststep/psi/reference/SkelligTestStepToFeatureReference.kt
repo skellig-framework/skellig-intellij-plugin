@@ -1,33 +1,29 @@
 package org.skellig.plugin.language.teststep.psi.reference
 
-import com.intellij.codeInsight.lookup.LookupElement
-import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.module.ModuleUtilCore
+import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.*
+import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
+import com.intellij.psi.util.CachedValueProvider
+import com.intellij.psi.util.CachedValuesManager
+import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.indexing.FileBasedIndex
-import org.skellig.plugin.language.SkelligFileIcons
 import org.skellig.plugin.language.feature.psi.*
-import org.skellig.plugin.language.teststep.SkelligTestStepPsiImplUtil
-import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName
 import java.util.regex.Pattern
 
 
-open class SkelligTestStepToFeatureReference(element: PsiElement) : SkelligTestStepSimpleReference(element), PsiPolyVariantReference {
+open class SkelligTestStepToFeatureReference(myElement: PsiElement, private val range: TextRange) : SkelligTestStepSimpleReference(myElement), PsiPolyVariantReference {
+
+    companion object {
+        private val RESOLVER = MyResolver()
+    }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val module = ModuleUtilCore.findModuleForPsiElement(element)
-        return module?.let {
-            val foundTestSteps = findAllUsagesInSkelligFeatureFiles(it, Pattern.compile(SkelligUtil.getTestStepName(element)))
-            val results = mutableListOf<ResolveResult>()
-            for (testStep in foundTestSteps) {
-                results.add(PsiElementResolveResult(testStep))
-            }
-            results.toTypedArray()
-        } ?: emptyArray()
+        return ResolveCache.getInstance(element.project).resolveWithCaching<SkelligTestStepToFeatureReference>(this, RESOLVER, false, incompleteCode)
     }
 
     override fun resolve(): PsiElement? {
@@ -35,55 +31,106 @@ open class SkelligTestStepToFeatureReference(element: PsiElement) : SkelligTestS
         return if (resolveResults.size == 1) resolveResults[0].element else null
     }
 
-    override fun getVariants(): Array<Any> {
-        val variants = mutableListOf<LookupElement>()
-        val module = ModuleUtilCore.findModuleForPsiElement(element)
-        module?.let {
-            val stateValues = findAllUsagesInSkelligFeatureFiles(module, Pattern.compile(SkelligUtil.getTestStepName(element)))
-            for (item in stateValues) {
-                variants.add(
-                    LookupElementBuilder
-                        .create(item.text).withIcon(SkelligFileIcons.TEST_DATA_FILE)
-                        .withTypeText(item.containingFile.name)
-                )
+    override fun isSoft(): Boolean = false
+
+    override fun isReferenceTo(element: PsiElement): Boolean {
+        val resolvedResults = multiResolve(false)
+        for (rr in resolvedResults) {
+            if (element.manager.areElementsEquivalent(rr.element, element)) {
+                return true
             }
         }
-        return variants.toTypedArray()
+        return false
     }
 
-    private fun findAllUsagesInSkelligFeatureFiles(module: com.intellij.openapi.module.Module, testStepPattern: Pattern): List<SkelligFeatureStep> {
-        val fileBasedIndex = FileBasedIndex.getInstance()
-        val project = module.project
+    override fun getCanonicalText(): String = element.text
 
-        val searchScope = module.getModuleWithDependenciesAndLibrariesScope(true)
-            .uniteWith(ProjectScope.getLibrariesScope(project))
-        val files = GlobalSearchScope.getScopeRestrictedByFileTypes(searchScope, SkelligFileType.INSTANCE)
+    override fun handleElementRename(newElementName: String): PsiElement {
+        return element
+    }
 
-        val elements = mutableListOf<SkelligFeatureStep>()
-        val psiManager = PsiManager.getInstance(project)
+    override fun bindToElement(element: PsiElement): PsiElement {
+        return element
+    }
 
-        // Iterate through VirtualFiles in the scope
-        fileBasedIndex.iterateIndexableFiles({ virtualFile: VirtualFile ->
-            if (!virtualFile.isDirectory && files.contains(virtualFile)) {
-                val psiFile = psiManager.findFile(virtualFile)
-                if (psiFile != null && psiFile is SkelligFile) {
-                    PsiTreeUtil.getChildrenOfType(psiFile, SkelligFeature::class.java)?.forEach { feature ->
-                        PsiTreeUtil.getChildrenOfType(feature, SkelligScenarioOutline::class.java)?.forEach { scenario ->
-                            PsiTreeUtil.getChildrenOfType(scenario, SkelligFeatureStep::class.java)?.forEach { step ->
-                                if (testStepPattern.matcher(step.substitutedName ?: "").matches()) {
-                                    elements.add(step)
+    override fun getRangeInElement(): TextRange = range
+
+    fun multiResolveInner(): Array<ResolveResult> {
+        val resolvedElements: List<SkelligFeatureStepDefinition> =
+            CachedValuesManager.getCachedValue(element.containingFile) {
+                val allSkelligFeatureFiles = mutableListOf<SkelligFile>()
+                val module = ModuleUtilCore.findModuleForPsiElement(element)
+                module?.let {
+                    val fileBasedIndex = FileBasedIndex.getInstance()
+                    val project = module.project
+
+                    val searchScope = module.getModuleWithDependenciesAndLibrariesScope(true)
+                        .uniteWith(ProjectScope.getLibrariesScope(project))
+                    val files = GlobalSearchScope.getScopeRestrictedByFileTypes(searchScope, SkelligFileType.INSTANCE)
+
+                    val psiManager = PsiManager.getInstance(project)
+                    fileBasedIndex.iterateIndexableFiles({ virtualFile: VirtualFile ->
+                        if (!virtualFile.isDirectory && files.contains(virtualFile)) {
+                            val psiFile = psiManager.findFile(virtualFile)
+                            if (psiFile != null && psiFile is SkelligFile) {
+                                allSkelligFeatureFiles.add(psiFile)
+                            }
+                        }
+                        true // continue processing
+                    }, project, null)
+
+                    val resolvedElements: MutableList<SkelligFeatureStepDefinition> = mutableListOf()
+                    val testStepPattern = Pattern.compile(SkelligUtil.getTestStepName(element))
+                    for (skelligFeatureFile in allSkelligFeatureFiles) {
+                        PsiTreeUtil.getChildrenOfType(skelligFeatureFile, SkelligFeature::class.java)?.forEach { feature ->
+                            PsiTreeUtil.getChildrenOfType(feature, SkelligScenarioOutline::class.java)?.forEach { scenario ->
+                                PsiTreeUtil.getChildrenOfType(scenario, SkelligFeatureStep::class.java)?.forEach { step ->
+                                    if (testStepPattern.matcher(step.substitutedName ?: "").matches()) {
+                                        resolvedElements.add(SkelligFeatureStepDefinition(step))
+                                    }
                                 }
                             }
                         }
                     }
-
+                    CachedValueProvider.Result.create<List<SkelligFeatureStepDefinition>>(resolvedElements, PsiModificationTracker.MODIFICATION_COUNT)
                 }
             }
-            true // continue processing
-        }, project, null)
 
-        return elements
+        return resolvedElements.mapNotNull { it.getElement() }.map { PsiElementResolveResult(it) }.toTypedArray()
     }
 
+    override fun equals(other: Any?): Boolean {
+        return if (other is SkelligTestStepToFeatureReference) {
+            element == other.element
+        } else false
+    }
 
+    override fun hashCode(): Int {
+        return element.hashCode()
+    }
+
+    private class MyResolver : ResolveCache.PolyVariantResolver<SkelligTestStepToFeatureReference?> {
+        override fun resolve(ref: SkelligTestStepToFeatureReference, incompleteCode: Boolean): Array<ResolveResult> {
+            return ref.multiResolveInner()
+        }
+    }
+
+    class SkelligFeatureStepDefinition(element: PsiElement) {
+        private val myElementPointer: SmartPsiElementPointer<PsiElement> = SmartPointerManager.getInstance(element.project).createSmartPsiElementPointer(element)
+
+        fun getElement(): PsiElement? {
+            return myElementPointer.element
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
+            val that = other as SkelligFeatureStepDefinition
+            return myElementPointer == that.myElementPointer
+        }
+
+        override fun hashCode(): Int {
+            return myElementPointer.hashCode()
+        }
+    }
 }

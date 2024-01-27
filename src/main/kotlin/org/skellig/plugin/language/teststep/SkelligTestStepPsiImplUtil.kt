@@ -2,13 +2,13 @@ package org.skellig.plugin.language.teststep
 
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.psi.PsiElementFactory
 import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiReference
 import org.skellig.plugin.language.SkelligFileIcons
+import org.skellig.plugin.language.feature.psi.SkelligUtil
 import org.skellig.plugin.language.teststep.psi.*
-import org.skellig.plugin.language.teststep.psi.impl.SkelligTestStepTestStepNameImpl
 import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToFeatureReference
 import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToStateReference
 import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToValuesAndPropertiesReference
@@ -18,7 +18,7 @@ object SkelligTestStepPsiImplUtil {
 
     @JvmStatic
     fun getName(element: SkelligTestStepTestStepName): String {
-        return if(element.text.length > 2) element.text.substring(1, element.text.length - 1) else ""
+        return if (element.text.length > 2) element.text.substring(1, element.text.length - 1) else ""
     }
 
     @JvmStatic
@@ -61,7 +61,9 @@ object SkelligTestStepPsiImplUtil {
 
     @JvmStatic
     fun getReference(element: SkelligTestStepTestStepName): PsiReference {
-        return SkelligTestStepToFeatureReference(element)
+        val testStepDef = SkelligUtil.getTestStepName(element)
+        val textRange = if (testStepDef.isNotEmpty()) TextRange(1, testStepDef.length + 1) else TextRange(0, 0)
+        return SkelligTestStepToFeatureReference(element, textRange)
     }
 
     @JvmStatic
