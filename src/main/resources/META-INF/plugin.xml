@@ -29,6 +29,7 @@
 
         <psi.referenceContributor language="JAVA"
                                   implementation="org.skellig.plugin.language.feature.steps.reference.java.JavaToSkelligTestStepReferenceContributor"/>
+        <psi.referenceContributor implementation="org.skellig.plugin.language.feature.steps.reference.kotlin.KotlinToSkelligTestStepReferenceContributor"/>
 
 
         <fileType name="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepFileType"

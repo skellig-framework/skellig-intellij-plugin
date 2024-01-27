@@ -8,6 +8,9 @@ import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
+import org.skellig.plugin.language.feature.psi.SkelligUtil.extractTextFromJavaString
+import org.skellig.plugin.language.feature.psi.SkelligUtil.extractTextFromKotlinString
 import org.skellig.plugin.language.feature.psi.impl.SkelligFeatureStepImpl
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 
@@ -40,7 +43,7 @@ class SkelligStepReference(val step: PsiElement, private val range: TextRange) :
     override fun isReferenceTo(element: PsiElement): Boolean {
         val resolvedResults = multiResolve(false)
         for (rr in resolvedResults) {
-            if (element.getManager().areElementsEquivalent(rr.element, element)) {
+            if (element.manager.areElementsEquivalent(rr.element, element)) {
                 return true
             }
         }
@@ -53,14 +56,15 @@ class SkelligStepReference(val step: PsiElement, private val range: TextRange) :
         return ResolveCache.getInstance(element.project).resolveWithCaching<SkelligStepReference>(this, RESOLVER, false, incompleteCode)
     }
 
-    private fun multiResolveInner(): Array<ResolveResult> {
+    fun multiResolveInner(): Array<ResolveResult> {
         val module: Module = ModuleUtilCore.findModuleForPsiElement(step) ?: return ResolveResult.EMPTY_ARRAY
         val frameworks = SkelligExtensionPoint.EP_NAME.extensionList
         val stepVariants =
-            if (element is PsiLiteralExpression) {
-                val text = element.text
-                setOf(text.substring(1, text.length - 1))
-            } else frameworks.mapNotNull { f -> f.getStepName(step) }.toSet()
+            when (element) {
+                is PsiLiteralExpression ->  setOf(extractTextFromJavaString(element as PsiLiteralExpression))
+                is KtStringTemplateExpression ->  setOf(extractTextFromKotlinString(element as KtStringTemplateExpression))
+                else -> frameworks.mapNotNull { f -> f.getStepName(step) }.toSet()
+            }
         if (stepVariants.isEmpty()) {
             return ResolveResult.EMPTY_ARRAY
         }
@@ -80,7 +84,6 @@ class SkelligStepReference(val step: PsiElement, private val range: TextRange) :
                     val element: PsiElement? = stepDefinition.getElement()
                     if (stepDefinition.matches(stepVariant) && element != null && !resolvedElements.contains(element)) {
                         resolvedElements.add(element)
-//                        break
                     }
                 }
             }
