@@ -36,13 +36,13 @@ class SkelligTestStepCompletionContributor : CompletionContributor() {
                                 var element = LookupElementBuilder.create(it)
                                 if (keywordsWithComplexValue.contains(it)) {
                                     element = element.withInsertHandler() { context, _ ->
-                                        context.document.insertString(context.selectionEndOffset, " { }");
-                                        context.editor.caretModel.moveToOffset(context.selectionEndOffset - 1);
+                                        context.document.insertString(context.selectionEndOffset, " { }")
+                                        context.editor.caretModel.moveToOffset(context.selectionEndOffset - 1)
                                     }
                                 } else if (NAME == it) {
                                     element = element.withInsertHandler() { context, _ ->
-                                        context.document.insertString(context.selectionEndOffset, " (\"\") { }");
-                                        context.editor.caretModel.moveToOffset(context.selectionEndOffset - 1);
+                                        context.document.insertString(context.selectionEndOffset, " (\"\") { }")
+                                        context.editor.caretModel.moveToOffset(context.selectionEndOffset - 1)
                                     }
                                 }
                                 result.addElement(element)

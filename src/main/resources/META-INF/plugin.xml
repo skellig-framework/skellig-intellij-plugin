@@ -26,6 +26,7 @@
         <fileBasedIndex implementation="org.skellig.plugin.language.feature.steps.reference.java.SkelligJavaTestStepStepIndex"/>
         <lang.commenter language="Skellig"
                         implementationClass="org.skellig.plugin.language.feature.psi.commenter.SkelligFeatureCommenter"/>
+        <completion.contributor language="Skellig" implementationClass="org.skellig.plugin.language.feature.psi.completion.SkelligCompletionContributor"/>
 
         <psi.referenceContributor language="JAVA"
                                   implementation="org.skellig.plugin.language.feature.steps.reference.java.JavaToSkelligTestStepReferenceContributor"/>
