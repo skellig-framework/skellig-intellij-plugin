@@ -28,7 +28,7 @@ class DefaultEnterHandlerDelegate : EnterHandlerDelegate {
                 val nextLineStartOffset = editor.document.getLineStartOffset(lineNumber + 1)
                 val nextLineEndOffset = editor.document.getLineEndOffset(lineNumber + 1)
                 val nextLineText = editor.document.charsSequence.subSequence(nextLineStartOffset, nextLineEndOffset)
-                shiftNumber = if (nextLineText.last() != '}' || previousLineText.last() != ']') countLeadingWhitespace(nextLineText)
+                shiftNumber = if (nextLineText.isNotEmpty() && nextLineText.last() != '}' || previousLineText.last() != ']') countLeadingWhitespace(nextLineText)
                 else countLeadingWhitespace(previousLineText)
             } else {
                 shiftNumber = countLeadingWhitespace(previousLineText)
