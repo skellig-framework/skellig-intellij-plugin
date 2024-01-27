@@ -48,6 +48,8 @@
         <annotator language="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.highlighter.SkelligTestStepFunctionAnnotator"/>
         <lang.psiStructureViewFactory language="SkelligTestStep"
                                       implementationClass="org.skellig.plugin.language.teststep.psi.view.SkelligTestStepKeyStructureViewFactory"/>
+        <completion.contributor language="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.completion.SkelligTestStepCompletionContributor"/>
+        <enterHandlerDelegate implementation="org.skellig.plugin.language.teststep.psi.formatter.DefaultEnterHandlerDelegate" />
     </extensions>
 
     <extensionPoints>
