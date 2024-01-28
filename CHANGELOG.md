@@ -12,6 +12,10 @@
 - Expand/Collapse blocks of code in .sts files
 - Comment code
 
-## [1.1.0-beta]
+## [2023.3.1]
 ### Updated
-- Updated the plugin to support new parser for Skellig Test Steps
+- Updated the plugin to support new parser for Skellig Test Steps (from v2.1.0-RC)
+- References to properties of config file (HOCON) from Skellig test steps
+- References to test steps from Kotlin and Java classes
+- References from Skellig test steps to Kotlin, Java and Skellig Feature files
+- Added autocomplete for common keywords in Skellig test step and feature files
