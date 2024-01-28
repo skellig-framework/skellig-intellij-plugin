@@ -25,6 +25,7 @@ class SkelligCompletionContributor : CompletionContributor() {
                             .forEach {
                                 result.addElement(LookupElementBuilder.create(it).withInsertHandler { context, _ ->
                                     context.document.insertString(context.selectionEndOffset, ":")
+                                    context.editor.caretModel.moveToOffset(context.selectionEndOffset + 1)
                                 })
                             }
                     }
