@@ -115,10 +115,10 @@ tasks {
         sinceBuild.set("203")
         untilBuild.set("233.*")
 
-        changeNotes.set("""
-            <b>Skellig Framework Plugin (BETA)</b>
+        /*changeNotes.set("""
+            <b>Skellig Framework Plugin</b>
             <br/>
-            Provides integration with Skellig test steps (.sts) and feature files (.skellig):
+            Provides integration with Skellig test steps (.sts) and Skellig Feature files (.skellig):
             <br/>
         <ul> 
             <li> References to test steps from Skellig feature files</li>
@@ -128,7 +128,7 @@ tasks {
             <li> Expand/Collapse blocks of code in .sts files</li>
             <li> Comment code</li>
         </ul> 
-        """.trimIndent())
+        """.trimIndent())*/
     }
 
     runPluginVerifier {

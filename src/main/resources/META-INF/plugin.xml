@@ -3,6 +3,29 @@
     <name>Skellig Framework</name>
     <vendor>Skellig</vendor>
     <description>Provides integration with Skellig Framework test steps (.sts) and feature files (.skellig):</description>
+    <change-notes>
+        <![CDATA[
+        1.0.0-beta: Initial release
+        <ul>
+        <li>Support of .sts files</li>
+        <li>Support of .skellig files</li>
+        <li>References to test steps from Skellig feature files</li>
+        <li>Code format</li>
+        <li>Syntax highlighter with colour customization</li>
+        <li>Syntax check for .sts files</li>
+        <li>Expand/Collapse blocks of code in .sts files</li>
+        <li>Comment code</li>
+        </ul>
+        2023.3.1 - update to new Skellig Test Step Parser:
+        <ul>
+        <li>Updated the plugin to support new parser for Skellig Test Steps (from v2.1.0-RC)</li>
+        <li>References to properties of config file (HOCON) from Skellig test steps</li>
+        <li>References to test steps from Kotlin and Java classes</li>
+        <li>References from Skellig test steps to Kotlin, Java and Skellig Feature files</li>
+        <li>Added autocomplete for common keywords in Skellig test step and feature files</li>
+        </ul>
+        ]]>
+    </change-notes>
 
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.java</depends>
