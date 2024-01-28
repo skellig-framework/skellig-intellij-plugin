@@ -90,7 +90,7 @@ functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION
 functionName ::= ID {
  name = "Function name"
 }
-testStepPropertyKeywords ::= (VALUES | VALIDATE | WHERE | PAYLOAD | BODY | MESSAGE | REQUEST) {
+testStepPropertyKeywords ::= (VALUES | STATE | VALIDATE | WHERE | PAYLOAD | BODY | MESSAGE | REQUEST ) {
   name = "Test Step keywords"
 }
 arg ::= expression* {
