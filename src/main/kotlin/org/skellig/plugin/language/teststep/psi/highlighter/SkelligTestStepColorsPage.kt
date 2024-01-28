@@ -52,7 +52,7 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
                  c = $\{property1}
               }
               
-              assert {
+              validate {
                  body.jsonPath(a.b.c) = contains(text)
                  status = $\{status}
               }

@@ -24,7 +24,7 @@ class DefaultEnterHandlerDelegate : EnterHandlerDelegate {
             // Get the leading whitespaces from the previous line
             val previousLineText = editor.document.charsSequence.subSequence(previousLineStartOffset, previousLineEndOffset)
             var shiftNumber = 0
-            if (previousLineText.isNotEmpty() && previousLineText.last() == '{' || previousLineText.last() == '[') {
+            if (previousLineText.isNotEmpty() && (previousLineText.last() == '{' || previousLineText.last() == '[')) {
                 val nextLineStartOffset = editor.document.getLineStartOffset(lineNumber + 1)
                 val nextLineEndOffset = editor.document.getLineEndOffset(lineNumber + 1)
                 val nextLineText = editor.document.charsSequence.subSequence(nextLineStartOffset, nextLineEndOffset)

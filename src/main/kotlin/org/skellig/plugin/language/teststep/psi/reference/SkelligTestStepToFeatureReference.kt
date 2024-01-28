@@ -56,8 +56,9 @@ open class SkelligTestStepToFeatureReference(myElement: PsiElement, private val 
     override fun getRangeInElement(): TextRange = range
 
     fun multiResolveInner(): Array<ResolveResult> {
+        val cacheKey = element
         val resolvedElements: List<SkelligFeatureStepDefinition> =
-            CachedValuesManager.getCachedValue(element.containingFile) {
+            CachedValuesManager.getCachedValue(cacheKey) {
                 val allSkelligFeatureFiles = mutableListOf<SkelligFile>()
                 val module = ModuleUtilCore.findModuleForPsiElement(element)
                 module?.let {
