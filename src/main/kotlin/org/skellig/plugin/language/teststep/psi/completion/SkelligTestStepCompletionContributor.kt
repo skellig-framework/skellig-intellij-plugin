@@ -10,7 +10,7 @@ private const val NAME = "name"
 
 class SkelligTestStepCompletionContributor : CompletionContributor() {
 
-    private val keywordsWithComplexValue = setOf("values", "validate", "body", "request", "message", "payload")
+    private val keywordsWithComplexValue = setOf("values", "validate", "body", "request", "message", "payload", "state")
     private val keywords = keywordsWithComplexValue.union(listOf(
         NAME,
         "method", "headers", "url", "services", "query", "form", "username", "password",

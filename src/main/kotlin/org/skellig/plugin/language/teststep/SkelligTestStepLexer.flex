@@ -49,6 +49,7 @@ COMMENT="//"[^\n]*[\n\r]*
   "["                   { return ARRAY_L_BRACKET; }
   "]"                   { return ARRAY_R_BRACKET; }
   "values"              { return VALUES; }
+  "state"               { return STATE; }
   "validate"            { return VALIDATE; }
   "where"               { return WHERE; }
   "payload"             { return PAYLOAD; }

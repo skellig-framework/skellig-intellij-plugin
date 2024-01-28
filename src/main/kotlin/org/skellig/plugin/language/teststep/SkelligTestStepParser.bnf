@@ -34,6 +34,7 @@
       ARRAY_R_BRACKET= "]"
       KEY_SYMBOLS= "regexp:[_\-&'%$£!?`¬#~@\\:]+"
       VALUES= "values"
+      STATE= "state"
       VALIDATE= "validate"
       WHERE= "where"
       PAYLOAD= "payload"
@@ -58,7 +59,7 @@ testNameKeyword ::= NAME {
 }
 testStepName ::= STRING {
   name = "Test Step name"
-  methods=[getName setName getNameIdentifier getPresentation]
+  methods=[getName setName getNameIdentifier getPresentation getReference]
 }
 pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE* {
   name = "Property [= Value | { } | [ ] ] pair"
