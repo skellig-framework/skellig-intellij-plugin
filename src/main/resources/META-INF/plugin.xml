@@ -47,6 +47,7 @@
                                   implementation="org.skellig.plugin.language.feature.steps.reference.SkelligReferenceContributor"/>
         <fileBasedIndex implementation="org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepStepIndex"/>
         <fileBasedIndex implementation="org.skellig.plugin.language.feature.steps.reference.java.SkelligJavaTestStepStepIndex"/>
+        <fileBasedIndex implementation="org.skellig.plugin.language.feature.steps.reference.kotlin.SkelligKotlinTestStepStepIndex"/>
         <lang.commenter language="Skellig"
                         implementationClass="org.skellig.plugin.language.feature.psi.commenter.SkelligFeatureCommenter"/>
         <completion.contributor language="Skellig" implementationClass="org.skellig.plugin.language.feature.psi.completion.SkelligCompletionContributor"/>
@@ -84,6 +85,7 @@
     <extensions defaultExtensionNs="org.skellig.plugin.language">
         <skelligExtensionPoint implementation="org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepExtension"/>
         <skelligExtensionPoint implementation="org.skellig.plugin.language.feature.steps.reference.java.SkelligJavaTestStepExtension"/>
+        <skelligExtensionPoint implementation="org.skellig.plugin.language.feature.steps.reference.kotlin.SkelligKotlinTestStepExtension"/>
     </extensions>
 
 </idea-plugin>
