@@ -45,7 +45,6 @@ class SkelligJavaTestStepExtension : AbstractExtension() {
                             }
                         }
                     }
-
                 }
                 true
             }, scope
