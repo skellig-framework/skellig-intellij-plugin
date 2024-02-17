@@ -71,6 +71,7 @@ intellij {
         "IU-2023.1.1" -> "org.jetbrains.plugins.hocon:2023.1.0"
         "IU-2023.2.1" -> "org.jetbrains.plugins.hocon:2023.1.0"
         "IU-2023.3.1" -> "org.jetbrains.plugins.hocon:2023.1.0"
+        "IU-2024.1.0" -> "org.jetbrains.plugins.hocon:2024.1.0"
         else -> ""
     }
 
@@ -112,8 +113,8 @@ tasks {
 
     patchPluginXml {
         version.set(pluginVersion)
-        sinceBuild.set("203")
-        untilBuild.set("233.*")
+        sinceBuild.set("231")
+        untilBuild.set("240.*")
 
         /*changeNotes.set("""
             <b>Skellig Framework Plugin</b>
