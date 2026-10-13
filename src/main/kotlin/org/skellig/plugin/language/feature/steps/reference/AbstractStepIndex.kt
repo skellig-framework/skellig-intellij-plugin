@@ -14,22 +14,23 @@ import java.io.DataInput
 import java.io.DataOutput
 
 abstract class AbstractStepIndex : FileBasedIndexExtension<Boolean, List<Int>>() {
-
     companion object {
+        private val DATA_EXTERNALIZER =
+            object : DataExternalizer<List<Int>> {
+                override fun read(input: DataInput): List<Int> =
+                    DataInputOutputUtilRt.readSeq(input) { DataInputOutputUtilRt.readINT(input) }
 
-        private val DATA_EXTERNALIZER = object : DataExternalizer<List<Int>> {
-            override fun read(input: DataInput): List<Int> {
-                return DataInputOutputUtilRt.readSeq(input) { DataInputOutputUtilRt.readINT(input) }
+                override fun save(
+                    out: DataOutput,
+                    value: List<Int>,
+                ) {
+                    DataInputOutputUtilRt.writeSeq(out, value) { descriptor: Int -> DataInputOutputUtilRt.writeINT(out, descriptor) }
+                }
             }
-
-            override fun save(out: DataOutput, value: List<Int>) {
-                DataInputOutputUtilRt.writeSeq(out, value) { descriptor: Int -> DataInputOutputUtilRt.writeINT(out, descriptor) }
-            }
-        }
     }
 
-    override fun getIndexer(): DataIndexer<Boolean, List<Int>, FileContent> {
-        return DataIndexer {inputData: FileContent ->
+    override fun getIndexer(): DataIndexer<Boolean, List<Int>, FileContent> =
+        DataIndexer { inputData: FileContent ->
             val text = inputData.contentAsText
             if (!hasCucumberImport(text)) {
                 emptyMap<Boolean, List<Int>>()
@@ -40,21 +41,15 @@ abstract class AbstractStepIndex : FileBasedIndexExtension<Boolean, List<Int>>()
             resultMap[true] = result
             resultMap
         }
-    }
 
-    override fun getKeyDescriptor(): KeyDescriptor<Boolean> {
-        return BooleanDataDescriptor.INSTANCE
-    }
+    override fun getKeyDescriptor(): KeyDescriptor<Boolean> = BooleanDataDescriptor.INSTANCE
 
-    override fun getValueExternalizer(): DataExternalizer<List<Int>> {
-        return DATA_EXTERNALIZER
-    }
+    override fun getValueExternalizer(): DataExternalizer<List<Int>> = DATA_EXTERNALIZER
 
-    override fun dependsOnFileContent(): Boolean {
-        return true
-    }
+    override fun dependsOnFileContent(): Boolean = true
 
     protected abstract val packagesToScan: Array<String>
+
     private fun hasCucumberImport(text: CharSequence): Boolean {
         for (pkg in packagesToScan) {
             val searcher = StringSearcher(pkg, true, true)
@@ -65,6 +60,8 @@ abstract class AbstractStepIndex : FileBasedIndexExtension<Boolean, List<Int>>()
         return false
     }
 
-    protected abstract fun getStepDefinitionOffsets(lighterAst: LighterAST, text: CharSequence): List<Int>
-
+    protected abstract fun getStepDefinitionOffsets(
+        lighterAst: LighterAST,
+        text: CharSequence,
+    ): List<Int>
 }

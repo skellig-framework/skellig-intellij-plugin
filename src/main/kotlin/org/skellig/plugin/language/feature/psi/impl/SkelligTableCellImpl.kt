@@ -14,22 +14,19 @@ import org.skellig.plugin.language.feature.psi.SkelligElementFactory
 import org.skellig.plugin.language.feature.psi.SkelligElementVisitor
 import org.skellig.plugin.language.feature.psi.SkelligTableCell
 
-class SkelligTableCellImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligTableCell {
+class SkelligTableCellImpl(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligTableCell {
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {
         skelligElementVisitor.visitSkelligTableCell(this)
     }
 
-    override fun getPresentableText(): String? {
-        return String.format("Step parameter '%s'", name)
-    }
+    override fun getPresentableText(): String? = String.format("Step parameter '%s'", name)
 
-    override fun getReference(): PsiReference? {
-        return SkelligSimpleReference(this);
-    }
+    override fun getReference(): PsiReference? = SkelligSimpleReference(this)
 
-    override fun getName(): String? {
-        return text
-    }
+    override fun getName(): String? = text
 
     override fun setName(name: String): PsiElement {
         val content: LeafPsiElement? = PsiTreeUtil.getChildOfType(this, LeafPsiElement::class.java)
@@ -42,17 +39,15 @@ class SkelligTableCellImpl(node: ASTNode) : SkelligPsiElementBase(node), Skellig
 
     override fun getNameIdentifier(): PsiElement? = PsiTreeUtil.getChildOfType(this, LeafPsiElement::class.java)
 
-    override fun getUseScope(): SearchScope {
-        return LocalSearchScope(containingFile)
-    }
+    override fun getUseScope(): SearchScope = LocalSearchScope(containingFile)
 
-    override fun getReferences(): Array<PsiReference> {
-        return CachedValuesManager.getCachedValue(this) {
+    override fun getReferences(): Array<PsiReference> =
+        CachedValuesManager.getCachedValue(this) {
             CachedValueProvider.Result.create(
-                referencesInner, this
+                referencesInner,
+                this,
             )
         }
-    }
 
     private val referencesInner: Array<PsiReference>
         get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)

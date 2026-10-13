@@ -7,18 +7,17 @@ import com.intellij.psi.impl.source.tree.LeafPsiElement
 import org.skellig.plugin.language.feature.psi.SkelligElementVisitor
 import org.skellig.plugin.language.feature.psi.SkelligPystring
 
-class SkelligPystringImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligPystring {
+class SkelligPystringImpl(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligPystring {
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {
         skelligElementVisitor.visitPystring(this)
     }
 
-    override fun toString(): String {
-        return "SkelligPystring"
-    }
+    override fun toString(): String = "SkelligPystring"
 
-    override fun isValidHost(): Boolean {
-        return true
-    }
+    override fun isValidHost(): Boolean = true
 
     override fun updateText(text: String): PsiLanguageInjectionHost {
         val docStringSep = firstChild.text
@@ -29,7 +28,5 @@ class SkelligPystringImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligP
         return this
     }
 
-    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> {
-        return LiteralTextEscaper.createSimple(this)
-    }
+    override fun createLiteralTextEscaper(): LiteralTextEscaper<out PsiLanguageInjectionHost> = LiteralTextEscaper.createSimple(this)
 }

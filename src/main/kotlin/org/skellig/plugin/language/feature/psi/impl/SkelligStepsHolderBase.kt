@@ -7,7 +7,10 @@ import org.skellig.plugin.language.feature.psi.SkelligStepsHolder
 import org.skellig.plugin.language.feature.psi.SkelligTag
 import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
 
-abstract class SkelligStepsHolderBase protected constructor(node: ASTNode) : SkelligPsiElementBase(node), SkelligStepsHolder {
+abstract class SkelligStepsHolderBase protected constructor(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligStepsHolder {
     override val scenarioName: String
         get() {
             val result = StringBuilder()

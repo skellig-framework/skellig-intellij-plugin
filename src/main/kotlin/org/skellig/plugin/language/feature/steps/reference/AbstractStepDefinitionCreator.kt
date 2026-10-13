@@ -12,17 +12,18 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import org.skellig.plugin.language.feature.psi.SkelligFeatureStep
 import java.io.File
-import java.util.*
+import java.util.ArrayList
+import java.util.Objects
 
 abstract class AbstractStepDefinitionCreator : StepDefinitionCreator {
-
     companion object {
         private fun findStepDefinitionDirectory(featureFile: PsiFile): PsiDirectory? {
             val psiFeatureDir = featureFile.containingDirectory!!
             var featureDir: VirtualFile? = psiFeatureDir.virtualFile
             val contentRoot = ProjectRootManager.getInstance(featureFile.project).fileIndex.getContentRootForFile(featureDir!!)
             while (featureDir != null &&
-                !Comparing.equal(featureDir, contentRoot) && featureDir.findChild(org.skellig.plugin.language.feature.SkelligUtil.STEP_DEFINITIONS_DIR_NAME) == null
+                !Comparing.equal(featureDir, contentRoot) &&
+                featureDir.findChild(org.skellig.plugin.language.feature.SkelligUtil.STEP_DEFINITIONS_DIR_NAME) == null
             ) {
                 featureDir = featureDir.parent
             }
@@ -67,7 +68,7 @@ abstract class AbstractStepDefinitionCreator : StepDefinitionCreator {
         val dir = findStepDefinitionDirectory(featureFile)
         return dir?.virtualFile?.path ?: FileUtil.join(
             featureFile.containingDirectory.virtualFile.path,
-            org.skellig.plugin.language.feature.SkelligUtil.STEP_DEFINITIONS_DIR_NAME
+            org.skellig.plugin.language.feature.SkelligUtil.STEP_DEFINITIONS_DIR_NAME,
         )
     }
 

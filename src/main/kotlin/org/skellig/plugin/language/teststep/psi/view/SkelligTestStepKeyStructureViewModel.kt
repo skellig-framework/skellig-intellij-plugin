@@ -7,19 +7,14 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepKey
 
+class SkelligTestStepKeyStructureViewModel(
+    editor: Editor?,
+    psiFile: PsiFile,
+) : StructureViewModelBase(psiFile, editor, SkelligTestStepKeyViewElement(psiFile)),
+    StructureViewModel.ElementInfoProvider {
+    override fun isAlwaysShowsPlus(element: StructureViewTreeElement?): Boolean = false
 
-class SkelligTestStepKeyStructureViewModel(editor: Editor?, psiFile: PsiFile) :
-    StructureViewModelBase(psiFile, editor, SkelligTestStepKeyViewElement(psiFile)), StructureViewModel.ElementInfoProvider {
+    override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean = element.value is SkelligTestStepKey
 
-    override fun isAlwaysShowsPlus(element: StructureViewTreeElement?): Boolean {
-        return false
-    }
-
-    override fun isAlwaysLeaf(element: StructureViewTreeElement): Boolean {
-        return element.value is SkelligTestStepKey
-    }
-
-    override fun getSuitableClasses(): Array<Class<SkelligTestStepKey>> {
-       return arrayOf(SkelligTestStepKey::class.java)
-    }
+    override fun getSuitableClasses(): Array<Class<SkelligTestStepKey>> = arrayOf(SkelligTestStepKey::class.java)
 }

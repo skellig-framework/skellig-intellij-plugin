@@ -9,7 +9,9 @@ import org.jetbrains.annotations.Contract
 import java.util.regex.Pattern
 import java.util.regex.PatternSyntaxException
 
-abstract class AbstractStepDefinition(element: PsiElement) {
+abstract class AbstractStepDefinition(
+    element: PsiElement,
+) {
     private val myElementPointer: SmartPsiElementPointer<PsiElement>
 
     @Volatile
@@ -26,27 +28,21 @@ abstract class AbstractStepDefinition(element: PsiElement) {
         return try {
             pattern.matcher(stepChars).matches()
         } catch (ignore: ProcessCanceledException) {
-             false
+            false
         }
     }
 
-    open fun getElement(): PsiElement? {
-        return myElementPointer.element
-    }
+    open fun getElement(): PsiElement? = myElementPointer.element
 
-    open fun getCucumberRegex(): String? {
-        return getExpression()
-    }
+    open fun getCucumberRegex(): String? = getExpression()
 
-    open fun getExpression(): String? {
-        return getRegexFromElement(getElement());
-    }
+    open fun getExpression(): String? = getRegexFromElement(getElement())
 
     /**
      * @return regexp pattern for step or null if regexp is malformed
      */
     open fun getPattern(): Pattern? {
-       return try {
+        return try {
             val cucumberRegex = getCucumberRegex() ?: return null
             if (myRegexText == null || cucumberRegex != myRegexText) {
                 val patternText = StringBuilder(ESCAPE_PATTERN.matcher(cucumberRegex).replaceAll("(.*)"))
@@ -78,9 +74,7 @@ abstract class AbstractStepDefinition(element: PsiElement) {
         return myElementPointer == that.myElementPointer
     }
 
-    override fun hashCode(): Int {
-        return myElementPointer.hashCode()
-    }
+    override fun hashCode(): Int = myElementPointer.hashCode()
 
     /**
      * Set new value for step definitions (most likely provided by refactor->rename)
@@ -94,9 +88,7 @@ abstract class AbstractStepDefinition(element: PsiElement) {
      * @param step Step to check
      * @return true if supports.
      */
-    fun supportsStep(step: PsiElement): Boolean {
-        return true
-    }
+    fun supportsStep(step: PsiElement): Boolean = true
 
     /**
      * Checks if step definition supports rename.
@@ -104,9 +96,7 @@ abstract class AbstractStepDefinition(element: PsiElement) {
      * If not null -- check if it can be renamed to the new (provided) name.
      * @return true if rename is supported
      */
-    fun supportsRename(newName: String?): Boolean {
-        return true
-    }
+    fun supportsRename(newName: String?): Boolean = true
 
     companion object {
         private val ESCAPE_PATTERN = Pattern.compile("(#\\{.+?})")

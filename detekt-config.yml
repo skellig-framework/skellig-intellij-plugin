@@ -1,8 +1,5 @@
-# Default detekt configuration:
-# https://github.com/detekt/detekt/blob/master/detekt-core/src/main/resources/default-detekt-config.yml
+# Detekt configuration: https://detekt.dev/docs/rules/ktlint/
 
-formatting:
-  Indentation:
-    continuationIndentSize: 8
+ktlint:
   ParameterListWrapping:
     indentSize: 8

@@ -22,17 +22,21 @@ import org.skellig.plugin.language.feature.steps.reference.AbstractExtension
 import org.skellig.plugin.language.feature.steps.reference.BDDFrameworkType
 
 class SkelligKotlinTestStepExtension : AbstractExtension() {
-
     override val stepFileType: BDDFrameworkType
         get() = BDDFrameworkType(KotlinFileType.INSTANCE, "Skellig Kotlin Test Step")
 
-    override fun loadStepsFor(featureFile: PsiFile?, module: Module): List<AbstractStepDefinition> {
+    override fun loadStepsFor(
+        featureFile: PsiFile?,
+        module: Module,
+    ): List<AbstractStepDefinition> {
         val result = mutableListOf<AbstractStepDefinition>()
         val fileBasedIndex: FileBasedIndex = FileBasedIndex.getInstance()
         val scope: GlobalSearchScope = featureFile?.resolveScope ?: module.getModuleWithDependenciesAndLibrariesScope(true)
         val project = module.project
         fileBasedIndex.processValues(
-            SkelligKotlinTestStepStepIndex.INDEX_ID, true, null,
+            SkelligKotlinTestStepStepIndex.INDEX_ID,
+            true,
+            null,
             { file: VirtualFile, _: List<Int> ->
                 ProgressManager.checkCanceled()
                 val psiFile: PsiFile = PsiManager.getInstance(project).findFile(file) ?: return@processValues true
@@ -53,7 +57,8 @@ class SkelligKotlinTestStepExtension : AbstractExtension() {
                     }
                 }
                 true
-            }, scope
+            },
+            scope,
         )
         return result
     }

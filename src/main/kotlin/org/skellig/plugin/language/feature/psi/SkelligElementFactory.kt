@@ -4,10 +4,13 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiElement
 
-
 object SkelligElementFactory {
     private val LOG = Logger.getInstance(SkelligElementFactory::class.java.name)
-    fun createFeatureFromText(project: Project?, text: String): SkelligFeature? {
+
+    fun createFeatureFromText(
+        project: Project?,
+        text: String,
+    ): SkelligFeature? {
         val list: Array<PsiElement> = getTopLevelElements(project, text)
         for (psiElement in list) {
             if (psiElement is SkelligFeature) {
@@ -18,19 +21,28 @@ object SkelligElementFactory {
         return null
     }
 
-    fun createScenarioFromText(project: Project?, language: String, text: String): SkelligStepsHolder {
+    fun createScenarioFromText(
+        project: Project?,
+        language: String,
+        text: String,
+    ): SkelligStepsHolder {
         val provider: SkelligKeywordProvider = PlainSkelligKeywordProvider()
         val keywordsTable = provider.getKeywordsTable(language)
-        val featureText = """
-               # language: $language
-               ${keywordsTable.getFeatureSectionKeyword()}: Dummy
-               $text
-               """.trimIndent()
+        val featureText =
+            """
+            # language: $language
+            ${keywordsTable.getFeatureSectionKeyword()}: Dummy
+            $text
+            """.trimIndent()
         val feature = createFeatureFromText(project, featureText)
         return feature!!.scenarios!![0]
     }
 
-    fun getTopLevelElements(project: Project?, text: String): Array<PsiElement> {
-        return org.skellig.plugin.language.feature.SkelligElementFactory.createTempPsiFile(project, text).getChildren()
-    }
+    fun getTopLevelElements(
+        project: Project?,
+        text: String,
+    ): Array<PsiElement> =
+        org.skellig.plugin.language.feature.SkelligElementFactory
+            .createTempPsiFile(project, text)
+            .getChildren()
 }

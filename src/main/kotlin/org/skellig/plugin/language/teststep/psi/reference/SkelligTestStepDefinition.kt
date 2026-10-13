@@ -2,12 +2,11 @@ package org.skellig.plugin.language.teststep.psi.reference
 
 import com.intellij.psi.PsiElement
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
-import org.skellig.plugin.language.teststep.psi.SkelligTestStepExpression
-import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepNameExpression
 
-class SkelligTestStepDefinition(element: PsiElement) : AbstractStepDefinition(element) {
-
+class SkelligTestStepDefinition(
+    element: PsiElement,
+) : AbstractStepDefinition(element) {
     override val variableNames: List<String>
         get() {
             return emptyList()

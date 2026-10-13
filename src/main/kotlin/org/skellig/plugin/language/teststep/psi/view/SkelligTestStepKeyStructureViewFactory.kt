@@ -8,14 +8,8 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiFile
 
 class SkelligTestStepKeyStructureViewFactory : PsiStructureViewFactory {
-
-    override fun getStructureViewBuilder(file: PsiFile): StructureViewBuilder {
-        return object : TreeBasedStructureViewBuilder() {
-            override fun createStructureViewModel(editor: Editor?): StructureViewModel {
-                return SkelligTestStepKeyStructureViewModel(editor, file)
-            }
+    override fun getStructureViewBuilder(file: PsiFile): StructureViewBuilder =
+        object : TreeBasedStructureViewBuilder() {
+            override fun createStructureViewModel(editor: Editor?): StructureViewModel = SkelligTestStepKeyStructureViewModel(editor, file)
         }
-    }
-
-
 }

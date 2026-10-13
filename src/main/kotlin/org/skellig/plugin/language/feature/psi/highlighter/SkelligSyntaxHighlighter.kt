@@ -4,12 +4,13 @@ import com.intellij.lexer.Lexer
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.tree.IElementType
-import org.skellig.plugin.language.feature.psi.SkelligElementTypes
 import org.skellig.plugin.language.feature.psi.SkelligKeywordProvider
 import org.skellig.plugin.language.feature.psi.SkelligLexer
 import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
 
-class SkelligSyntaxHighlighter(private val myKeywordProvider: SkelligKeywordProvider) : SyntaxHighlighterBase() {
+class SkelligSyntaxHighlighter(
+    private val myKeywordProvider: SkelligKeywordProvider,
+) : SyntaxHighlighterBase() {
     companion object {
         private val ATTRIBUTES: MutableMap<IElementType, TextAttributesKey> = HashMap()
 
@@ -26,11 +27,7 @@ class SkelligSyntaxHighlighter(private val myKeywordProvider: SkelligKeywordProv
         }
     }
 
-    override fun getHighlightingLexer(): Lexer {
-        return SkelligLexer(myKeywordProvider)
-    }
+    override fun getHighlightingLexer(): Lexer = SkelligLexer(myKeywordProvider)
 
-    override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
-        return pack(ATTRIBUTES[tokenType])
-    }
+    override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> = pack(ATTRIBUTES[tokenType])
 }

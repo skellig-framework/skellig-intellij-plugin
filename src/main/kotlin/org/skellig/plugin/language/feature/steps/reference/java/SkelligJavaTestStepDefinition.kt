@@ -5,8 +5,9 @@ import com.intellij.psi.PsiElement
 import org.skellig.plugin.language.feature.psi.SkelligUtil
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 
-class SkelligJavaTestStepDefinition(element: PsiElement) : AbstractStepDefinition(element) {
-
+class SkelligJavaTestStepDefinition(
+    element: PsiElement,
+) : AbstractStepDefinition(element) {
     override val variableNames: List<String>
         get() {
             return emptyList()

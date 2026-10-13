@@ -18,11 +18,12 @@ import org.skellig.plugin.language.teststep.psi.SkelligTestStepReferenceKey
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepNameExpression
 import java.util.regex.Pattern
 
-
 private const val DOUBLE_QUOTE = "\""
 private const val DOT = "."
 
-class SkelligTestStepToValuesAndPropertiesReference(stepParameter: SkelligTestStepReferenceKey) : SkelligTestStepSimpleReference(stepParameter) {
+class SkelligTestStepToValuesAndPropertiesReference(
+    stepParameter: SkelligTestStepReferenceKey,
+) : SkelligTestStepSimpleReference(stepParameter) {
     val element: SkelligTestStepReferenceKey
         get() = super.getElement() as SkelligTestStepReferenceKey
 
@@ -38,8 +39,10 @@ class SkelligTestStepToValuesAndPropertiesReference(stepParameter: SkelligTestSt
         } else {
             var foundItem: PsiElement? = null
             val testStep = PsiTreeUtil.getParentOfType(element, SkelligTestStepTestStepNameExpression::class.java) ?: return null
-            val pairs = PsiTreeUtil.getChildrenOfTypeAsList(testStep, SkelligTestStepPair::class.java)
-                .find { it.key.text == "values" }
+            val pairs =
+                PsiTreeUtil
+                    .getChildrenOfTypeAsList(testStep, SkelligTestStepPair::class.java)
+                    .find { it.key.text == "values" }
             pairs?.let { values ->
                 values.map?.let {
                     for (pair in it.pairList) {
@@ -61,7 +64,10 @@ class SkelligTestStepToValuesAndPropertiesReference(stepParameter: SkelligTestSt
         return null
     }
 
-    private fun findReferenceToConfigProperty(module: com.intellij.openapi.module.Module, keyToSearch: String): PsiElement? {
+    private fun findReferenceToConfigProperty(
+        module: com.intellij.openapi.module.Module,
+        keyToSearch: String,
+    ): PsiElement? {
         val fileBasedIndex = FileBasedIndex.getInstance()
         val project = module.project
 
@@ -69,9 +75,11 @@ class SkelligTestStepToValuesAndPropertiesReference(stepParameter: SkelligTestSt
         val psiManager = PsiManager.getInstance(project)
 
         val keysToSearch =
-            if (keyToSearch.startsWith(DOUBLE_QUOTE) && keyToSearch.endsWith(DOUBLE_QUOTE))
+            if (keyToSearch.startsWith(DOUBLE_QUOTE) && keyToSearch.endsWith(DOUBLE_QUOTE)) {
                 keyToSearch.substring(1, keyToSearch.length - 1).split(DOT)
-            else keyToSearch.split(DOT)
+            } else {
+                keyToSearch.split(DOT)
+            }
 
         fileBasedIndex.iterateIndexableFiles({ virtualFile: VirtualFile ->
             if (elements.isEmpty() && !virtualFile.isDirectory && virtualFile.extension == HoconFileType.DefaultExtension()) {
@@ -97,7 +105,10 @@ class SkelligTestStepToValuesAndPropertiesReference(stepParameter: SkelligTestSt
         return if (elements.isNotEmpty()) elements.first() else null
     }
 
-    private fun findNextKey(parentElement: PsiElement?, keyToSearch: String): PsiElement? {
+    private fun findNextKey(
+        parentElement: PsiElement?,
+        keyToSearch: String,
+    ): PsiElement? {
         var foundElement: PsiElement? = null
         if (parentElement is HFieldKey) {
             if (parentElement.text == keyToSearch) foundElement = parentElement
@@ -115,22 +126,16 @@ class SkelligTestStepToValuesAndPropertiesReference(stepParameter: SkelligTestSt
     }
 }
 
-open class SkelligTestStepSimpleReference(private val myElement: PsiElement) : PsiReference {
-    override fun getElement(): PsiElement {
-        return myElement
-    }
+open class SkelligTestStepSimpleReference(
+    private val myElement: PsiElement,
+) : PsiReference {
+    override fun getElement(): PsiElement = myElement
 
-    override fun getRangeInElement(): TextRange {
-        return TextRange(0, myElement.textLength)
-    }
+    override fun getRangeInElement(): TextRange = TextRange(0, myElement.textLength)
 
-    override fun resolve(): PsiElement? {
-        return myElement
-    }
+    override fun resolve(): PsiElement? = myElement
 
-    override fun getCanonicalText(): String {
-        return myElement.text
-    }
+    override fun getCanonicalText(): String = myElement.text
 
     override fun handleElementRename(newElementName: String): PsiElement {
         if (myElement is PsiNamedElement) {
@@ -139,9 +144,7 @@ open class SkelligTestStepSimpleReference(private val myElement: PsiElement) : P
         return myElement
     }
 
-    override fun bindToElement(element: PsiElement): PsiElement {
-        return myElement
-    }
+    override fun bindToElement(element: PsiElement): PsiElement = myElement
 
     override fun isReferenceTo(element: PsiElement): Boolean {
         val myResolved = resolve()
@@ -152,7 +155,5 @@ open class SkelligTestStepSimpleReference(private val myElement: PsiElement) : P
         return myResolved != null && resolved == myResolved
     }
 
-    override fun isSoft(): Boolean {
-        return false
-    }
+    override fun isSoft(): Boolean = false
 }

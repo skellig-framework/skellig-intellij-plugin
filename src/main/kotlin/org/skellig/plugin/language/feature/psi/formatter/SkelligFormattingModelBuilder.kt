@@ -10,15 +10,19 @@ import com.intellij.psi.impl.source.tree.TreeElement
 import com.intellij.psi.impl.source.tree.TreeUtil
 
 class SkelligFormattingModelBuilder : FormattingModelBuilder {
-
     override fun createModel(formattingContext: FormattingContext): FormattingModel {
         val file: PsiFile = formattingContext.containingFile
-        val fileElement = TreeUtil.getFileElement(
-            (SourceTreeToPsiMap.psiElementToTree(formattingContext.psiElement) as TreeElement)
-        )
+        val fileElement =
+            TreeUtil.getFileElement(
+                (SourceTreeToPsiMap.psiElementToTree(formattingContext.psiElement) as TreeElement),
+            )
         val rootBlock = SkelligBlock(fileElement)
         return DocumentBasedFormattingModel(
-            rootBlock, file.project, formattingContext.codeStyleSettings, file.fileType, file
+            rootBlock,
+            file.project,
+            formattingContext.codeStyleSettings,
+            file.fileType,
+            file,
         )
     }
 }

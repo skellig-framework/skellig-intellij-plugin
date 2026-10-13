@@ -11,8 +11,6 @@
    elementTypeClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepElementType"
    tokenTypeClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepTokenType"
 
-   psiImplUtilClass="org.skellig.plugin.language.teststep.SkelligTestStepPsiImplUtil"
-
    tokens=[
       FLOAT= "regexp:[0-9]+'.'[0-9]+"
       INT= "regexp:[0-9]+"
@@ -52,20 +50,21 @@
 file ::= testStepNameExpression*
 testStepNameExpression ::= NEWLINE* testNameKeyword FUNCTION_L_BRACKET testStepName FUNCTION_R_BRACKET NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET NEWLINE* {
  name = "Test Step declaration"
-   methods=[getPresentation]
+   mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepDeclarationMixin"
 }
 testNameKeyword ::= NAME {
   name = "name"
 }
 testStepName ::= STRING {
   name = "Test Step name"
-  methods=[getName setName getNameIdentifier getPresentation getReference]
+  implements="com.intellij.psi.PsiNameIdentifierOwner"
+  mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepNameMixin"
 }
 pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE* {
   name = "Property [= Value | { } | [ ] ] pair"
 }
 key ::= expression+ {
-  methods=[getPresentation]
+  mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepKeyMixin"
 }
 
 value ::= expression+
@@ -85,7 +84,7 @@ expression ::= referenceExpression | functionExpression | testStepPropertyKeywor
 }
 functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION_R_BRACKET {
  name = "Function declaration"
- methods=[getReference]
+ mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepFunctionMixin"
 }
 functionName ::= ID {
  name = "Function name"
@@ -100,6 +99,6 @@ referenceExpression ::= REFERENCE_BRACKET referenceKey+ (COMMA expression*)? OBJ
 
 referenceKey ::= (referenceExpression | ID| INT | STRING |'+') {
   name = "Reference name"
-  methods=[getReference]
+  mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepReferenceMixin"
 }
 number ::= FLOAT | INT

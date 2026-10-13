@@ -7,10 +7,11 @@ import org.skellig.plugin.language.feature.psi.SkelligRule
 import org.skellig.plugin.language.feature.psi.SkelligStepsHolder
 import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
 
-class SkelligRuleImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligRule {
-    override fun toString(): String {
-        return "SkelligRule:$ruleName"
-    }
+class SkelligRuleImpl(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligRule {
+    override fun toString(): String = "SkelligRule:$ruleName"
 
     override val ruleName: String
         get() {
@@ -23,6 +24,7 @@ class SkelligRuleImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligRule 
             val children = PsiTreeUtil.getChildrenOfType(this, SkelligStepsHolder::class.java)
             return children ?: SkelligStepsHolder.Companion.EMPTY_ARRAY
         }
+
     override fun getPresentableText(): String = "Rule: $ruleName"
 
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {

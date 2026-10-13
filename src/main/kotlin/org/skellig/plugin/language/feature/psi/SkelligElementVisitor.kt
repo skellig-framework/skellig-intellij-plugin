@@ -1,7 +1,13 @@
 package org.skellig.plugin.language.feature.psi
 
 import com.intellij.psi.PsiElementVisitor
-import org.skellig.plugin.language.feature.psi.impl.*
+import org.skellig.plugin.language.feature.psi.impl.SkelligExamplesBlockImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligFeatureHeaderImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligStepParameterImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligTableHeaderRowImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligTableImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligTableRowImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligTagImpl
 
 abstract class SkelligElementVisitor : PsiElementVisitor() {
     fun visitFeature(feature: SkelligFeature) {

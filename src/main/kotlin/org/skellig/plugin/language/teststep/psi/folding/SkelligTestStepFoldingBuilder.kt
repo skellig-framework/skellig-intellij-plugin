@@ -13,17 +13,19 @@ import org.jetbrains.annotations.NotNull
 import org.jetbrains.annotations.Nullable
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepArray
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepMap
-import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepNameExpression
-import org.skellig.plugin.language.teststep.psi.impl.*
 
-
-class SkelligTestStepFoldingBuilder : FoldingBuilderEx(), DumbAware {
-
-    private val GROUP_PREFIX = "group-"
+class SkelligTestStepFoldingBuilder :
+    FoldingBuilderEx(),
+    DumbAware {
+    private val groupPrefix = "group-"
 
     @NotNull
-    override fun buildFoldRegions(@NotNull root: PsiElement, @NotNull document: Document, quick: Boolean): Array<FoldingDescriptor> {
+    override fun buildFoldRegions(
+        @NotNull root: PsiElement,
+        @NotNull document: Document,
+        quick: Boolean,
+    ): Array<FoldingDescriptor> {
         // Initialize the group of folding regions that will expand/collapse together.
         // Initialize the list of folding regions
         val descriptors = mutableListOf<FoldingDescriptor>()
@@ -36,7 +38,11 @@ class SkelligTestStepFoldingBuilder : FoldingBuilderEx(), DumbAware {
         return descriptors.toTypedArray()
     }
 
-    private fun addDescriptor(element: PsiElement?, descriptors: MutableList<FoldingDescriptor>, groupNumber: Int) {
+    private fun addDescriptor(
+        element: PsiElement?,
+        descriptors: MutableList<FoldingDescriptor>,
+        groupNumber: Int,
+    ) {
         if (element != null) {
             if (isElementWithBrackets(element)) {
                 val start = element.textRange.startOffset + getIndexOfFirstBracket(element)
@@ -45,8 +51,9 @@ class SkelligTestStepFoldingBuilder : FoldingBuilderEx(), DumbAware {
                     descriptors.add(
                         FoldingDescriptor(
                             element.node,
-                            TextRange(start, end), FoldingGroup.newGroup(GROUP_PREFIX + groupNumber)
-                        )
+                            TextRange(start, end),
+                            FoldingGroup.newGroup(groupPrefix + groupNumber),
+                        ),
                     )
                 }
             }
@@ -62,24 +69,22 @@ class SkelligTestStepFoldingBuilder : FoldingBuilderEx(), DumbAware {
      * defined by the Simple language file.
      */
     @Nullable
-    override fun getPlaceholderText(@NotNull node: ASTNode): String {
-        return "..."
-    }
+    override fun getPlaceholderText(
+        @NotNull node: ASTNode,
+    ): String = "..."
 
-    override fun isCollapsedByDefault(@NotNull node: ASTNode): Boolean {
-        return false
-    }
+    override fun isCollapsedByDefault(
+        @NotNull node: ASTNode,
+    ): Boolean = false
 
     private fun getIndexOfFirstBracket(element: PsiElement): Int {
         val text = element.text
         val index = text.indexOfFirst { c -> c == '{' || c == '[' }
         return if (index == -1) return 1 else index + 1
-
     }
 
-    private fun isElementWithBrackets(element: PsiElement?): Boolean {
-        return element is SkelligTestStepTestStepNameExpression ||
-                element is SkelligTestStepMap ||
-                element is SkelligTestStepArray
-    }
+    private fun isElementWithBrackets(element: PsiElement?): Boolean =
+        element is SkelligTestStepTestStepNameExpression ||
+            element is SkelligTestStepMap ||
+            element is SkelligTestStepArray
 }

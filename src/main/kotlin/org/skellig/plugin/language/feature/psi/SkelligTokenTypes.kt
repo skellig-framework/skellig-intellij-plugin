@@ -21,12 +21,17 @@ interface SkelligTokenTypes {
         val PYSTRING_TEXT = SkelligElementType("PYSTRING_TEXT")
         val PIPE = SkelligElementType("PIPE")
         val TABLE_CELL = SkelligElementType("TABLE_CELL")
-        val KEYWORDS = TokenSet.create(
-            FEATURE_KEYWORD, RULE_KEYWORD, EXAMPLE_KEYWORD,
-            BACKGROUND_KEYWORD, SCENARIO_KEYWORD,
-            EXAMPLES_KEYWORD, EXAMPLES_KEYWORD,
-            STEP_KEYWORD
-        )
+        val KEYWORDS =
+            TokenSet.create(
+                FEATURE_KEYWORD,
+                RULE_KEYWORD,
+                EXAMPLE_KEYWORD,
+                BACKGROUND_KEYWORD,
+                SCENARIO_KEYWORD,
+                EXAMPLES_KEYWORD,
+                EXAMPLES_KEYWORD,
+                STEP_KEYWORD,
+            )
         val SCENARIOS_KEYWORDS = TokenSet.create(SCENARIO_KEYWORD, EXAMPLE_KEYWORD)
     }
 }

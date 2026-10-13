@@ -11,12 +11,15 @@ import org.skellig.plugin.language.feature.psi.SkelligFile
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 
 abstract class AbstractExtension : SkelligExtensionPoint {
+    override fun isStepLikeFile(
+        child: PsiElement,
+        parent: PsiElement,
+    ): Boolean = false
 
-    override fun isStepLikeFile(child: PsiElement, parent: PsiElement): Boolean {
-        return false
-    }
-
-    override fun isWritableStepLikeFile(child: PsiElement, parent: PsiElement): Boolean {
+    override fun isWritableStepLikeFile(
+        child: PsiElement,
+        parent: PsiElement,
+    ): Boolean {
         val file: PsiFile = child.containingFile
         val vFile: VirtualFile = file.virtualFile
         val rootForFile: VirtualFile? = ProjectRootManager.getInstance(child.project).fileIndex.getSourceRootForFile(vFile)
@@ -25,7 +28,9 @@ abstract class AbstractExtension : SkelligExtensionPoint {
 
     override fun getStepDefinitionContainers(file: SkelligFile): Collection<PsiFile> {
         val module: Module = ModuleUtilCore.findModuleForPsiElement(file) ?: return emptySet()
-        val stepDefs: List<AbstractStepDefinition> = org.skellig.plugin.language.feature.SkelligUtil.loadFrameworkSteps(this, file, module)
+        val stepDefs: List<AbstractStepDefinition> =
+            org.skellig.plugin.language.feature.SkelligUtil
+                .loadFrameworkSteps(this, file, module)
         val result = mutableSetOf<PsiFile>()
         for (stepDef in stepDefs) {
             val stepDefElement: PsiElement? = stepDef.getElement()

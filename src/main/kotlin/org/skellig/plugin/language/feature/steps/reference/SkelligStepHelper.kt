@@ -8,7 +8,6 @@ import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 import java.util.regex.Pattern
 
 object SkelligStepHelper {
-
     /**
      * Searches for ALL step definitions, groups it by step definition class and sorts by pattern size.
      * For each step definition class it finds the largest pattern.
@@ -17,7 +16,10 @@ object SkelligStepHelper {
      * @param step        step itself
      * @return definitions
      */
-    fun findStepDefinitions(featureFile: PsiFile, step: SkelligFeatureStep): Collection<AbstractStepDefinition> {
+    fun findStepDefinitions(
+        featureFile: PsiFile,
+        step: SkelligFeatureStep,
+    ): Collection<AbstractStepDefinition> {
         val module: Module = ModuleUtilCore.findModuleForPsiElement(featureFile) ?: return emptyList()
         val substitutedName: String = step.substitutedName ?: return emptyList()
         val definitionsByClass = mutableMapOf<Class<out AbstractStepDefinition>, AbstractStepDefinition>()
@@ -41,14 +43,18 @@ object SkelligStepHelper {
      * @param definition step definition
      * @return pattern or null if does not exist
      */
-    private fun getPatternByDefinition(definition: AbstractStepDefinition?): Pattern? {
-        return definition?.getPattern()
-    }
+    private fun getPatternByDefinition(definition: AbstractStepDefinition?): Pattern? = definition?.getPattern()
 
-    private fun loadStepsFor(featureFile: PsiFile?, module: Module): List<AbstractStepDefinition> {
+    private fun loadStepsFor(
+        featureFile: PsiFile?,
+        module: Module,
+    ): List<AbstractStepDefinition> {
         val result: ArrayList<AbstractStepDefinition> = ArrayList<AbstractStepDefinition>()
         for (extension in cucumberExtensions) {
-            result.addAll(org.skellig.plugin.language.feature.SkelligUtil.loadFrameworkSteps(extension, featureFile, module))
+            result.addAll(
+                org.skellig.plugin.language.feature.SkelligUtil
+                    .loadFrameworkSteps(extension, featureFile, module),
+            )
         }
         return result
     }
@@ -56,8 +62,5 @@ object SkelligStepHelper {
     val cucumberExtensions: List<SkelligExtensionPoint>
         get() = SkelligExtensionPoint.EP_NAME.extensionList
 
-    fun getExtensionCount(): Int {
-        return cucumberExtensions.size
-    }
-
+    fun getExtensionCount(): Int = cucumberExtensions.size
 }

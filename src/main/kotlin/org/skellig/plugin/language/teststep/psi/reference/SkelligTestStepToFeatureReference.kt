@@ -3,7 +3,13 @@ package org.skellig.plugin.language.teststep.psi.reference
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementResolveResult
+import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiPolyVariantReference
+import com.intellij.psi.ResolveResult
+import com.intellij.psi.SmartPointerManager
+import com.intellij.psi.SmartPsiElementPointer
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
@@ -12,19 +18,28 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.indexing.FileBasedIndex
-import org.skellig.plugin.language.feature.psi.*
+import org.skellig.plugin.language.feature.psi.SkelligFeature
+import org.skellig.plugin.language.feature.psi.SkelligFeatureStep
+import org.skellig.plugin.language.feature.psi.SkelligFile
+import org.skellig.plugin.language.feature.psi.SkelligFileType
+import org.skellig.plugin.language.feature.psi.SkelligScenarioOutline
+import org.skellig.plugin.language.feature.psi.SkelligUtil
 import java.util.regex.Pattern
 
-
-open class SkelligTestStepToFeatureReference(myElement: PsiElement, private val range: TextRange) : SkelligTestStepSimpleReference(myElement), PsiPolyVariantReference {
-
+open class SkelligTestStepToFeatureReference(
+    myElement: PsiElement,
+    private val range: TextRange,
+) : SkelligTestStepSimpleReference(myElement),
+    PsiPolyVariantReference {
     companion object {
         private val RESOLVER = MyResolver()
     }
 
-    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        return ResolveCache.getInstance(element.project).resolveWithCaching<SkelligTestStepToFeatureReference>(this, RESOLVER, false, incompleteCode)
-    }
+    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> =
+        ResolveCache
+            .getInstance(
+                element.project,
+            ).resolveWithCaching<SkelligTestStepToFeatureReference>(this, RESOLVER, false, incompleteCode)
 
     override fun resolve(): PsiElement? {
         val resolveResults = multiResolve(false)
@@ -45,13 +60,9 @@ open class SkelligTestStepToFeatureReference(myElement: PsiElement, private val 
 
     override fun getCanonicalText(): String = element.text
 
-    override fun handleElementRename(newElementName: String): PsiElement {
-        return element
-    }
+    override fun handleElementRename(newElementName: String): PsiElement = element
 
-    override fun bindToElement(element: PsiElement): PsiElement {
-        return element
-    }
+    override fun bindToElement(element: PsiElement): PsiElement = element
 
     override fun getRangeInElement(): TextRange = range
 
@@ -65,8 +76,10 @@ open class SkelligTestStepToFeatureReference(myElement: PsiElement, private val 
                     val fileBasedIndex = FileBasedIndex.getInstance()
                     val project = module.project
 
-                    val searchScope = module.getModuleWithDependenciesAndLibrariesScope(true)
-                        .uniteWith(ProjectScope.getLibrariesScope(project))
+                    val searchScope =
+                        module
+                            .getModuleWithDependenciesAndLibrariesScope(true)
+                            .uniteWith(ProjectScope.getLibrariesScope(project))
                     val files = GlobalSearchScope.getScopeRestrictedByFileTypes(searchScope, SkelligFileType.INSTANCE)
 
                     val psiManager = PsiManager.getInstance(project)
@@ -93,35 +106,42 @@ open class SkelligTestStepToFeatureReference(myElement: PsiElement, private val 
                             }
                         }
                     }
-                    CachedValueProvider.Result.create<List<SkelligFeatureStepDefinition>>(resolvedElements, PsiModificationTracker.MODIFICATION_COUNT)
+                    CachedValueProvider.Result.create<List<SkelligFeatureStepDefinition>>(
+                        resolvedElements,
+                        PsiModificationTracker.MODIFICATION_COUNT,
+                    )
                 }
             }
 
         return resolvedElements.mapNotNull { it.getElement() }.map { PsiElementResolveResult(it) }.toTypedArray()
     }
 
-    override fun equals(other: Any?): Boolean {
-        return if (other is SkelligTestStepToFeatureReference) {
+    override fun equals(other: Any?): Boolean =
+        if (other is SkelligTestStepToFeatureReference) {
             element == other.element
-        } else false
-    }
+        } else {
+            false
+        }
 
-    override fun hashCode(): Int {
-        return element.hashCode()
-    }
+    override fun hashCode(): Int = element.hashCode()
 
     private class MyResolver : ResolveCache.PolyVariantResolver<SkelligTestStepToFeatureReference?> {
-        override fun resolve(ref: SkelligTestStepToFeatureReference, incompleteCode: Boolean): Array<ResolveResult> {
-            return ref.multiResolveInner()
-        }
+        override fun resolve(
+            ref: SkelligTestStepToFeatureReference,
+            incompleteCode: Boolean,
+        ): Array<ResolveResult> = ref.multiResolveInner()
     }
 
-    class SkelligFeatureStepDefinition(element: PsiElement) {
-        private val myElementPointer: SmartPsiElementPointer<PsiElement> = SmartPointerManager.getInstance(element.project).createSmartPsiElementPointer(element)
+    class SkelligFeatureStepDefinition(
+        element: PsiElement,
+    ) {
+        private val myElementPointer: SmartPsiElementPointer<PsiElement> =
+            SmartPointerManager
+                .getInstance(
+                    element.project,
+                ).createSmartPsiElementPointer(element)
 
-        fun getElement(): PsiElement? {
-            return myElementPointer.element
-        }
+        fun getElement(): PsiElement? = myElementPointer.element
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -130,8 +150,6 @@ open class SkelligTestStepToFeatureReference(myElement: PsiElement, private val 
             return myElementPointer == that.myElementPointer
         }
 
-        override fun hashCode(): Int {
-            return myElementPointer.hashCode()
-        }
+        override fun hashCode(): Int = myElementPointer.hashCode()
     }
 }

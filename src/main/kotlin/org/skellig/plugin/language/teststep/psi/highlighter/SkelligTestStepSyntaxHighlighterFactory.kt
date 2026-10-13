@@ -6,7 +6,8 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 
 class SkelligTestStepSyntaxHighlighterFactory : SyntaxHighlighterFactory() {
-    override fun getSyntaxHighlighter(project: Project?, virtualFile: VirtualFile?): SyntaxHighlighter {
-        return SkelligTestStepSyntaxHighlighter()
-    }
+    override fun getSyntaxHighlighter(
+        project: Project?,
+        virtualFile: VirtualFile?,
+    ): SyntaxHighlighter = SkelligTestStepSyntaxHighlighter()
 }

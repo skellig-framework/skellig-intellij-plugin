@@ -19,7 +19,10 @@ class SkelligStepReferenceProvider : PsiReferenceProvider() {
         private val TEXT_PARAM_AND_WHITE_SPACE_SET = TokenSet.orSet(TEXT_AND_PARAM_SET, TokenSet.WHITE_SPACE)
     }
 
-    override fun getReferencesByElement(element: PsiElement, context: ProcessingContext): Array<PsiReference> {
+    override fun getReferencesByElement(
+        element: PsiElement,
+        context: ProcessingContext,
+    ): Array<PsiReference> {
         if (element is SkelligFeatureStepImpl) {
             var textNode = element.node.findChildByType(TEXT_AND_PARAM_SET)
             if (textNode != null) {

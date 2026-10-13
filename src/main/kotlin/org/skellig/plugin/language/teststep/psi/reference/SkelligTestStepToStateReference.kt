@@ -4,17 +4,26 @@ import com.intellij.codeInsight.lookup.LookupElement
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementResolveResult
+import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiPolyVariantReference
+import com.intellij.psi.ResolveResult
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.indexing.FileBasedIndex
 import org.skellig.plugin.language.SkelligFileIcons
-import org.skellig.plugin.language.teststep.psi.*
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepFile
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepFileType
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepFunctionExpression
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepKey
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepPair
 
-
-open class SkelligTestStepToStateReference(stepParameter: SkelligTestStepFunctionExpression) : SkelligTestStepSimpleReference(stepParameter), PsiPolyVariantReference {
-
+open class SkelligTestStepToStateReference(
+    stepParameter: SkelligTestStepFunctionExpression,
+) : SkelligTestStepSimpleReference(stepParameter),
+    PsiPolyVariantReference {
     val element: SkelligTestStepFunctionExpression
         get() = super.getElement() as SkelligTestStepFunctionExpression
 
@@ -24,8 +33,9 @@ open class SkelligTestStepToStateReference(stepParameter: SkelligTestStepFunctio
             val stateValues = findAllStateValues(it)
             val results = mutableListOf<ResolveResult>()
             for (item in stateValues) {
-                if (element.argList.isNotEmpty() && item.text == element.argList[0].text)
+                if (element.argList.isNotEmpty() && item.text == element.argList[0].text) {
                     results.add(PsiElementResolveResult(item))
+                }
             }
             results.toTypedArray()
         } ?: emptyArray()
@@ -48,8 +58,9 @@ open class SkelligTestStepToStateReference(stepParameter: SkelligTestStepFunctio
             for (item in stateValues) {
                 variants.add(
                     LookupElementBuilder
-                        .create(item.text).withIcon(SkelligFileIcons.TEST_DATA_FILE)
-                        .withTypeText(item.containingFile.name)
+                        .create(item.text)
+                        .withIcon(SkelligFileIcons.TEST_DATA_FILE)
+                        .withTypeText(item.containingFile.name),
                 )
             }
         }
@@ -60,8 +71,10 @@ open class SkelligTestStepToStateReference(stepParameter: SkelligTestStepFunctio
         val fileBasedIndex = FileBasedIndex.getInstance()
         val project = module.project
 
-        val searchScope = module.getModuleWithDependenciesAndLibrariesScope(true)
-            .uniteWith(ProjectScope.getLibrariesScope(project))
+        val searchScope =
+            module
+                .getModuleWithDependenciesAndLibrariesScope(true)
+                .uniteWith(ProjectScope.getLibrariesScope(project))
         val files = GlobalSearchScope.getScopeRestrictedByFileTypes(searchScope, SkelligTestStepFileType.INSTANCE)
 
         val elements = mutableListOf<SkelligTestStepKey>()
@@ -83,7 +96,6 @@ open class SkelligTestStepToStateReference(stepParameter: SkelligTestStepFunctio
                             }
                         }
                     }
-
                 }
             }
             true // continue processing
@@ -91,6 +103,4 @@ open class SkelligTestStepToStateReference(stepParameter: SkelligTestStepFunctio
 
         return elements
     }
-
-
 }

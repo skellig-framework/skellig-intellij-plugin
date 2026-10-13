@@ -2,9 +2,9 @@ package org.skellig.plugin.language.feature.psi
 
 import com.intellij.psi.tree.IElementType
 
-
 class SkelligKeywordTable {
     private val myType2KeywordsTable: MutableMap<IElementType, MutableCollection<String>> = HashMap()
+
     fun putAllKeywordsInto(target: MutableMap<String?, IElementType>) {
         for (type in getTypes()) {
             val keywords: Collection<String>? = getKeywords(type)
@@ -16,7 +16,10 @@ class SkelligKeywordTable {
         }
     }
 
-    fun put(type: IElementType, keyword: String) {
+    fun put(
+        type: IElementType,
+        keyword: String,
+    ) {
         if (SkelligTokenTypes.Companion.KEYWORDS.contains(type)) {
             var keywords = getKeywords(type)
             if (keywords == null) {
@@ -27,13 +30,9 @@ class SkelligKeywordTable {
         }
     }
 
-    fun getStepKeywords(): Collection<String>? {
-        return getKeywords(SkelligTokenTypes.Companion.STEP_KEYWORD)!!
-    }
+    fun getStepKeywords(): Collection<String>? = getKeywords(SkelligTokenTypes.Companion.STEP_KEYWORD)!!
 
-    fun getScenarioKeywords(): Collection<String>? {
-        return getKeywords(SkelligTokenTypes.Companion.SCENARIO_KEYWORD)
-    }
+    fun getScenarioKeywords(): Collection<String>? = getKeywords(SkelligTokenTypes.Companion.SCENARIO_KEYWORD)
 
     fun getScenarioLikeKeywords(): Collection<String> {
         val keywords: MutableSet<String> = HashSet()
@@ -47,43 +46,28 @@ class SkelligKeywordTable {
         return result ?: emptyList()
     }
 
-    fun getScenarioOutlineKeyword(): String {
-        return getScenarioOutlineKeywords()!!.iterator().next()
-    }
+    fun getScenarioOutlineKeyword(): String = getScenarioOutlineKeywords()!!.iterator().next()
 
-    fun getScenarioOutlineKeywords(): Collection<String>? {
-        return getKeywords(SkelligTokenTypes.Companion.SCENARIO_KEYWORD)!!
-    }
+    fun getScenarioOutlineKeywords(): Collection<String>? = getKeywords(SkelligTokenTypes.Companion.SCENARIO_KEYWORD)!!
 
-    fun getBackgroundKeywords(): Collection<String>? {
-        return getKeywords(SkelligTokenTypes.Companion.BACKGROUND_KEYWORD)!!
-    }
+    fun getBackgroundKeywords(): Collection<String>? = getKeywords(SkelligTokenTypes.Companion.BACKGROUND_KEYWORD)!!
 
-    fun getExampleSectionKeyword(): String {
-        return getExampleSectionKeywords()!!.iterator().next()
-    }
+    fun getExampleSectionKeyword(): String = getExampleSectionKeywords()!!.iterator().next()
 
-    fun getExampleSectionKeywords(): Collection<String>? {
-        return getKeywords(SkelligTokenTypes.Companion.EXAMPLES_KEYWORD)!!
-    }
+    fun getExampleSectionKeywords(): Collection<String>? = getKeywords(SkelligTokenTypes.Companion.EXAMPLES_KEYWORD)!!
 
-    fun getFeatureSectionKeyword(): String {
-        return getFeaturesSectionKeywords()!!.iterator().next()
-    }
+    fun getFeatureSectionKeyword(): String = getFeaturesSectionKeywords()!!.iterator().next()
 
-    fun getFeaturesSectionKeywords(): Collection<String>? {
-        return getKeywords(SkelligTokenTypes.Companion.FEATURE_KEYWORD)!!
-    }
+    fun getFeaturesSectionKeywords(): Collection<String>? = getKeywords(SkelligTokenTypes.Companion.FEATURE_KEYWORD)!!
 
-    fun getTypes(): Collection<IElementType> {
-        return myType2KeywordsTable.keys
-    }
+    fun getTypes(): Collection<IElementType> = myType2KeywordsTable.keys
 
-    fun getKeywords(type: IElementType): MutableCollection<String>? {
-        return myType2KeywordsTable[type]
-    }
+    fun getKeywords(type: IElementType): MutableCollection<String>? = myType2KeywordsTable[type]
 
-    fun tableContainsKeyword(type: SkelligElementType, keyword: String): Boolean {
+    fun tableContainsKeyword(
+        type: SkelligElementType,
+        keyword: String,
+    ): Boolean {
         val alreadyKnownKeywords: Collection<String>? = getKeywords(type)
         return null != alreadyKnownKeywords && alreadyKnownKeywords.contains(keyword)
     }
