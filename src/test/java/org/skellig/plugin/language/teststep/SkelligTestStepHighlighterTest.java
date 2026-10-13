@@ -79,6 +79,46 @@ class SkelligTestStepHighlighterTest {
             """);
     }
 
+    @Test
+    public void testResultKeywordsInsideValidationBlocks() {
+        assertKeywordHighlighting("""
+            <keyword>name</keyword> ("validation") {
+                <keyword>validate</keyword> {
+                    <keyword>$</keyword>."skellig-db".fromIndex(0).taken_seats.contains(${1}) = true
+                    <keyword>$result</keyword>.success = true
+                    actual = compare(<keyword>$</keyword>, <keyword>$result</keyword>, ${result})
+                    nested { actual = <keyword>$result</keyword> }
+                    other = $resultOther
+                    text = "$result and ${1}"
+                    // $result and $
+                }
+                assert {
+                    <keyword>$result</keyword>.success = true
+                    <keyword>$</keyword>.success = true
+                    expected = ${result}
+                }
+            }
+            """);
+    }
+
+    @Test
+    public void testResultKeywordsDoNotLeakOutsideValidationBlocks() {
+        assertKeywordHighlighting("""
+            <keyword>name</keyword> ("outside validation") {
+                actual = $result
+                <keyword>values</keyword> {
+                    actual = $
+                    validate { actual = $result }
+                    assert { actual = $result }
+                }
+                <keyword>validate</keyword> { actual = <keyword>$result</keyword> }
+                actual = $
+                assert { actual = <keyword>$</keyword> }
+                actual = $result
+            }
+            """);
+    }
+
     private void assertKeywordHighlighting(String markedText) {
         Set<TextRange> expected = new LinkedHashSet<>();
         StringBuilder text = new StringBuilder();
