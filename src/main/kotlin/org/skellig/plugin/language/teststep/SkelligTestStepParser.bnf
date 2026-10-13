@@ -49,6 +49,7 @@
 
 file ::= testStepNameExpression*
 testStepNameExpression ::= NEWLINE* testNameKeyword FUNCTION_L_BRACKET testStepName FUNCTION_R_BRACKET NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET NEWLINE* {
+ pin = 8
  name = "Test Step declaration"
    mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepDeclarationMixin"
 }
@@ -73,9 +74,11 @@ allValues ::= value | map | array {
 }
 
 array ::= NEWLINE* ARRAY_L_BRACKET NEWLINE* (allValues (COMMA NEWLINE? allValues)*)? NEWLINE* ARRAY_R_BRACKET NEWLINE* {
+  pin = 2
   name = "Array declaration"
 }
 map ::= NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET {
+   pin = 2
    name = "Map declaration"
 }
 
@@ -83,6 +86,7 @@ expression ::= referenceExpression | functionExpression | testStepPropertyKeywor
     name = "Property, Value or Expression declaration"
 }
 functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION_R_BRACKET {
+ pin = 2
  name = "Function declaration"
  mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepFunctionMixin"
 }
