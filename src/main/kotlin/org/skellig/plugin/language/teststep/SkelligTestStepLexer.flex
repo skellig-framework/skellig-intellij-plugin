@@ -29,7 +29,7 @@ KEY_SYMBOLS=[_\-&'%$£!?`¬#~@\\:]+
 VALUE_SYMBOLS=[><|+/*]+
 STRING=\"[^\"\\]*(\\.[^\"\\]*)*\"
 NEWLINE=\r?\n
-COMMENT="//"[^\n]*[\n\r]*
+COMMENT="//"[^\n\r]*
 
 %%
 <YYINITIAL> {
@@ -56,7 +56,7 @@ COMMENT="//"[^\n]*[\n\r]*
   "body"                { return BODY; }
   "message"             { return MESSAGE; }
   "request"             { return REQUEST; }
-  " "                   { return WHITE_SPACE; }
+  [ \t\f]+             { return WHITE_SPACE; }
 
   {FLOAT}               { return FLOAT; }
   {INT}                 { return INT; }
