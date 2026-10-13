@@ -11,7 +11,6 @@ import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
 class SkelligTestStepSyntaxHighlighter : SyntaxHighlighterBase() {
     companion object {
         val COMMENT = arrayOf(SkelligTestStepHighlighter.COMMENT)
-        val KEYWORD = arrayOf(SkelligTestStepHighlighter.KEYWORD)
         val BRACKETS = arrayOf(SkelligTestStepHighlighter.BRACKETS)
         val STRING = arrayOf(SkelligTestStepHighlighter.STRING)
         val OPERATION = arrayOf(SkelligTestStepHighlighter.OPERATION)
@@ -23,15 +22,15 @@ class SkelligTestStepSyntaxHighlighter : SyntaxHighlighterBase() {
 
     override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> =
         when (tokenType) {
-            SkelligTestStepTypes.NAME -> KEYWORD
-            SkelligTestStepTypes.VALUES -> KEYWORD
-            SkelligTestStepTypes.VALIDATE -> KEYWORD
-            SkelligTestStepTypes.BODY -> KEYWORD
-            SkelligTestStepTypes.MESSAGE -> KEYWORD
-            SkelligTestStepTypes.REQUEST -> KEYWORD
-            SkelligTestStepTypes.WHERE -> KEYWORD
-            SkelligTestStepTypes.PAYLOAD -> KEYWORD
-            SkelligTestStepTypes.STATE -> KEYWORD
+            SkelligTestStepTypes.NAME -> TEXT
+            SkelligTestStepTypes.VALUES -> TEXT
+            SkelligTestStepTypes.VALIDATE -> TEXT
+            SkelligTestStepTypes.BODY -> TEXT
+            SkelligTestStepTypes.MESSAGE -> TEXT
+            SkelligTestStepTypes.REQUEST -> TEXT
+            SkelligTestStepTypes.WHERE -> TEXT
+            SkelligTestStepTypes.PAYLOAD -> TEXT
+            SkelligTestStepTypes.STATE -> TEXT
 
             SkelligTestStepTypes.ID -> TEXT
             SkelligTestStepTypes.KEY_SYMBOLS -> TEXT

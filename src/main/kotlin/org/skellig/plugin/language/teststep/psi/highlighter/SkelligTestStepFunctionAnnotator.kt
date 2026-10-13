@@ -5,16 +5,18 @@ import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.PsiElement
-import com.intellij.psi.util.elementType
-import com.intellij.psi.util.parentOfType
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepFunctionName
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepKey
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepPair
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepReferenceKey
-import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepPropertyKeywords
-import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestNameKeyword
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepNameExpression
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepVisitor
 
 class SkelligTestStepFunctionAnnotator : Annotator {
+    private val propertyKeywords =
+        setOf("name", "values", "state", "validate", "where", "payload", "body", "message", "messages", "request", "test")
+
     override fun annotate(
         element: PsiElement,
         holder: AnnotationHolder,
@@ -31,10 +33,16 @@ class SkelligTestStepFunctionAnnotator : Annotator {
                     setHighlighting(o, holder, SkelligTestStepHighlighter.REFERENCE)
                 }
 
-                override fun visitTestStepPropertyKeywords(o: SkelligTestStepTestStepPropertyKeywords) {
-                    super.visitTestStepPropertyKeywords(o)
-                    if (o.parentOfType<SkelligTestStepPair>()?.parent?.elementType != SkelligTestStepTypes.TEST_STEP_NAME_EXPRESSION) {
-                        setHighlighting(o, holder, SkelligTestStepHighlighter.TEXT)
+                override fun visitTestNameKeyword(o: SkelligTestStepTestNameKeyword) {
+                    super.visitTestNameKeyword(o)
+                    setHighlighting(o, holder, SkelligTestStepHighlighter.KEYWORD)
+                }
+
+                override fun visitKey(o: SkelligTestStepKey) {
+                    super.visitKey(o)
+                    val pair = o.parent as? SkelligTestStepPair
+                    if (pair?.parent is SkelligTestStepTestStepNameExpression && o.text in propertyKeywords) {
+                        setHighlighting(o, holder, SkelligTestStepHighlighter.KEYWORD)
                     }
                 }
             },

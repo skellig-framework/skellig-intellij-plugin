@@ -35,10 +35,10 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
     override fun getDemoText(): String =
         """
            // comment
-           name ("test 1") {
+           <keyword>name</keyword> ("test 1") {
               id = test1
               
-              values {
+              <keyword>values</keyword> {
                  a = "string value"
                  b [
                    1,
@@ -47,7 +47,7 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
                  c = $\{property1}
               }
               
-              validate {
+              <keyword>validate</keyword> {
                  body.jsonPath(a.b.c) = contains(text)
                  status = $\{status}
               }
@@ -55,7 +55,8 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
         """.replace("\\", "").trimIndent()
 
     @Nullable
-    override fun getAdditionalHighlightingTagToDescriptorMap(): @Nullable MutableMap<String, TextAttributesKey>? = null
+    override fun getAdditionalHighlightingTagToDescriptorMap(): MutableMap<String, TextAttributesKey> =
+        mutableMapOf("keyword" to SkelligTestStepHighlighter.KEYWORD)
 
     @NotNull
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> = ATTRS
