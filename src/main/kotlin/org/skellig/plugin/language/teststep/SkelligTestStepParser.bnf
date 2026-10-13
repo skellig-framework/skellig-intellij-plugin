@@ -92,7 +92,7 @@ functionName ::= ID {
 testStepPropertyKeywords ::= (VALUES | STATE | VALIDATE | WHERE | PAYLOAD | BODY | MESSAGE | REQUEST ) {
   name = "Test Step keywords"
 }
-arg ::= expression* {
+arg ::= NEWLINE* (map | expression*) NEWLINE* {
   name = "Function arguments"
 }
 referenceExpression ::= REFERENCE_BRACKET referenceKey+ (COMMA expression*)? OBJECT_R_BRACKET
