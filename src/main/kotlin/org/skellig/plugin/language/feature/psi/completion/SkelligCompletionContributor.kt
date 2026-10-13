@@ -1,36 +1,46 @@
 package org.skellig.plugin.language.feature.psi.completion
 
-import com.intellij.codeInsight.completion.*
+import com.intellij.codeInsight.completion.CompletionContributor
+import com.intellij.codeInsight.completion.CompletionParameters
+import com.intellij.codeInsight.completion.CompletionProvider
+import com.intellij.codeInsight.completion.CompletionResultSet
+import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
 import com.intellij.util.ProcessingContext
 
 class SkelligCompletionContributor : CompletionContributor() {
-
-    private val keywords = listOf(
-        "Feature", "Scenario", "Examples"
-    )
+    private val keywords =
+        listOf(
+            "Feature",
+            "Scenario",
+            "Examples",
+        )
 
     init {
         extend(
-            CompletionType.BASIC, PlatformPatterns.psiElement(),
+            CompletionType.BASIC,
+            PlatformPatterns.psiElement(),
             object : CompletionProvider<CompletionParameters>() {
                 override fun addCompletions(
                     parameters: CompletionParameters,
                     context: ProcessingContext,
-                    result: CompletionResultSet
+                    result: CompletionResultSet,
                 ) {
                     parameters.originalPosition?.text?.let { currentText ->
-                        keywords.filter { it.startsWith(currentText) }
+                        keywords
+                            .filter { it.startsWith(currentText) }
                             .forEach {
-                                result.addElement(LookupElementBuilder.create(it).withInsertHandler { context, _ ->
-                                    context.document.insertString(context.selectionEndOffset, ":")
-                                    context.editor.caretModel.moveToOffset(context.selectionEndOffset + 1)
-                                })
+                                result.addElement(
+                                    LookupElementBuilder.create(it).withInsertHandler { context, _ ->
+                                        context.document.insertString(context.selectionEndOffset, ":")
+                                        context.editor.caretModel.moveToOffset(context.selectionEndOffset + 1)
+                                    },
+                                )
                             }
                     }
                 }
-            }
+            },
         )
     }
 }

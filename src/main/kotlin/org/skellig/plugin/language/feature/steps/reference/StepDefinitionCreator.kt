@@ -12,7 +12,10 @@ interface StepDefinitionCreator {
      * @param name of created file
      * @return PsiFile object of created file
      */
-    fun createStepDefinitionContainer(dir: PsiDirectory, name: String): PsiFile
+    fun createStepDefinitionContainer(
+        dir: PsiDirectory,
+        name: String,
+    ): PsiFile
 
     /**
      * Creates step definition
@@ -22,18 +25,21 @@ interface StepDefinitionCreator {
      * number of templates in case of "Create All Step Definitions" action invoked
      * @return true if success, false otherwise
      */
-    fun createStepDefinition(step: SkelligFeatureStep, file: PsiFile, withTemplate: Boolean): Boolean {
-        return false
-    }
+    fun createStepDefinition(
+        step: SkelligFeatureStep,
+        file: PsiFile,
+        withTemplate: Boolean,
+    ): Boolean = false
 
     /**
      * Validates name of new step definition file
      * @param fileName name of file to check
      * @return true if name is valid, false otherwise
      */
-    fun validateNewStepDefinitionFileName(project: Project, fileName: String): Boolean {
-        return true
-    }
+    fun validateNewStepDefinitionFileName(
+        project: Project,
+        fileName: String,
+    ): Boolean = true
 
     fun getDefaultStepDefinitionFolderPath(step: SkelligFeatureStep): String
 

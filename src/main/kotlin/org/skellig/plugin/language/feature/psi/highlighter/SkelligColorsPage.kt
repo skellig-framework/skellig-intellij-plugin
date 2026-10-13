@@ -13,19 +13,19 @@ import javax.swing.Icon
 
 class SkelligColorsPage : ColorSettingsPage {
     companion object {
-
-        private val ATTRS: Array<AttributesDescriptor> = arrayOf(
-            AttributesDescriptor("text", SkelligHighlighter.TEXT),
-            AttributesDescriptor("comment", SkelligHighlighter.COMMENT),
-            AttributesDescriptor("keyword", SkelligHighlighter.KEYWORD),
-            AttributesDescriptor("tag", SkelligHighlighter.TAG),
-            AttributesDescriptor("pystring", SkelligHighlighter.PYSTRING),
-            AttributesDescriptor("table.header.cell", SkelligHighlighter.TABLE_HEADER_CELL),
-            AttributesDescriptor("table.cell", SkelligHighlighter.TABLE_CELL),
-            AttributesDescriptor("table.pipe", SkelligHighlighter.PIPE),
-            AttributesDescriptor("parameter", SkelligHighlighter.OUTLINE_PARAMETER_SUBSTITUTION),
-            AttributesDescriptor("regexp.param", SkelligHighlighter.REGEXP_PARAMETER)
-        )
+        private val ATTRS: Array<AttributesDescriptor> =
+            arrayOf(
+                AttributesDescriptor("text", SkelligHighlighter.TEXT),
+                AttributesDescriptor("comment", SkelligHighlighter.COMMENT),
+                AttributesDescriptor("keyword", SkelligHighlighter.KEYWORD),
+                AttributesDescriptor("tag", SkelligHighlighter.TAG),
+                AttributesDescriptor("pystring", SkelligHighlighter.PYSTRING),
+                AttributesDescriptor("table.header.cell", SkelligHighlighter.TABLE_HEADER_CELL),
+                AttributesDescriptor("table.cell", SkelligHighlighter.TABLE_CELL),
+                AttributesDescriptor("table.pipe", SkelligHighlighter.PIPE),
+                AttributesDescriptor("parameter", SkelligHighlighter.OUTLINE_PARAMETER_SUBSTITUTION),
+                AttributesDescriptor("regexp.param", SkelligHighlighter.REGEXP_PARAMETER),
+            )
 
         // Empty still
         private val ADDITIONAL_HIGHLIGHT_DESCRIPTORS: MutableMap<String, TextAttributesKey> = HashMap<String, TextAttributesKey>()
@@ -38,55 +38,43 @@ class SkelligColorsPage : ColorSettingsPage {
     }
 
     @Nullable
-    override fun getIcon(): Icon? {
-        return SkelligFileIcons.FEATURE_FILE
-    }
+    override fun getIcon(): Icon? = SkelligFileIcons.FEATURE_FILE
 
     @NotNull
-    override fun getHighlighter(): SyntaxHighlighter {
-        return SkelligSyntaxHighlighter(PlainSkelligKeywordProvider())
-    }
+    override fun getHighlighter(): SyntaxHighlighter = SkelligSyntaxHighlighter(PlainSkelligKeywordProvider())
 
     override fun getDemoText(): String =
         "# language: en\n" +
-                "Feature: Skellig Colors Settings Page\n" +
-                "  In order to customize Skellig language (*.feature files) highlighting\n" +
-                "  Our users can use this settings preview pane\n" +
-                "\n" +
-                "  @wip\n" +
-                "  Scenario: Different Skellig language structures\n" +
-                "    Given Some feature file with content\n" +
-                "    \"\"\"\n" +
-                "    Feature: Some feature\n" +
-                "      Scenario: Some scenario\n" +
-                "    \"\"\"\n" +
-                "    And I want to add new cucumber step\n" +
-                "    And Also a step with \"<regexp_param>regexp</regexp_param>\" parameter\n" +
-                "    When I open <<outline_param>ruby_ide</outline_param>>\n" +
-                "    Then Steps autocompletion feature will help me with all these tasks\n" +
-                "\n" +
-                "  Examples:\n" +
-                "    | <th>ruby_ide</th> |\n" +
-                "    | RubyMine |";
+            "Feature: Skellig Colors Settings Page\n" +
+            "  In order to customize Skellig language (*.feature files) highlighting\n" +
+            "  Our users can use this settings preview pane\n" +
+            "\n" +
+            "  @wip\n" +
+            "  Scenario: Different Skellig language structures\n" +
+            "    Given Some feature file with content\n" +
+            "    \"\"\"\n" +
+            "    Feature: Some feature\n" +
+            "      Scenario: Some scenario\n" +
+            "    \"\"\"\n" +
+            "    And I want to add new cucumber step\n" +
+            "    And Also a step with \"<regexp_param>regexp</regexp_param>\" parameter\n" +
+            "    When I open <<outline_param>ruby_ide</outline_param>>\n" +
+            "    Then Steps autocompletion feature will help me with all these tasks\n" +
+            "\n" +
+            "  Examples:\n" +
+            "    | <th>ruby_ide</th> |\n" +
+            "    | RubyMine |"
 
     @Nullable
-    override fun getAdditionalHighlightingTagToDescriptorMap(): @Nullable MutableMap<String, TextAttributesKey>? {
-        return ADDITIONAL_HIGHLIGHT_DESCRIPTORS
-    }
+    override fun getAdditionalHighlightingTagToDescriptorMap(): @Nullable MutableMap<String, TextAttributesKey>? =
+        ADDITIONAL_HIGHLIGHT_DESCRIPTORS
 
     @NotNull
-    override fun getAttributeDescriptors(): Array<AttributesDescriptor> {
-        return ATTRS
-    }
+    override fun getAttributeDescriptors(): Array<AttributesDescriptor> = ATTRS
 
     @NotNull
-    override fun getColorDescriptors(): Array<ColorDescriptor> {
-        return ColorDescriptor.EMPTY_ARRAY
-    }
+    override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
     @NotNull
-    override fun getDisplayName(): String {
-        return "Skellig Feature"
-    }
-
+    override fun getDisplayName(): String = "Skellig Feature"
 }

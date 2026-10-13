@@ -13,24 +13,32 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import com.intellij.psi.util.PsiUtilCore
-import org.skellig.plugin.language.feature.psi.impl.*
+import org.skellig.plugin.language.feature.psi.impl.SkelligExamplesBlockImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligFeatureHeaderImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligFeatureImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligFeatureStepImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligFileImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligPystringImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligRuleImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligScenarioOutlineImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligStepParameterImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligTableCellImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligTableHeaderRowImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligTableImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligTableRowImpl
+import org.skellig.plugin.language.feature.psi.impl.SkelligTagImpl
 
 class SkelligParserDefinition : ParserDefinition {
-
     companion object {
         private val WHITESPACE = TokenSet.create(TokenType.WHITE_SPACE)
         private val COMMENTS = TokenSet.create(SkelligTokenTypes.COMMENT)
     }
 
-    override fun createLexer(project: Project): Lexer {
-        return SkelligLexer(PlainSkelligKeywordProvider())
-    }
+    override fun createLexer(project: Project): Lexer = SkelligLexer(PlainSkelligKeywordProvider())
 
-    override fun createParser(project: Project): PsiParser {
-        return SkelligParser()
-    }
+    override fun createParser(project: Project): PsiParser = SkelligParser()
 
-    override fun getFileNodeType(): IFileElementType =  SkelligElementTypes.SKELLIG_FILE
+    override fun getFileNodeType(): IFileElementType = SkelligElementTypes.SKELLIG_FILE
 
     override fun getCommentTokens(): TokenSet = COMMENTS
 
@@ -52,11 +60,12 @@ class SkelligParserDefinition : ParserDefinition {
         return if (node.elementType === SkelligElementTypes.PYSTRING) SkelligPystringImpl(node) else PsiUtilCore.NULL_PSI_ELEMENT
     }
 
-    override fun createFile(viewProvider: FileViewProvider): PsiFile {
-        return SkelligFileImpl(viewProvider)
-    }
+    override fun createFile(viewProvider: FileViewProvider): PsiFile = SkelligFileImpl(viewProvider)
 
-    override fun spaceExistenceTypeBetweenTokens(left: ASTNode, right: ASTNode): ParserDefinition.SpaceRequirements {
+    override fun spaceExistenceTypeBetweenTokens(
+        left: ASTNode,
+        right: ASTNode,
+    ): ParserDefinition.SpaceRequirements {
         // Line break between line comment and other elements
         val leftElementType: IElementType = left.elementType
         if (leftElementType === SkelligTokenTypes.COMMENT) {
@@ -64,6 +73,8 @@ class SkelligParserDefinition : ParserDefinition {
         }
         return if (right.elementType === SkelligTokenTypes.EXAMPLES_KEYWORD) {
             ParserDefinition.SpaceRequirements.MUST_LINE_BREAK
-        } else ParserDefinition.SpaceRequirements.MAY
+        } else {
+            ParserDefinition.SpaceRequirements.MAY
+        }
     }
 }

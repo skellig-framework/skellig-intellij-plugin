@@ -2,7 +2,15 @@ package org.skellig.plugin.language.feature.steps.reference.java
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.*
+import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiIdentifier
+import com.intellij.psi.PsiLiteralExpression
+import com.intellij.psi.PsiMethodCallExpression
+import com.intellij.psi.PsiReference
+import com.intellij.psi.PsiReferenceContributor
+import com.intellij.psi.PsiReferenceProvider
+import com.intellij.psi.PsiReferenceRegistrar
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
@@ -17,7 +25,7 @@ class JavaToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
             object : PsiReferenceProvider() {
                 override fun getReferencesByElement(
                     element: PsiElement,
-                    context: ProcessingContext
+                    context: ProcessingContext,
                 ): Array<PsiReference> {
                     val testStepName = getTestStepName(element)
                     if (!testStepName.isNullOrEmpty()) {
@@ -36,7 +44,8 @@ class JavaToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
                     }
                     return PsiReference.EMPTY_ARRAY
                 }
-            })
+            },
+        )
     }
 
     private fun getTestStepName(element: PsiElement): String? {
@@ -44,11 +53,14 @@ class JavaToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
         val value = literalExpression.value
         return if (value is String && value.isNotEmpty()) {
             PsiTreeUtil.getParentOfType(element, PsiMethodCallExpression::class.java)?.let {
-                if (it.children.isNotEmpty() && it.children[0].getChildOfType<PsiIdentifier>()?.text == "run")
+                if (it.children.isNotEmpty() && it.children[0].getChildOfType<PsiIdentifier>()?.text == "run") {
                     value
-                else null
+                } else {
+                    null
+                }
             }
-        } else null
+        } else {
+            null
+        }
     }
-
 }

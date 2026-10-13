@@ -11,23 +11,19 @@ import org.skellig.plugin.language.teststep.psi.SkelligTestStepFile
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepKey
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepNameExpression
 
-class SkelligTestStepKeyViewElement(private val myElement: NavigatablePsiElement) : StructureViewTreeElement, SortableTreeElement {
-
-    override fun getValue(): Any {
-        return myElement
-    }
+class SkelligTestStepKeyViewElement(
+    private val myElement: NavigatablePsiElement,
+) : StructureViewTreeElement,
+    SortableTreeElement {
+    override fun getValue(): Any = myElement
 
     override fun navigate(requestFocus: Boolean) {
         myElement.navigate(requestFocus)
     }
 
-    override fun canNavigate(): Boolean {
-        return myElement.canNavigate()
-    }
+    override fun canNavigate(): Boolean = myElement.canNavigate()
 
-    override fun canNavigateToSource(): Boolean {
-        return myElement.canNavigateToSource()
-    }
+    override fun canNavigateToSource(): Boolean = myElement.canNavigateToSource()
 
     override fun getAlphaSortKey(): String {
         val name = myElement.name
@@ -42,9 +38,11 @@ class SkelligTestStepKeyViewElement(private val myElement: NavigatablePsiElement
     override fun getChildren(): Array<TreeElement> {
         if (myElement is SkelligTestStepFile) {
             val treeElements = mutableListOf<TreeElement>()
-            PsiTreeUtil.getChildrenOfTypeAsList(myElement, SkelligTestStepTestStepNameExpression::class.java)
+            PsiTreeUtil
+                .getChildrenOfTypeAsList(myElement, SkelligTestStepTestStepNameExpression::class.java)
                 .forEach { _ ->
-                    PsiTreeUtil.getChildrenOfTypeAsList(myElement, SkelligTestStepKey::class.java)
+                    PsiTreeUtil
+                        .getChildrenOfTypeAsList(myElement, SkelligTestStepKey::class.java)
                         .forEach { treeElements.add(SkelligTestStepKeyViewElement(it as NavigatablePsiElement)) }
                 }
             return treeElements.toTypedArray()

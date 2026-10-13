@@ -6,7 +6,6 @@ import org.skellig.plugin.language.feature.OutlineStepSubstitution
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 
 object SkelligPsiUtil {
-
     fun getSkelligFile(element: PsiElement): SkelligFile? {
         if (!element.isValid) {
             return null
@@ -18,7 +17,7 @@ object SkelligPsiUtil {
     fun buildParameterRanges(
         step: SkelligFeatureStep,
         definition: AbstractStepDefinition,
-        shiftOffset: Int
+        shiftOffset: Int,
     ): List<TextRange>? {
         val substitution = convertOutlineStepName(step)
         val parameterRanges: MutableList<TextRange> = ArrayList()
@@ -66,6 +65,7 @@ object SkelligPsiUtil {
             return OutlineStepSubstitution(step.name)
         }
         val outlineTableMap = (step.stepHolder as SkelligScenarioOutline).getOutlineTableMap()
-        return org.skellig.plugin.language.feature.SkelligUtil.substituteTableReferences(step.name, outlineTableMap)
+        return org.skellig.plugin.language.feature.SkelligUtil
+            .substituteTableReferences(step.name, outlineTableMap)
     }
 }

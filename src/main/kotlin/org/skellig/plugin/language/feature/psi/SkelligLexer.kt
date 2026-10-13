@@ -1,11 +1,13 @@
 package org.skellig.plugin.language.feature.psi
 
 import com.intellij.lexer.LexerBase
-import com.intellij.psi.*
+import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 
-class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : LexerBase() {
-    private var myBuffer : CharSequence = ""
+class SkelligLexer(
+    private val myKeywordProvider: SkelligKeywordProvider,
+) : LexerBase() {
+    private var myBuffer: CharSequence = ""
     private var myStartOffset = 0
     private var myEndOffset = 0
     private var myPosition = 0
@@ -14,12 +16,18 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
     private var myKeywords: List<String?>? = null
     private var myState = 0
     private var myCurLanguage: String? = null
+
     private fun updateLanguage(language: String) {
         myCurLanguage = language
         myKeywords = ArrayList(myKeywordProvider.getAllKeywords(language))
     }
 
-    override fun start(buffer: CharSequence, startOffset: Int, endOffset: Int, initialState: Int) {
+    override fun start(
+        buffer: CharSequence,
+        startOffset: Int,
+        endOffset: Int,
+        initialState: Int,
+    ) {
         myBuffer = buffer
         myStartOffset = startOffset
         myEndOffset = endOffset
@@ -28,26 +36,22 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
         advance()
     }
 
-    override fun getState(): Int {
-        return myState
-    }
+    override fun getState(): Int = myState
 
-    override fun getTokenType(): IElementType? {
-        return myCurrentToken
-    }
+    override fun getTokenType(): IElementType? = myCurrentToken
 
-    override fun getTokenStart(): Int {
-        return myCurrentTokenStart
-    }
+    override fun getTokenStart(): Int = myCurrentTokenStart
 
-    override fun getTokenEnd(): Int {
-        return myPosition
-    }
+    override fun getTokenEnd(): Int = myPosition
 
     private fun isStepParameter(currentElementTerminator: String): Boolean {
         var pos = myPosition
         if (myBuffer[pos] == '<') {
-            while (pos < myEndOffset && myBuffer[pos] != '\n' && myBuffer[pos] != '>' && !isStringAtPosition(currentElementTerminator, pos)) {
+            while (pos < myEndOffset &&
+                myBuffer[pos] != '\n' &&
+                myBuffer[pos] != '>' &&
+                !isStringAtPosition(currentElementTerminator, pos)
+            ) {
                 pos++
             }
             return pos < myEndOffset && myBuffer[pos] == '>'
@@ -83,7 +87,7 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
             }
         } else if (myState == STATE_INSIDE_PYSTRING) {
             if (isStringAtPosition(PYSTRING_MARKER)) {
-                myPosition += 3 /* marker length */
+                myPosition += 3 // marker length
                 myCurrentToken = SkelligTokenTypes.PYSTRING
                 myState = STATE_DEFAULT
             } else {
@@ -148,7 +152,8 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
                 for (keyword in myKeywords!!) {
                     val length = keyword!!.length
                     if (isStringAtPosition(keyword)) {
-                        if (myKeywordProvider.isSpaceRequiredAfterKeyword(myCurLanguage, keyword) && myEndOffset - myPosition > length &&
+                        if (myKeywordProvider.isSpaceRequiredAfterKeyword(myCurLanguage, keyword) &&
+                            myEndOffset - myPosition > length &&
                             Character.isLetterOrDigit(myBuffer[myPosition + length])
                         ) {
                             continue
@@ -162,13 +167,14 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
                             }
                         }
                         myPosition += length
-                        myState = if (myCurrentToken === SkelligTokenTypes.STEP_KEYWORD) {
-                            STATE_AFTER_STEP_KEYWORD
-                        } else if (myCurrentToken === SkelligTokenTypes.SCENARIO_KEYWORD) {
-                            STATE_AFTER_SCENARIO_KEYWORD
-                        } else {
-                            STATE_AFTER_KEYWORD
-                        }
+                        myState =
+                            if (myCurrentToken === SkelligTokenTypes.STEP_KEYWORD) {
+                                STATE_AFTER_STEP_KEYWORD
+                            } else if (myCurrentToken === SkelligTokenTypes.SCENARIO_KEYWORD) {
+                                STATE_AFTER_SCENARIO_KEYWORD
+                            } else {
+                                STATE_AFTER_KEYWORD
+                            }
                         return
                     }
                 }
@@ -199,9 +205,7 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
         }
     }
 
-    protected fun isParameterAllowed(): Boolean {
-        return myState == STATE_AFTER_STEP_KEYWORD || myState == STATE_AFTER_SCENARIO_KEYWORD
-    }
+    protected fun isParameterAllowed(): Boolean = myState == STATE_AFTER_STEP_KEYWORD || myState == STATE_AFTER_SCENARIO_KEYWORD
 
     private fun advanceOverWhitespace() {
         if (myBuffer[myPosition] == '\n') {
@@ -215,7 +219,10 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
         return myEndOffset - myPosition >= length && myBuffer.subSequence(myPosition, myPosition + length).toString() == keyword
     }
 
-    private fun isStringAtPosition(keyword: String, position: Int): Boolean {
+    private fun isStringAtPosition(
+        keyword: String,
+        position: Int,
+    ): Boolean {
         val length = keyword.length
         return myEndOffset - position >= length && myBuffer.subSequence(position, position + length).toString() == keyword
     }
@@ -236,7 +243,11 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
         }
     }
 
-    private fun advanceToParameterOrSymbol(s: String, parameterState: Int, shouldReturnWhitespace: Boolean) {
+    private fun advanceToParameterOrSymbol(
+        s: String,
+        parameterState: Int,
+        shouldReturnWhitespace: Boolean,
+    ) {
         val mark = myPosition
         while (myPosition < myEndOffset && !isStringAtPosition(s) && !isStepParameter(s)) {
             myPosition++
@@ -266,17 +277,12 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
         returnWhitespace(mark)
     }
 
-    private fun isCommentAtPosition(): Boolean {
-        return myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '/' && myBuffer[myPosition + 1] == '/'
-    }
+    private fun isCommentAtPosition(): Boolean =
+        myBuffer.length > myPosition + 1 && myBuffer[myPosition] == '/' && myBuffer[myPosition + 1] == '/'
 
-    override fun getBufferSequence(): CharSequence {
-        return myBuffer
-    }
+    override fun getBufferSequence(): CharSequence = myBuffer
 
-    override fun getBufferEnd(): Int {
-        return myEndOffset
-    }
+    override fun getBufferEnd(): Int = myEndOffset
 
     companion object {
         private const val STATE_DEFAULT = 0
@@ -288,15 +294,15 @@ class SkelligLexer(private val myKeywordProvider: SkelligKeywordProvider) : Lexe
         private const val STATE_PARAMETER_INSIDE_PYSTRING = 6
         private const val STATE_PARAMETER_INSIDE_STEP = 7
         const val PYSTRING_MARKER = "\"\"\""
-        fun fetchLocationLanguage(commentText: String): String? {
-            return if (commentText.startsWith("language:")) {
-                commentText.substring(9).trim { it <= ' ' }
-            } else null
-        }
 
-        private fun isValidTagChar(c: Char): Boolean {
-            return !Character.isWhitespace(c) && c != '@'
-        }
+        fun fetchLocationLanguage(commentText: String): String? =
+            if (commentText.startsWith("language:")) {
+                commentText.substring(9).trim { it <= ' ' }
+            } else {
+                null
+            }
+
+        private fun isValidTagChar(c: Char): Boolean = !Character.isWhitespace(c) && c != '@'
     }
 
     init {

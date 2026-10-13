@@ -13,16 +13,27 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.IncorrectOperationException
 import org.jetbrains.annotations.NonNls
-import org.skellig.plugin.language.feature.psi.*
+import org.skellig.plugin.language.feature.psi.SkelligElementTypes
+import org.skellig.plugin.language.feature.psi.SkelligElementVisitor
+import org.skellig.plugin.language.feature.psi.SkelligFeatureStep
+import org.skellig.plugin.language.feature.psi.SkelligPystring
+import org.skellig.plugin.language.feature.psi.SkelligScenarioOutline
+import org.skellig.plugin.language.feature.psi.SkelligStepsHolder
+import org.skellig.plugin.language.feature.psi.SkelligTable
+import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
+import org.skellig.plugin.language.feature.psi.SkelligUtil
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 import java.util.regex.Pattern
 
-class SkelligFeatureStepImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligFeatureStep, PsiCheckedRenameElement {
-    private val LOCK = Any()
+class SkelligFeatureStepImpl(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligFeatureStep,
+    PsiCheckedRenameElement {
+    private val lock = Any()
     private var mySubstitutions: List<String>? = null
-    override fun toString(): String {
-        return "SkelligStep:$name"
-    }
+
+    override fun toString(): String = "SkelligStep:$name"
 
     override val keyword: ASTNode?
         get() = node.findChildByType(SkelligTokenTypes.Companion.STEP_KEYWORD)
@@ -49,13 +60,13 @@ class SkelligFeatureStepImpl(node: ASTNode) : SkelligPsiElementBase(node), Skell
         return prefix + name
     }
 
-    override fun getReferences(): Array<PsiReference> {
-        return CachedValuesManager.getCachedValue(this) {
+    override fun getReferences(): Array<PsiReference> =
+        CachedValuesManager.getCachedValue(this) {
             CachedValueProvider.Result.create(
-                referencesInner, this
+                referencesInner,
+                this,
             )
         }
-    }
 
     private val referencesInner: Array<PsiReference>
         get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
@@ -67,15 +78,14 @@ class SkelligFeatureStepImpl(node: ASTNode) : SkelligPsiElementBase(node), Skell
     // step name
     override val paramsSubstitutions:
 
-    // pystring
+        // pystring
 
-    // table
-            List<String>
+        // table
+        List<String>
         get() {
-            synchronized(LOCK) {
+            synchronized(lock) {
                 if (mySubstitutions == null) {
                     val substitutions = ArrayList<String>()
-
 
                     // step name
                     val text = name
@@ -115,25 +125,27 @@ class SkelligFeatureStepImpl(node: ASTNode) : SkelligPsiElementBase(node), Skell
         }
 
     private fun clearCaches() {
-        synchronized(LOCK) { mySubstitutions = null }
+        synchronized(lock) { mySubstitutions = null }
     }
 
     override val substitutedName: String?
         get() {
             val holder = stepHolder as? SkelligScenarioOutline ?: return name
-            return org.skellig.plugin.language.feature.SkelligUtil.substituteTableReferences(name, holder.getOutlineTableMap()).substitution
+            return org.skellig.plugin.language.feature.SkelligUtil
+                .substituteTableReferences(name, holder.getOutlineTableMap())
+                .substitution
         }
 
     @Throws(IncorrectOperationException::class)
-    override fun setName(@NonNls name: String): PsiElement {
-        val newStep: SkelligFeatureStep? = null //SkelligChangeUtil.createStep(getKeyword().getText() + " " + name, getProject());
+    override fun setName(
+        @NonNls name: String,
+    ): PsiElement {
+        val newStep: SkelligFeatureStep? = null // SkelligChangeUtil.createStep(getKeyword().getText() + " " + name, getProject());
         //        replace(newStep);
         return newStep!!
     }
 
-    override fun getName(): String {
-        return elementText
-    }
+    override fun getName(): String = elementText
 
     override fun findDefinitions(): Collection<AbstractStepDefinition> {
         //        for (final PsiReference reference : getReferences()) {
@@ -151,7 +163,7 @@ class SkelligFeatureStepImpl(node: ASTNode) : SkelligPsiElementBase(node), Skell
         }
         for (definition in definitions) {
             if (!definition.supportsRename(newName)) {
-                return false //At least one definition does not support renaming
+                return false // At least one definition does not support renaming
             }
         }
         return true // Nothing prevents us from renaming
@@ -164,16 +176,21 @@ class SkelligFeatureStepImpl(node: ASTNode) : SkelligPsiElementBase(node), Skell
     }
 
     companion object {
-        private val TEXT_FILTER = TokenSet
-            .create(
-                SkelligTokenTypes.Companion.TEXT,
-                SkelligElementTypes.Companion.STEP_PARAMETER,
-                TokenType.WHITE_SPACE,
-                SkelligTokenTypes.Companion.STEP_PARAMETER_TEXT,
-                SkelligTokenTypes.Companion.STEP_PARAMETER_BRACE
-            )
+        private val TEXT_FILTER =
+            TokenSet
+                .create(
+                    SkelligTokenTypes.Companion.TEXT,
+                    SkelligElementTypes.Companion.STEP_PARAMETER,
+                    TokenType.WHITE_SPACE,
+                    SkelligTokenTypes.Companion.STEP_PARAMETER_TEXT,
+                    SkelligTokenTypes.Companion.STEP_PARAMETER_BRACE,
+                )
         private val PARAMETER_SUBSTITUTION_PATTERN = Pattern.compile("<([^>\n\r]+)>")
-        private fun addSubstitutionFromText(text: String?, substitutions: ArrayList<String>) {
+
+        private fun addSubstitutionFromText(
+            text: String?,
+            substitutions: ArrayList<String>,
+        ) {
             val matcher = PARAMETER_SUBSTITUTION_PATTERN.matcher(text)
             var result = matcher.find()
             if (!result) {

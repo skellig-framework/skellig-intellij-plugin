@@ -7,11 +7,15 @@ import com.intellij.util.LocalTimeCounter
 import org.skellig.plugin.language.feature.psi.SkelligFileType
 
 object SkelligElementFactory {
-    fun createTempPsiFile(project: Project?, text: String): PsiElement {
-        return PsiFileFactory.getInstance(project).createFileFromText(
+    fun createTempPsiFile(
+        project: Project?,
+        text: String,
+    ): PsiElement =
+        PsiFileFactory.getInstance(project).createFileFromText(
             "temp." + SkelligFileType.INSTANCE.defaultExtension,
             SkelligFileType.INSTANCE,
-            text, LocalTimeCounter.currentTime(), true
+            text,
+            LocalTimeCounter.currentTime(),
+            true,
         )
-    }
 }

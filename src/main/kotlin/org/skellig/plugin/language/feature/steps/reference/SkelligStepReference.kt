@@ -3,7 +3,12 @@ package org.skellig.plugin.language.feature.steps.reference
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleUtilCore
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiElementResolveResult
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiLiteralExpression
+import com.intellij.psi.PsiPolyVariantReference
+import com.intellij.psi.ResolveResult
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
@@ -14,8 +19,10 @@ import org.skellig.plugin.language.feature.psi.SkelligUtil.extractTextFromKotlin
 import org.skellig.plugin.language.feature.psi.impl.SkelligFeatureStepImpl
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 
-class SkelligStepReference(val step: PsiElement, private val range: TextRange) : PsiPolyVariantReference {
-
+class SkelligStepReference(
+    val step: PsiElement,
+    private val range: TextRange,
+) : PsiPolyVariantReference {
     companion object {
         private val RESOLVER = MyResolver()
     }
@@ -24,7 +31,6 @@ class SkelligStepReference(val step: PsiElement, private val range: TextRange) :
 
     override fun getRangeInElement(): TextRange = range
 
-
     override fun resolve(): PsiElement? {
         val result = multiResolve(true)
         return if (result.size == 1) result[0].element else null
@@ -32,13 +38,9 @@ class SkelligStepReference(val step: PsiElement, private val range: TextRange) :
 
     override fun getCanonicalText(): String = step.text
 
-    override fun handleElementRename(newElementName: String): PsiElement {
-        return step
-    }
+    override fun handleElementRename(newElementName: String): PsiElement = step
 
-    override fun bindToElement(element: PsiElement): PsiElement {
-        return step
-    }
+    override fun bindToElement(element: PsiElement): PsiElement = step
 
     override fun isReferenceTo(element: PsiElement): Boolean {
         val resolvedResults = multiResolve(false)
@@ -52,17 +54,16 @@ class SkelligStepReference(val step: PsiElement, private val range: TextRange) :
 
     override fun isSoft(): Boolean = false
 
-    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        return ResolveCache.getInstance(element.project).resolveWithCaching<SkelligStepReference>(this, RESOLVER, false, incompleteCode)
-    }
+    override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> =
+        ResolveCache.getInstance(element.project).resolveWithCaching<SkelligStepReference>(this, RESOLVER, false, incompleteCode)
 
     fun multiResolveInner(): Array<ResolveResult> {
         val module: Module = ModuleUtilCore.findModuleForPsiElement(step) ?: return ResolveResult.EMPTY_ARRAY
         val frameworks = SkelligExtensionPoint.EP_NAME.extensionList
         val stepVariants =
             when (element) {
-                is PsiLiteralExpression ->  setOf(extractTextFromJavaString(element as PsiLiteralExpression))
-                is KtStringTemplateExpression ->  setOf(extractTextFromKotlinString(element as KtStringTemplateExpression))
+                is PsiLiteralExpression -> setOf(extractTextFromJavaString(element as PsiLiteralExpression))
+                is KtStringTemplateExpression -> setOf(extractTextFromKotlinString(element as KtStringTemplateExpression))
                 else -> frameworks.mapNotNull { f -> f.getStepName(step) }.toSet()
             }
         if (stepVariants.isEmpty()) {
@@ -75,7 +76,10 @@ class SkelligStepReference(val step: PsiElement, private val range: TextRange) :
                 for (framework in frameworks) {
                     allStepDefinition.addAll(framework.loadStepsFor(featureFile, module))
                 }
-                CachedValueProvider.Result.create<List<AbstractStepDefinition>>(allStepDefinition, PsiModificationTracker.MODIFICATION_COUNT)
+                CachedValueProvider.Result.create<List<AbstractStepDefinition>>(
+                    allStepDefinition,
+                    PsiModificationTracker.MODIFICATION_COUNT,
+                )
             }
         val resolvedElements: MutableList<PsiElement> = mutableListOf()
         for (stepDefinition in stepDefinitions) {
@@ -104,14 +108,13 @@ class SkelligStepReference(val step: PsiElement, private val range: TextRange) :
      * @return step definitions
      * @see .resolveToDefinition
      */
-    private fun resolveToDefinitions(): Collection<AbstractStepDefinition> {
-        return SkelligStepHelper.findStepDefinitions(step.containingFile, step as SkelligFeatureStepImpl)
-    }
+    private fun resolveToDefinitions(): Collection<AbstractStepDefinition> =
+        SkelligStepHelper.findStepDefinitions(step.containingFile, step as SkelligFeatureStepImpl)
 
     private class MyResolver : ResolveCache.PolyVariantResolver<SkelligStepReference?> {
-        override fun resolve(ref: SkelligStepReference, incompleteCode: Boolean): Array<ResolveResult> {
-            return ref.multiResolveInner()
-        }
+        override fun resolve(
+            ref: SkelligStepReference,
+            incompleteCode: Boolean,
+        ): Array<ResolveResult> = ref.multiResolveInner()
     }
-
 }

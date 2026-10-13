@@ -6,10 +6,20 @@ import com.intellij.openapi.fileTypes.FileType
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.TokenType
-import org.skellig.plugin.language.feature.psi.*
+import org.skellig.plugin.language.feature.psi.PlainSkelligKeywordProvider
+import org.skellig.plugin.language.feature.psi.SkelligFeature
+import org.skellig.plugin.language.feature.psi.SkelligFile
+import org.skellig.plugin.language.feature.psi.SkelligFileType
+import org.skellig.plugin.language.feature.psi.SkelligKeywordProvider
+import org.skellig.plugin.language.feature.psi.SkelligKeywordTable
+import org.skellig.plugin.language.feature.psi.SkelligLanguage
+import org.skellig.plugin.language.feature.psi.SkelligLexer
+import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
 
-class SkelligFileImpl(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, SkelligLanguage.INSTANCE), SkelligFile {
-
+class SkelligFileImpl(
+    viewProvider: FileViewProvider,
+) : PsiFileBase(viewProvider, SkelligLanguage.INSTANCE),
+    SkelligFile {
     override fun getFileType(): FileType = SkelligFileType.INSTANCE
 
     override fun getStepKeywords(): List<String> {
@@ -47,9 +57,7 @@ class SkelligFileImpl(viewProvider: FileViewProvider) : PsiFileBase(viewProvider
 
     override fun getFeatures(): Array<SkelligFeature?> = findChildrenByClass(SkelligFeature::class.java)
 
-    override fun toString(): String {
-        return "SkelligFile:" + getName()
-    }
+    override fun toString(): String = "SkelligFile:" + getName()
 
     override fun findElementAt(offset: Int): PsiElement? {
         var result: PsiElement? = super.findElementAt(offset)

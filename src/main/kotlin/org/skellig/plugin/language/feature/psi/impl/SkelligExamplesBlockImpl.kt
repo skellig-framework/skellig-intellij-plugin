@@ -7,14 +7,13 @@ import org.skellig.plugin.language.feature.psi.SkelligElementVisitor
 import org.skellig.plugin.language.feature.psi.SkelligExamplesBlock
 import org.skellig.plugin.language.feature.psi.SkelligTable
 
-class SkelligExamplesBlockImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligExamplesBlock {
-    override fun toString(): String {
-        return "SkelligExamplesBlock:$elementText"
-    }
+class SkelligExamplesBlockImpl(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligExamplesBlock {
+    override fun toString(): String = "SkelligExamplesBlock:$elementText"
 
-    override fun getPresentableText(): String? {
-        return buildPresentableText("Examples")
-    }
+    override fun getPresentableText(): String? = buildPresentableText("Examples")
 
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {
         skelligElementVisitor.visitExamplesBlock(this)

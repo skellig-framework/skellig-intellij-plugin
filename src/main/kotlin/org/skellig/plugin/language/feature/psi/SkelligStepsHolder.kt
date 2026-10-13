@@ -1,6 +1,8 @@
 package org.skellig.plugin.language.feature.psi
 
-interface SkelligStepsHolder : SkelligPsiElement, SkelligSuppressionHolder {
+interface SkelligStepsHolder :
+    SkelligPsiElement,
+    SkelligSuppressionHolder {
     val scenarioName: String
     val steps: Array<SkelligFeatureStep?>
     val tags: Array<SkelligTag?>

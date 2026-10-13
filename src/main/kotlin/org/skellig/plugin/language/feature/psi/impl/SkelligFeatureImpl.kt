@@ -6,12 +6,14 @@ import org.skellig.plugin.language.feature.psi.SkelligElementVisitor
 import org.skellig.plugin.language.feature.psi.SkelligFeature
 import org.skellig.plugin.language.feature.psi.SkelligStepsHolder
 import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
-import java.util.*
+import java.util.ArrayList
+import java.util.Arrays
 
-class SkelligFeatureImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligFeature {
-    override fun toString(): String {
-        return "SkelligFeature:$featureName"
-    }
+class SkelligFeatureImpl(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligFeature {
+    override fun toString(): String = "SkelligFeature:$featureName"
 
     override val featureName: String
         get() {
@@ -42,9 +44,7 @@ class SkelligFeatureImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligFe
             return result.toTypedArray()
         }
 
-    protected override fun getPresentableText(): String? {
-        return "Feature: $featureName"
-    }
+    protected override fun getPresentableText(): String? = "Feature: $featureName"
 
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {
         skelligElementVisitor.visitFeature(this)

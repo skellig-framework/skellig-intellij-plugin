@@ -12,7 +12,10 @@ import org.skellig.plugin.language.feature.psi.SkelligPsiElement
 import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
 import javax.swing.Icon
 
-abstract class SkelligPsiElementBase(node: ASTNode) : ASTWrapperPsiElement(node), SkelligPsiElement {
+abstract class SkelligPsiElementBase(
+    node: ASTNode,
+) : ASTWrapperPsiElement(node),
+    SkelligPsiElement {
     companion object {
         private val TEXT_FILTER: TokenSet = TokenSet.create(SkelligTokenTypes.Companion.TEXT)
     }
@@ -26,25 +29,16 @@ abstract class SkelligPsiElementBase(node: ASTNode) : ASTWrapperPsiElement(node)
 
     override fun getPresentation(): ItemPresentation? {
         val fileName = this.containingFile.name
-       return object : ItemPresentation {
+        return object : ItemPresentation {
+            override fun getPresentableText(): String = node.text
 
-            override fun getPresentableText(): String {
-                return node.text
-            }
+            override fun getLocationString(): String = fileName
 
-            override fun getLocationString(): String {
-                return fileName
-            }
-
-            override fun getIcon(open: Boolean): Icon? {
-                return getIcon(Iconable.ICON_FLAG_VISIBILITY)
-            }
+            override fun getIcon(open: Boolean): Icon? = getIcon(Iconable.ICON_FLAG_VISIBILITY)
         }
     }
 
-    protected open fun getPresentableText(): String? {
-        return toString()
-    }
+    protected open fun getPresentableText(): String? = toString()
 
     protected fun buildPresentableText(prefix: String?): String {
         val result = StringBuilder(prefix)
@@ -64,6 +58,4 @@ abstract class SkelligPsiElementBase(node: ASTNode) : ASTWrapperPsiElement(node)
     }
 
     protected abstract fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor)
-
-
 }

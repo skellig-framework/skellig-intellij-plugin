@@ -6,14 +6,13 @@ import com.intellij.formatting.FormattingModelBuilder
 import com.intellij.formatting.FormattingModelProvider
 
 class SkelligTestStepFormattingModelBuilder : FormattingModelBuilder {
-
     override fun createModel(formattingContext: FormattingContext): FormattingModel {
         val codeStyleSettings = formattingContext.codeStyleSettings
         return FormattingModelProvider
             .createFormattingModelForPsiFile(
                 formattingContext.containingFile,
                 SkelligTestStepBlock(formattingContext.node),
-                codeStyleSettings
+                codeStyleSettings,
             )
     }
 }

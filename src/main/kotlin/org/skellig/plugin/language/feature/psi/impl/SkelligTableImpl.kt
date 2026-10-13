@@ -8,7 +8,10 @@ import org.skellig.plugin.language.feature.psi.SkelligElementVisitor
 import org.skellig.plugin.language.feature.psi.SkelligTable
 import org.skellig.plugin.language.feature.psi.SkelligTableRow
 
-class SkelligTableImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligTable {
+class SkelligTableImpl(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligTable {
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {
         skelligElementVisitor.visitTable(this)
     }
@@ -45,9 +48,7 @@ class SkelligTableImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligTabl
         return result
     }
 
-    override fun toString(): String {
-        return "SkelligTable"
-    }
+    override fun toString(): String = "SkelligTable"
 
     companion object {
         private val HEADER_ROW_TOKEN_SET = TokenSet.create(SkelligElementTypes.Companion.TABLE_HEADER_ROW)

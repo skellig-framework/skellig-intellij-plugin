@@ -10,14 +10,13 @@ import org.skellig.plugin.language.feature.psi.SkelligElementVisitor
 import org.skellig.plugin.language.feature.psi.SkelligExamplesBlock
 import org.skellig.plugin.language.feature.psi.SkelligScenarioOutline
 
-class SkelligScenarioOutlineImpl(node: ASTNode) : SkelligStepsHolderBase(node), SkelligScenarioOutline {
-    override fun toString(): String {
-        return "SkelligScenario:$elementText"
-    }
+class SkelligScenarioOutlineImpl(
+    node: ASTNode,
+) : SkelligStepsHolderBase(node),
+    SkelligScenarioOutline {
+    override fun toString(): String = "SkelligScenario:$elementText"
 
-    override fun getPresentableText(): String? {
-        return buildPresentableText("Scenario")
-    }
+    override fun getPresentableText(): String? = buildPresentableText("Scenario")
 
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {
         skelligElementVisitor.visitScenarioOutline(this)
@@ -32,13 +31,15 @@ class SkelligScenarioOutlineImpl(node: ASTNode) : SkelligStepsHolderBase(node), 
         return result
     }
 
-    override fun getOutlineTableMap(): Map<String, String>? {
-        return CachedValuesManager
-            .getCachedValue(this) { CachedValueProvider.Result.create(buildOutlineTableMap(this), PsiModificationTracker.MODIFICATION_COUNT) }
-    }
+    override fun getOutlineTableMap(): Map<String, String>? =
+        CachedValuesManager
+            .getCachedValue(
+                this,
+            ) { CachedValueProvider.Result.create(buildOutlineTableMap(this), PsiModificationTracker.MODIFICATION_COUNT) }
 
     companion object {
         private val EXAMPLES_BLOCK_FILTER = TokenSet.create(SkelligElementTypes.Companion.EXAMPLES_BLOCK)
+
         private fun buildOutlineTableMap(scenarioOutline: SkelligScenarioOutline?): Map<String, String>? {
             if (scenarioOutline == null) {
                 return null

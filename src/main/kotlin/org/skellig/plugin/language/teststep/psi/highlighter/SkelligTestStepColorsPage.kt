@@ -10,32 +10,27 @@ import org.jetbrains.annotations.Nullable
 import org.skellig.plugin.language.SkelligFileIcons
 import javax.swing.Icon
 
-
 class SkelligTestStepColorsPage : ColorSettingsPage {
-
     companion object {
-        private val ATTRS: Array<AttributesDescriptor> = arrayOf(
-            AttributesDescriptor("TEXT", SkelligTestStepHighlighter.TEXT),
-            AttributesDescriptor("COMMENT", SkelligTestStepHighlighter.COMMENT),
-            AttributesDescriptor("KEYWORD", SkelligTestStepHighlighter.KEYWORD),
-            AttributesDescriptor("STRING", SkelligTestStepHighlighter.STRING),
-            AttributesDescriptor("BRACKETS", SkelligTestStepHighlighter.BRACKETS),
-            AttributesDescriptor("REFERENCE", SkelligTestStepHighlighter.REFERENCE),
-            AttributesDescriptor("FUNCTION", SkelligTestStepHighlighter.FUNCTION),
-            AttributesDescriptor("OPERATION", SkelligTestStepHighlighter.OPERATION),
-            AttributesDescriptor("NUMBER", SkelligTestStepHighlighter.NUMBER),
-        )
+        private val ATTRS: Array<AttributesDescriptor> =
+            arrayOf(
+                AttributesDescriptor("TEXT", SkelligTestStepHighlighter.TEXT),
+                AttributesDescriptor("COMMENT", SkelligTestStepHighlighter.COMMENT),
+                AttributesDescriptor("KEYWORD", SkelligTestStepHighlighter.KEYWORD),
+                AttributesDescriptor("STRING", SkelligTestStepHighlighter.STRING),
+                AttributesDescriptor("BRACKETS", SkelligTestStepHighlighter.BRACKETS),
+                AttributesDescriptor("REFERENCE", SkelligTestStepHighlighter.REFERENCE),
+                AttributesDescriptor("FUNCTION", SkelligTestStepHighlighter.FUNCTION),
+                AttributesDescriptor("OPERATION", SkelligTestStepHighlighter.OPERATION),
+                AttributesDescriptor("NUMBER", SkelligTestStepHighlighter.NUMBER),
+            )
     }
 
     @Nullable
-    override fun getIcon(): Icon {
-        return SkelligFileIcons.FEATURE_FILE
-    }
+    override fun getIcon(): Icon = SkelligFileIcons.FEATURE_FILE
 
     @NotNull
-    override fun getHighlighter(): SyntaxHighlighter {
-        return SkelligTestStepSyntaxHighlighter()
-    }
+    override fun getHighlighter(): SyntaxHighlighter = SkelligTestStepSyntaxHighlighter()
 
     override fun getDemoText(): String =
         """
@@ -60,23 +55,14 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
         """.replace("\\", "").trimIndent()
 
     @Nullable
-    override fun getAdditionalHighlightingTagToDescriptorMap(): @Nullable MutableMap<String, TextAttributesKey>? {
-        return null
-    }
+    override fun getAdditionalHighlightingTagToDescriptorMap(): @Nullable MutableMap<String, TextAttributesKey>? = null
 
     @NotNull
-    override fun getAttributeDescriptors(): Array<AttributesDescriptor> {
-        return ATTRS
-    }
+    override fun getAttributeDescriptors(): Array<AttributesDescriptor> = ATTRS
 
     @NotNull
-    override fun getColorDescriptors(): Array<ColorDescriptor> {
-        return ColorDescriptor.EMPTY_ARRAY
-    }
+    override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY
 
     @NotNull
-    override fun getDisplayName(): String {
-        return "Skellig Test Step"
-    }
-
+    override fun getDisplayName(): String = "Skellig Test Step"
 }

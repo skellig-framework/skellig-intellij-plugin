@@ -8,18 +8,21 @@ import com.intellij.psi.util.CachedValuesManager
 import org.skellig.plugin.language.feature.psi.SkelligElementVisitor
 import org.skellig.plugin.language.feature.psi.SkelligTag
 
-class SkelligTagImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligTag {
+class SkelligTagImpl(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligTag {
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {
         skelligElementVisitor.visitTag(this)
     }
 
-    override fun getReferences(): Array<PsiReference> {
-        return CachedValuesManager.getCachedValue(this) {
+    override fun getReferences(): Array<PsiReference> =
+        CachedValuesManager.getCachedValue(this) {
             CachedValueProvider.Result.create(
-                referencesInner, this
+                referencesInner,
+                this,
             )
         }
-    }
 
     private val referencesInner: Array<PsiReference>
         get() = ReferenceProvidersRegistry.getReferencesFromProviders(this)
@@ -27,7 +30,5 @@ class SkelligTagImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligTag {
     override val tagName: String?
         get() = text
 
-    override fun toString(): String {
-        return "SkelligTag:$text"
-    }
+    override fun toString(): String = "SkelligTag:$text"
 }

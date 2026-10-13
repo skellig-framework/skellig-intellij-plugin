@@ -7,8 +7,10 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.TokenSet
 
 class SkelligParser : PsiParser {
-
-    override fun parse(root: IElementType, builder: PsiBuilder): ASTNode {
+    override fun parse(
+        root: IElementType,
+        builder: PsiBuilder,
+    ): ASTNode {
         val marker = builder.mark()
         parseFileTopLevel(builder)
         marker.done(SkelligElementTypes.SKELLIG_FILE)
@@ -16,12 +18,13 @@ class SkelligParser : PsiParser {
     }
 
     companion object {
-        private val SCENARIO_END_TOKENS = TokenSet.create(
-            SkelligTokenTypes.BACKGROUND_KEYWORD,
-            SkelligTokenTypes.SCENARIO_KEYWORD,
-            SkelligTokenTypes.RULE_KEYWORD,
-            SkelligTokenTypes.FEATURE_KEYWORD
-        )
+        private val SCENARIO_END_TOKENS =
+            TokenSet.create(
+                SkelligTokenTypes.BACKGROUND_KEYWORD,
+                SkelligTokenTypes.SCENARIO_KEYWORD,
+                SkelligTokenTypes.RULE_KEYWORD,
+                SkelligTokenTypes.FEATURE_KEYWORD,
+            )
 
         private fun parseFileTopLevel(builder: PsiBuilder) {
             while (!builder.eof()) {
@@ -48,7 +51,11 @@ class SkelligParser : PsiParser {
                         descMarker = builder.mark()
                     }
                 }
-                if (SkelligTokenTypes.SCENARIOS_KEYWORDS.contains(tokenType) || tokenType === SkelligTokenTypes.RULE_KEYWORD || tokenType === SkelligTokenTypes.BACKGROUND_KEYWORD || tokenType === SkelligTokenTypes.TAG) {
+                if (SkelligTokenTypes.SCENARIOS_KEYWORDS.contains(tokenType) ||
+                    tokenType === SkelligTokenTypes.RULE_KEYWORD ||
+                    tokenType === SkelligTokenTypes.BACKGROUND_KEYWORD ||
+                    tokenType === SkelligTokenTypes.TAG
+                ) {
                     if (descMarker != null) {
                         descMarker.done(SkelligElementTypes.FEATURE_HEADER)
                         descMarker = null
@@ -65,7 +72,10 @@ class SkelligParser : PsiParser {
             marker.done(SkelligElementTypes.FEATURE)
         }
 
-        private fun hadLineBreakBefore(builder: PsiBuilder, prevTokenEnd: Int): Boolean {
+        private fun hadLineBreakBefore(
+            builder: PsiBuilder,
+            prevTokenEnd: Int,
+        ): Boolean {
             if (prevTokenEnd < 0) return false
             val precedingText = builder.originalText.subSequence(prevTokenEnd, builder.currentOffset).toString()
             return precedingText.contains("\n")
@@ -155,7 +165,10 @@ class SkelligParser : PsiParser {
             val marker = builder.mark()
             builder.advanceLexer()
             var prevTokenEnd = -1
-            while (builder.tokenType === SkelligTokenTypes.TEXT || builder.tokenType === SkelligTokenTypes.STEP_PARAMETER_BRACE || builder.tokenType === SkelligTokenTypes.STEP_PARAMETER_TEXT) {
+            while (builder.tokenType === SkelligTokenTypes.TEXT ||
+                builder.tokenType === SkelligTokenTypes.STEP_PARAMETER_BRACE ||
+                builder.tokenType === SkelligTokenTypes.STEP_PARAMETER_TEXT
+            ) {
                 val tokenText = builder.tokenText
                 if (hadLineBreakBefore(builder, prevTokenEnd)) {
                     break
@@ -248,12 +261,13 @@ class SkelligParser : PsiParser {
             cellMarker.done(SkelligElementTypes.TABLE_CELL)
         }
 
-        private fun closeRowMarker(rowMarker: PsiBuilder.Marker, headerRow: Boolean) {
+        private fun closeRowMarker(
+            rowMarker: PsiBuilder.Marker,
+            headerRow: Boolean,
+        ) {
             rowMarker.done(if (headerRow) SkelligElementTypes.TABLE_HEADER_ROW else SkelligElementTypes.TABLE_ROW)
         }
 
-        private fun getTokenLength(tokenText: String?): Int {
-            return tokenText?.length ?: 0
-        }
+        private fun getTokenLength(tokenText: String?): Int = tokenText?.length ?: 0
     }
 }

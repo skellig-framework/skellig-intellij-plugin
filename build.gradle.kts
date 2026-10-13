@@ -1,142 +1,115 @@
-import io.gitlab.arturbosch.detekt.Detekt
+import dev.detekt.gradle.Detekt
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.net.URI
+import org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask
 
 plugins {
-    // Java support
-    id("java")
-    // Kotlin support
-    id("org.jetbrains.kotlin.jvm") version "1.9.0"
-    // gradle-intellij-plugin - read more: https://github.com/JetBrains/gradle-intellij-plugin
-    id("org.jetbrains.intellij") version "1.13.1"
-    // detekt linter - read more: https://detekt.github.io/detekt/gradle.html
-    id("io.gitlab.arturbosch.detekt") version "1.15.0"
-    // ktlint linter - read more: https://github.com/JLLeitschuh/ktlint-gradle
-    id("org.jlleitschuh.gradle.ktlint") version "9.4.1"
+    java
+    kotlin("jvm") version "2.4.20"
+    id("org.jetbrains.intellij.platform") version "2.19.0"
+    id("org.jetbrains.intellij.platform.grammarkit") version "2.19.0"
+    id("dev.detekt") version "2.0.0-alpha.6"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
-// Import variables from gradle.properties file
-val pluginGroup: String by project
-// `pluginName_` variable ends with `_` because of the collision with Kotlin magic getter in the `intellij` closure.
-// Read more about the issue: https://github.com/JetBrains/intellij-platform-plugin-template/issues/29
-val pluginName_: String by project
-val pluginVersion: String by project
-val pluginSinceBuild: String by project
-val pluginUntilBuild: String by project
-val pluginVerifierIdeVersions: String by project
+group = providers.gradleProperty("pluginGroup").get()
+version = providers.gradleProperty("pluginVersion").get()
 
-val platformType: String by project
-val platformVersion: String by project
-val platformPlugins: String by project
-val platformDownloadSources: String by project
+val generateLexer =
+    tasks.named<org.jetbrains.intellij.platform.gradle.tasks.GenerateLexerTask>("generateLexer") {
+        sourceFile.set(layout.projectDirectory.file("src/main/kotlin/org/skellig/plugin/language/teststep/SkelligTestStepLexer.flex"))
+    }
+val generateParser =
+    tasks.named<org.jetbrains.intellij.platform.gradle.tasks.GenerateParserTask>("generateParser") {
+        sourceFile.set(layout.projectDirectory.file("src/main/kotlin/org/skellig/plugin/language/teststep/SkelligTestStepParser.bnf"))
+    }
 
-group = pluginGroup
-version = pluginVersion
+sourceSets["main"].java.srcDirs(
+    generateLexer.flatMap { it.targetRootOutputDir },
+    generateParser.flatMap { it.targetRootOutputDir },
+)
 
-sourceSets["main"].java.srcDirs("src/main/gen")
+tasks.withType<BaseKtLintCheckTask>().configureEach {
+    dependsOn(generateLexer, generateParser)
+}
 
-// Configure project's dependencies
 repositories {
     mavenCentral()
-    jcenter()
-    maven {
-        url = URI("https://oss.sonatype.org/content/repositories/snapshots/")
-    }
-    maven {
-        url = URI("https://dl.bintray.com/jetbrains/intellij-plugin-service")
+    intellijPlatform {
+        defaultRepositories()
     }
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
+    intellijPlatform {
+        val localPlatformPath = providers.gradleProperty("localPlatformPath").orNull
+        if (localPlatformPath != null) {
+            local(localPlatformPath)
+        } else {
+            intellijIdea(providers.gradleProperty("platformVersion").get())
+        }
+        bundledPlugins("com.intellij.java", "org.jetbrains.kotlin")
+        plugin("org.jetbrains.plugins.hocon", providers.gradleProperty("hoconPluginVersion").get())
+    }
+    detektPlugins("dev.detekt:detekt-rules-ktlint-wrapper:2.0.0-alpha.6")
 }
 
-// Configure gradle-intellij-plugin plugin.
-// Read more: https://github.com/JetBrains/gradle-intellij-plugin
-intellij {
-    pluginName.set(pluginName_)
-    version.set(platformVersion)
-    downloadSources.set(true)
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(27))
+}
+
+kotlin {
+    jvmToolchain(27)
+}
+
+tasks.withType<KotlinCompile>().configureEach {
+    dependsOn(generateLexer, generateParser)
+    compilerOptions {
+        // IntelliJ IDEA 2026.2 runs on JBR 25, even when the build uses JDK 27.
+        jvmTarget.set(JvmTarget.JVM_25)
+        freeCompilerArgs.add("-Xjdk-release=25")
+    }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.release.set(25)
+}
+
+intellijPlatform {
+    projectName.set(providers.gradleProperty("pluginName_"))
     instrumentCode.set(true)
 
-    val hoconPlugin = when (platformVersion) {
-        "IU-2020.2.1" -> "org.jetbrains.plugins.hocon:2020.1.0"
-        "IU-2020.3.1" -> "org.jetbrains.plugins.hocon:2020.1.0"
-        "IU-2021.1.1" -> "org.jetbrains.plugins.hocon:2021.1.0"
-        "IU-2021.2.1" -> "org.jetbrains.plugins.hocon:2021.1.0"
-        "IU-2021.3.1" -> "org.jetbrains.plugins.hocon:2021.1.0"
-        "IU-2022.1.1" -> "org.jetbrains.plugins.hocon:2022.1.0"
-        "IU-2022.2.1" -> "org.jetbrains.plugins.hocon:2022.1.0"
-        "IU-2022.3.1" -> "org.jetbrains.plugins.hocon:2022.1.0"
-        "IU-2023.1.1" -> "org.jetbrains.plugins.hocon:2023.1.0"
-        "IU-2023.2.1" -> "org.jetbrains.plugins.hocon:2023.1.0"
-        "IU-2023.3.1" -> "org.jetbrains.plugins.hocon:2023.1.0"
-        "IU-2024.1.0" -> "org.jetbrains.plugins.hocon:2024.1.0"
-        else -> ""
+    pluginConfiguration {
+        version.set(providers.gradleProperty("pluginVersion"))
+        ideaVersion {
+            sinceBuild.set(providers.gradleProperty("pluginSinceBuild"))
+            untilBuild.set(providers.gradleProperty("pluginUntilBuild"))
+        }
     }
 
-    plugins.set(
-        listOf(
-            "com.intellij.java",
-            "org.jetbrains.kotlin",
-            hoconPlugin
-        )
-    )
+    pluginVerification {
+        ides {
+            current()
+        }
+    }
+
+    publishing {
+        token.set(providers.environmentVariable("PUBLISH_TOKEN"))
+    }
 }
 
-// Configure detekt plugin.
-// Read more: https://detekt.github.io/detekt/kotlindsl.html
 detekt {
-    config = files("./detekt-config.yml")
+    config.setFrom(files("detekt-config.yml"))
     buildUponDefaultConfig = true
     ignoreFailures = true
-
-    reports {
-        html.enabled = false
-        xml.enabled = false
-        txt.enabled = false
-    }
 }
 
-tasks {
-    withType<JavaCompile> {
-        sourceCompatibility = "11"
-        targetCompatibility = "11"
-    }
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "11"
-    }
-
-    withType<Detekt> {
-        jvmTarget = "11"
-    }
-
-    patchPluginXml {
-        version.set(pluginVersion)
-        sinceBuild.set("231")
-        untilBuild.set("240.*")
-
-        /*changeNotes.set("""
-            <b>Skellig Framework Plugin</b>
-            <br/>
-            Provides integration with Skellig test steps (.sts) and Skellig Feature files (.skellig):
-            <br/>
-        <ul> 
-            <li> References to test steps from Skellig feature files</li>
-            <li> Code format</li>
-            <li> Syntax highlighter with colour customization</li>
-            <li> Syntax check for .sts files</li>
-            <li> Expand/Collapse blocks of code in .sts files</li>
-            <li> Comment code</li>
-        </ul> 
-        """.trimIndent())*/
-    }
-
-    runPluginVerifier {
-        ideVersions.set(listOf(pluginVerifierIdeVersions))
-    }
-
-    publishPlugin {
-        token.set(System.getenv("PUBLISH_TOKEN"))
+tasks.withType<Detekt>().configureEach {
+    jvmTarget.set("25")
+    reports {
+        html.required.set(false)
+        checkstyle.required.set(false)
+        sarif.required.set(false)
+        markdown.required.set(false)
     }
 }

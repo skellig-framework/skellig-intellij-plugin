@@ -4,7 +4,11 @@ import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.progress.ProgressManager
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.psi.*
+import com.intellij.psi.PsiAnnotation
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiMethod
+import com.intellij.psi.PsiModifierList
 import com.intellij.psi.impl.source.PsiClassImpl
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.util.PsiTreeUtil
@@ -14,17 +18,21 @@ import org.skellig.plugin.language.feature.steps.reference.AbstractExtension
 import org.skellig.plugin.language.feature.steps.reference.BDDFrameworkType
 
 class SkelligJavaTestStepExtension : AbstractExtension() {
-
     override val stepFileType: BDDFrameworkType
         get() = BDDFrameworkType(JavaFileType.INSTANCE, "Skellig Java Test Step")
 
-    override fun loadStepsFor(featureFile: PsiFile?, module: Module): List<AbstractStepDefinition> {
+    override fun loadStepsFor(
+        featureFile: PsiFile?,
+        module: Module,
+    ): List<AbstractStepDefinition> {
         val result = mutableListOf<AbstractStepDefinition>()
         val fileBasedIndex: FileBasedIndex = FileBasedIndex.getInstance()
         val scope: GlobalSearchScope = featureFile?.resolveScope ?: module.getModuleWithDependenciesAndLibrariesScope(true)
         val project = module.project
         fileBasedIndex.processValues(
-            SkelligJavaTestStepStepIndex.INDEX_ID, true, null,
+            SkelligJavaTestStepStepIndex.INDEX_ID,
+            true,
+            null,
             { file: VirtualFile, _: List<Int> ->
                 ProgressManager.checkCanceled()
                 val psiFile: PsiFile = PsiManager.getInstance(project).findFile(file) ?: return@processValues true
@@ -39,7 +47,8 @@ class SkelligJavaTestStepExtension : AbstractExtension() {
                     }
                 }
                 true
-            }, scope
+            },
+            scope,
         )
         return result
     }

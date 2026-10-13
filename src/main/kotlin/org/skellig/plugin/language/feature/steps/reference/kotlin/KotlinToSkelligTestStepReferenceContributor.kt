@@ -2,10 +2,19 @@ package org.skellig.plugin.language.feature.steps.reference.kotlin
 
 import com.intellij.openapi.util.TextRange
 import com.intellij.patterns.PlatformPatterns
-import com.intellij.psi.*
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiReference
+import com.intellij.psi.PsiReferenceContributor
+import com.intellij.psi.PsiReferenceProvider
+import com.intellij.psi.PsiReferenceRegistrar
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.ProcessingContext
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtConstructorCalleeExpression
+import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.skellig.plugin.language.feature.psi.SkelligUtil
 import org.skellig.plugin.language.feature.steps.reference.SkelligStepReference
@@ -18,7 +27,7 @@ class KotlinToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
             object : PsiReferenceProvider() {
                 override fun getReferencesByElement(
                     element: PsiElement,
-                    context: ProcessingContext
+                    context: ProcessingContext,
                 ): Array<PsiReference> {
                     val testStepName = getTestStepName(element)
                     if (!testStepName.isNullOrEmpty()) {
@@ -37,7 +46,8 @@ class KotlinToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
                     }
                     return PsiReference.EMPTY_ARRAY
                 }
-            })
+            },
+        )
     }
 
     private fun getTestStepName(element: PsiElement): String? {
@@ -45,11 +55,14 @@ class KotlinToSkelligTestStepReferenceContributor : PsiReferenceContributor() {
         val value = literalExpression.getChildOfType<KtLiteralStringTemplateEntry>()?.text
         return if (value?.isNotEmpty() == true) {
             PsiTreeUtil.getParentOfType(element, KtCallExpression::class.java)?.let {
-                if (it.getChildOfType<KtNameReferenceExpression>()?.text == "run")
+                if (it.getChildOfType<KtNameReferenceExpression>()?.text == "run") {
                     value
-                else null
+                } else {
+                    null
+                }
             }
-        } else null
+        } else {
+            null
+        }
     }
-
 }

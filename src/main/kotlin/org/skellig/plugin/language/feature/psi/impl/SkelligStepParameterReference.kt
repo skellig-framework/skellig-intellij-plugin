@@ -1,14 +1,16 @@
 package org.skellig.plugin.language.feature.psi.impl
 
-import org.skellig.plugin.language.feature.psi.SkelligStepParameter
 import com.intellij.psi.PsiElement
-import org.skellig.plugin.language.feature.psi.SkelligScenarioOutline
 import com.intellij.psi.util.PsiTreeUtil
 import org.skellig.plugin.language.feature.psi.SkelligExamplesBlock
+import org.skellig.plugin.language.feature.psi.SkelligScenarioOutline
+import org.skellig.plugin.language.feature.psi.SkelligStepParameter
 import org.skellig.plugin.language.feature.psi.SkelligTable
 import org.skellig.plugin.language.feature.psi.SkelligTableCell
 
-class SkelligStepParameterReference(stepParameter: SkelligStepParameter) : SkelligSimpleReference(stepParameter) {
+class SkelligStepParameterReference(
+    stepParameter: SkelligStepParameter,
+) : SkelligSimpleReference(stepParameter) {
     val element: SkelligStepParameter
         get() = super.getElement() as SkelligStepParameter
 

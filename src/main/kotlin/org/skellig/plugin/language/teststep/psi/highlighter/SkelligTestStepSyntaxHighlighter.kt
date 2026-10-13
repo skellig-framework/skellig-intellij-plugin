@@ -1,7 +1,6 @@
 package org.skellig.plugin.language.teststep.psi.highlighter
 
 import com.intellij.lexer.Lexer
-import com.intellij.openapi.editor.DefaultLanguageHighlighterColors
 import com.intellij.openapi.editor.HighlighterColors
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
@@ -9,7 +8,7 @@ import com.intellij.psi.tree.IElementType
 import org.skellig.plugin.language.teststep.SkelligTestStepLexerAdapter
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
 
-class SkelligTestStepSyntaxHighlighter() : SyntaxHighlighterBase() {
+class SkelligTestStepSyntaxHighlighter : SyntaxHighlighterBase() {
     companion object {
         val COMMENT = arrayOf(SkelligTestStepHighlighter.COMMENT)
         val KEYWORD = arrayOf(SkelligTestStepHighlighter.KEYWORD)
@@ -20,12 +19,10 @@ class SkelligTestStepSyntaxHighlighter() : SyntaxHighlighterBase() {
         val TEXT = arrayOf(TextAttributesKey.createTextAttributesKey("TEST_STEP_TEXT", HighlighterColors.TEXT))
     }
 
-    override fun getHighlightingLexer(): Lexer {
-        return SkelligTestStepLexerAdapter()
-    }
+    override fun getHighlightingLexer(): Lexer = SkelligTestStepLexerAdapter()
 
-    override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> {
-        return when (tokenType) {
+    override fun getTokenHighlights(tokenType: IElementType): Array<TextAttributesKey> =
+        when (tokenType) {
             SkelligTestStepTypes.NAME -> KEYWORD
             SkelligTestStepTypes.VALUES -> KEYWORD
             SkelligTestStepTypes.VALIDATE -> KEYWORD
@@ -64,5 +61,4 @@ class SkelligTestStepSyntaxHighlighter() : SyntaxHighlighterBase() {
             SkelligTestStepTypes.FLOAT -> NUMBER
             else -> emptyArray()
         }
-    }
 }

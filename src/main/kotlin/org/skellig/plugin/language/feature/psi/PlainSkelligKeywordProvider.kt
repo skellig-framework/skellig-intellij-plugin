@@ -4,51 +4,48 @@ import com.intellij.psi.tree.IElementType
 
 class PlainSkelligKeywordProvider : SkelligKeywordProvider {
     companion object {
-        var DEFAULT_KEYWORD_TABLE = SkelligKeywordTable()
-        var DEFAULT_KEYWORDS: MutableMap<String?, IElementType> = HashMap()
+        var defaultKeywordTable = SkelligKeywordTable()
+        var defaultKeywords: MutableMap<String?, IElementType> = HashMap()
         private val ourKeywordsWithNoSpaceAfter: MutableSet<String?> = HashSet()
 
         init {
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.FEATURE_KEYWORD, "Feature")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.BACKGROUND_KEYWORD, "Background")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.SCENARIO_KEYWORD, "Scenario")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.RULE_KEYWORD, "Rule")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.SCENARIO_KEYWORD, "Example")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.EXAMPLES_KEYWORD, "Examples")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.EXAMPLES_KEYWORD, "Scenarios")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.STEP_KEYWORD, "Given")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.STEP_KEYWORD, "When")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.STEP_KEYWORD, "Then")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.STEP_KEYWORD, "And")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.STEP_KEYWORD, "But")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.STEP_KEYWORD, "*")
-            DEFAULT_KEYWORD_TABLE.put(SkelligTokenTypes.STEP_KEYWORD, "Lorsqu'")
+            defaultKeywordTable.put(SkelligTokenTypes.FEATURE_KEYWORD, "Feature")
+            defaultKeywordTable.put(SkelligTokenTypes.BACKGROUND_KEYWORD, "Background")
+            defaultKeywordTable.put(SkelligTokenTypes.SCENARIO_KEYWORD, "Scenario")
+            defaultKeywordTable.put(SkelligTokenTypes.RULE_KEYWORD, "Rule")
+            defaultKeywordTable.put(SkelligTokenTypes.SCENARIO_KEYWORD, "Example")
+            defaultKeywordTable.put(SkelligTokenTypes.EXAMPLES_KEYWORD, "Examples")
+            defaultKeywordTable.put(SkelligTokenTypes.EXAMPLES_KEYWORD, "Scenarios")
+            defaultKeywordTable.put(SkelligTokenTypes.STEP_KEYWORD, "Given")
+            defaultKeywordTable.put(SkelligTokenTypes.STEP_KEYWORD, "When")
+            defaultKeywordTable.put(SkelligTokenTypes.STEP_KEYWORD, "Then")
+            defaultKeywordTable.put(SkelligTokenTypes.STEP_KEYWORD, "And")
+            defaultKeywordTable.put(SkelligTokenTypes.STEP_KEYWORD, "But")
+            defaultKeywordTable.put(SkelligTokenTypes.STEP_KEYWORD, "*")
+            defaultKeywordTable.put(SkelligTokenTypes.STEP_KEYWORD, "Lorsqu'")
             ourKeywordsWithNoSpaceAfter.add("Lorsqu'")
-            DEFAULT_KEYWORD_TABLE.putAllKeywordsInto(DEFAULT_KEYWORDS)
+            defaultKeywordTable.putAllKeywordsInto(defaultKeywords)
         }
     }
 
-    override fun getAllKeywords(language: String?): Collection<String?>? {
-        return DEFAULT_KEYWORDS.keys
-    }
+    override fun getAllKeywords(language: String?): Collection<String?>? = defaultKeywords.keys
 
-    override fun getTokenType(language: String?, keyword: String?): IElementType? {
-        return DEFAULT_KEYWORDS[keyword]
-    }
+    override fun getTokenType(
+        language: String?,
+        keyword: String?,
+    ): IElementType? = defaultKeywords[keyword]
 
-    override fun getBaseKeyword(language: String?, keyword: String): String {
-        return keyword
-    }
+    override fun getBaseKeyword(
+        language: String?,
+        keyword: String,
+    ): String = keyword
 
-    override fun isSpaceRequiredAfterKeyword(language: String?, keyword: String?): Boolean {
-        return !ourKeywordsWithNoSpaceAfter.contains(keyword)
-    }
+    override fun isSpaceRequiredAfterKeyword(
+        language: String?,
+        keyword: String?,
+    ): Boolean = !ourKeywordsWithNoSpaceAfter.contains(keyword)
 
-    override fun isStepKeyword(keyword: String?): Boolean {
-        return DEFAULT_KEYWORDS[keyword] === SkelligTokenTypes.Companion.STEP_KEYWORD
-    }
+    override fun isStepKeyword(keyword: String?): Boolean = defaultKeywords[keyword] === SkelligTokenTypes.Companion.STEP_KEYWORD
 
-    override fun getKeywordsTable(language: String?): SkelligKeywordTable {
-        return DEFAULT_KEYWORD_TABLE
-    }
+    override fun getKeywordsTable(language: String?): SkelligKeywordTable = defaultKeywordTable
 }

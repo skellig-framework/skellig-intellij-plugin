@@ -7,16 +7,17 @@ import org.skellig.plugin.language.feature.psi.SkelligElementVisitor
 import org.skellig.plugin.language.feature.psi.SkelligTableCell
 import org.skellig.plugin.language.feature.psi.SkelligTableRow
 import org.skellig.plugin.language.feature.psi.SkelligTokenTypes
-import java.util.*
+import java.util.LinkedList
 
-open class SkelligTableRowImpl(node: ASTNode) : SkelligPsiElementBase(node), SkelligTableRow {
+open class SkelligTableRowImpl(
+    node: ASTNode,
+) : SkelligPsiElementBase(node),
+    SkelligTableRow {
     override fun acceptSkelligElement(skelligElementVisitor: SkelligElementVisitor) {
         skelligElementVisitor.visitTableRow(this)
     }
 
-    override fun toString(): String {
-        return "SkelligTableRow"
-    }
+    override fun toString(): String = "SkelligTableRow"
 
     override val psiCells: List<SkelligTableCell>
         get() = getChildrenByFilter(this, SkelligTableCell::class.java)
@@ -29,7 +30,9 @@ open class SkelligTableRowImpl(node: ASTNode) : SkelligPsiElementBase(node), Ske
         val cell: PsiElement = cells[columnIndex]
         return if (cell.text != null) {
             cell.text.trim { it <= ' ' }.length
-        } else 0
+        } else {
+            0
+        }
     }
 
     override fun deleteCell(columnIndex: Int) {
@@ -48,7 +51,10 @@ open class SkelligTableRowImpl(node: ASTNode) : SkelligPsiElementBase(node), Ske
     }
 
     companion object {
-        fun <T : PsiElement?> getChildrenByFilter(psiElement: PsiElement, c: Class<T>): List<T> {
+        fun <T : PsiElement?> getChildrenByFilter(
+            psiElement: PsiElement,
+            c: Class<T>,
+        ): List<T> {
             val list = LinkedList<T>()
             for (element in psiElement.children) {
                 if (c.isInstance(element)) {

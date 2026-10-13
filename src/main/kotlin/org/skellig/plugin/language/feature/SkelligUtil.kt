@@ -13,53 +13,56 @@ import com.intellij.util.Processor
 import org.jetbrains.annotations.NonNls
 import org.skellig.plugin.language.feature.steps.AbstractStepDefinition
 import org.skellig.plugin.language.feature.steps.reference.SkelligExtensionPoint
-import java.util.*
+import java.util.ArrayList
+import java.util.Collections
 import java.util.regex.Pattern
 
 object SkelligUtil {
     @NonNls
     val STEP_DEFINITIONS_DIR_NAME = "step_definitions"
-    val ARR = arrayOf(
-        arrayOf("\\\\", "\\\\\\\\"),
-        arrayOf("\\|", "\\\\|"),
-        arrayOf("\\$", "\\\\\\$"),
-        arrayOf("\\^", "\\\\^"),
-        arrayOf("\\+", "\\+"),
-        arrayOf("\\-", "\\\\-"),
-        arrayOf("\\#", "\\\\#"),
-        arrayOf("\\?", "\\\\?"),
-        arrayOf("\\*", "\\\\*"),
-        arrayOf("\\/", "\\\\/"),
-        arrayOf("\\{", "\\\\{"),
-        arrayOf("\\}", "\\\\}"),
-        arrayOf("\\[", "\\\\["),
-        arrayOf("\\]", "\\\\]"),
-        arrayOf("\\(", "\\\\("),
-        arrayOf("\\)", "\\\\)"),
-        arrayOf("\\+", "\\\\+"),
-        arrayOf("\"([^\\\\\"]*)\"", "\"([^\"]*)\""),
-        arrayOf("(?<=^|[ .,])\\d+[ ]", "(\\\\d+) "),
-        arrayOf("(?<=^|[ .,])\\d+[,]", "(\\\\d+),"),
-        arrayOf("(?<=^|[ .,])\\d+[.]", "(\\\\d+)."),
-        arrayOf("(?<=^|[ .,])\\d+$", "(\\\\d+)"),
-        arrayOf("\\.", "\\\\."),
-        arrayOf("(<[^>]*>)", "(.*)")
-    )
+    val ARR =
+        arrayOf(
+            arrayOf("\\\\", "\\\\\\\\"),
+            arrayOf("\\|", "\\\\|"),
+            arrayOf("\\$", "\\\\\\$"),
+            arrayOf("\\^", "\\\\^"),
+            arrayOf("\\+", "\\+"),
+            arrayOf("\\-", "\\\\-"),
+            arrayOf("\\#", "\\\\#"),
+            arrayOf("\\?", "\\\\?"),
+            arrayOf("\\*", "\\\\*"),
+            arrayOf("\\/", "\\\\/"),
+            arrayOf("\\{", "\\\\{"),
+            arrayOf("\\}", "\\\\}"),
+            arrayOf("\\[", "\\\\["),
+            arrayOf("\\]", "\\\\]"),
+            arrayOf("\\(", "\\\\("),
+            arrayOf("\\)", "\\\\)"),
+            arrayOf("\\+", "\\\\+"),
+            arrayOf("\"([^\\\\\"]*)\"", "\"([^\"]*)\""),
+            arrayOf("(?<=^|[ .,])\\d+[ ]", "(\\\\d+) "),
+            arrayOf("(?<=^|[ .,])\\d+[,]", "(\\\\d+),"),
+            arrayOf("(?<=^|[ .,])\\d+[.]", "(\\\\d+)."),
+            arrayOf("(?<=^|[ .,])\\d+$", "(\\\\d+)"),
+            arrayOf("\\.", "\\\\."),
+            arrayOf("(<[^>]*>)", "(.*)"),
+        )
     const val PREFIX_CHAR = "^"
     const val SUFFIX_CHAR = "$"
     private val ESCAPE_PATTERN = Pattern.compile("([\\\\^\\[$.|?*+\\]])")
     private val OPTIONAL_PATTERN = Pattern.compile("(\\\\\\\\)?\\(([^)]+)\\)")
-    var STANDARD_PARAMETER_TYPES: Map<String, String>? = null
+    var standardParameterTypes: Map<String, String>? = null
 
     init {
-        val standardParameterTypes = mapOf(
-            kotlin.Pair("int", "-?\\d+"),
-            kotlin.Pair("float", "-?\\d*[.,]?\\d+"),
-            kotlin.Pair("word", "[^\\s]+"),
-            kotlin.Pair("string", "\"(?:[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|'(?:[^'\\\\]*(?:\\\\.[^'\\\\]*)*)'"),
-            kotlin.Pair("", "(.*)")
-        )
-        STANDARD_PARAMETER_TYPES = Collections.unmodifiableMap(standardParameterTypes)
+        val parameterTypes =
+            mapOf(
+                kotlin.Pair("int", "-?\\d+"),
+                kotlin.Pair("float", "-?\\d*[.,]?\\d+"),
+                kotlin.Pair("word", "[^\\s]+"),
+                kotlin.Pair("string", "\"(?:[^\"\\\\]*(?:\\\\.[^\"\\\\]*)*)\"|'(?:[^'\\\\]*(?:\\\\.[^'\\\\]*)*)'"),
+                kotlin.Pair("", "(.*)"),
+            )
+        standardParameterTypes = Collections.unmodifiableMap(parameterTypes)
     }
 
     fun getTheBiggestWordToSearchByIndex(regexp: String): String {
@@ -108,11 +111,11 @@ object SkelligUtil {
      * From Cucumber's point of view the following code:
      * <pre>
      * `Then 'I print a word(s) red/blue using slash'...`
-    </pre> *
+     </pre> *
      * converted into regexp:
      * <pre>
      * `I print a word(?:s)? (red|blue) using slash`
-    </pre> *
+     </pre> *
      *
      * All pipes should be escaped.
      *
@@ -159,7 +162,7 @@ object SkelligUtil {
      */
     fun buildRegexpFromCucumberExpression(
         cucumberExpression: String,
-        parameterTypeManager: ParameterTypeManager
+        parameterTypeManager: ParameterTypeManager,
     ): String {
         var expression = cucumberExpression
         expression = escapeCucumberExpression(expression)
@@ -212,7 +215,7 @@ object SkelligUtil {
      */
     fun processParameterTypesInCucumberExpression(
         cucumberExpression: String,
-        processor: Processor<in TextRange>
+        processor: Processor<in TextRange>,
     ) {
         var i = 0
         while (i < cucumberExpression.length) {
@@ -286,8 +289,11 @@ object SkelligUtil {
      * @param stepName
      * @param outlineTableMap mapping from header to the first data row
      * @return OutlineStepSubstitution that contains result step name and can calculate offsets
-    </count> */
-    fun substituteTableReferences(stepName: String, outlineTableMap: Map<String, String>?): OutlineStepSubstitution {
+     </count> */
+    fun substituteTableReferences(
+        stepName: String,
+        outlineTableMap: Map<String, String>?,
+    ): OutlineStepSubstitution {
         if (outlineTableMap == null) {
             return OutlineStepSubstitution(stepName, emptyList())
         }
@@ -317,9 +323,7 @@ object SkelligUtil {
         return OutlineStepSubstitution(result.toString(), offsets)
     }
 
-    fun escapeCucumberExpression(stepPattern: String): String {
-        return ESCAPE_PATTERN.matcher(stepPattern).replaceAll("\\\\$1")
-    }
+    fun escapeCucumberExpression(stepPattern: String): String = ESCAPE_PATTERN.matcher(stepPattern).replaceAll("\\\\$1")
 
     fun getLineNumber(element: PsiElement): Int? {
         val containingFile = element.containingFile
@@ -329,28 +333,37 @@ object SkelligUtil {
         val textOffset = element.textOffset
         return if (document == null) {
             null
-        } else document.getLineNumber(textOffset) + 1
+        } else {
+            document.getLineNumber(textOffset) + 1
+        }
     }
 
-    fun loadFrameworkSteps(framework: SkelligExtensionPoint, featureFile: PsiFile?, module: Module): List<AbstractStepDefinition> {
-        return framework.loadStepsFor(featureFile, module)
-    }
+    fun loadFrameworkSteps(
+        framework: SkelligExtensionPoint,
+        featureFile: PsiFile?,
+        module: Module,
+    ): List<AbstractStepDefinition> = framework.loadStepsFor(featureFile, module)
 
     /**
      * Accepts each element and checks if it has reference to some other element
      */
     private class MyReferenceCheckingProcessor private constructor(
         private val myElementToFind: PsiElement,
-        private val myConsumer: Processor<in PsiReference>
+        private val myConsumer: Processor<in PsiReference>,
     ) : TextOccurenceProcessor {
-        override fun execute(element: PsiElement, offsetInElement: Int): Boolean {
+        override fun execute(
+            element: PsiElement,
+            offsetInElement: Int,
+        ): Boolean {
             val parent = element.parent
             val result = executeInternal(element)
             // We check element and its parent (StringLiteral is probably child of SkelligFeatureStep that has reference)
             // TODO: Search for SkelligStep parent?
             return if (result && parent != null) {
                 executeInternal(parent)
-            } else result
+            } else {
+                result
+            }
         }
 
         /**

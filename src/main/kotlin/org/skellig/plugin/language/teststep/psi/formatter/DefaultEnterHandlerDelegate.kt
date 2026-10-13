@@ -8,11 +8,20 @@ import com.intellij.openapi.util.Ref
 import com.intellij.psi.PsiFile
 
 class DefaultEnterHandlerDelegate : EnterHandlerDelegate {
-    override fun preprocessEnter(p0: PsiFile, p1: Editor, p2: Ref<Int>, p3: Ref<Int>, p4: DataContext, p5: EditorActionHandler?): EnterHandlerDelegate.Result {
-        return EnterHandlerDelegate.Result.Default
-    }
+    override fun preprocessEnter(
+        p0: PsiFile,
+        p1: Editor,
+        p2: Ref<Int>,
+        p3: Ref<Int>,
+        p4: DataContext,
+        p5: EditorActionHandler?,
+    ): EnterHandlerDelegate.Result = EnterHandlerDelegate.Result.Default
 
-    override fun postProcessEnter(file: PsiFile, editor: Editor, dataContext: DataContext): EnterHandlerDelegate.Result {
+    override fun postProcessEnter(
+        file: PsiFile,
+        editor: Editor,
+        dataContext: DataContext,
+    ): EnterHandlerDelegate.Result {
         val caretOffset = editor.caretModel.offset
         val lineNumber = editor.document.getLineNumber(caretOffset)
 
@@ -28,8 +37,15 @@ class DefaultEnterHandlerDelegate : EnterHandlerDelegate {
                 val nextLineStartOffset = editor.document.getLineStartOffset(lineNumber + 1)
                 val nextLineEndOffset = editor.document.getLineEndOffset(lineNumber + 1)
                 val nextLineText = editor.document.charsSequence.subSequence(nextLineStartOffset, nextLineEndOffset)
-                shiftNumber = if (nextLineText.isNotEmpty() && nextLineText.last() != '}' || previousLineText.last() != ']') countLeadingWhitespace(nextLineText)
-                else countLeadingWhitespace(previousLineText)
+                shiftNumber =
+                    if (nextLineText.isNotEmpty() &&
+                        nextLineText.last() != '}' ||
+                        previousLineText.last() != ']'
+                    ) {
+                        countLeadingWhitespace(nextLineText)
+                    } else {
+                        countLeadingWhitespace(previousLineText)
+                    }
             } else {
                 shiftNumber = countLeadingWhitespace(previousLineText)
             }
