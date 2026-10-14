@@ -17,6 +17,12 @@ object SkelligTestStepHighlighter {
             DefaultLanguageHighlighterColors.KEYWORD,
         )
 
+    val PROPERTY =
+        TextAttributesKey.createTextAttributesKey(
+            "TEST_STEP_PROPERTY",
+            DefaultLanguageHighlighterColors.INSTANCE_FIELD,
+        )
+
     val BRACKETS =
         TextAttributesKey.createTextAttributesKey(
             "TEST_STEP_BRACKETS",

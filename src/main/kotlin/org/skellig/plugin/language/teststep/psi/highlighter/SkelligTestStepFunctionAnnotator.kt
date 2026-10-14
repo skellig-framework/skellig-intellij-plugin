@@ -14,6 +14,7 @@ import org.skellig.plugin.language.teststep.psi.SkelligTestStepPair
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepReferenceKey
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestNameKeyword
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepNameExpression
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepVisitor
 
 class SkelligTestStepFunctionAnnotator : Annotator {
@@ -47,10 +48,28 @@ class SkelligTestStepFunctionAnnotator : Annotator {
                     val pair = o.parent as? SkelligTestStepPair
                     if (pair?.parent is SkelligTestStepTestStepNameExpression && o.text in propertyKeywords) {
                         setHighlighting(o, holder, SkelligTestStepHighlighter.KEYWORD)
+                    } else if (pair != null) {
+                        highlightPropertyNames(o, holder)
                     }
                 }
             },
         )
+    }
+
+    private fun highlightPropertyNames(
+        key: SkelligTestStepKey,
+        holder: AnnotationHolder,
+    ) {
+        val validation = isInsideValidationBlock(key)
+        key.expressionList.forEach { expression ->
+            val previous = expression.prevSibling as? SkelligTestStepExpression
+            val adjacentDollar = previous?.text == "$" && previous.textRange.endOffset == expression.textRange.startOffset
+            val resultSuffix = expression.text == "result" && adjacentDollar
+            val resultKeyword = validation && (expression.text == "$" || resultSuffix)
+            if (!resultKeyword && expression.firstChild.node.elementType in PROPERTY_NAME_TYPES) {
+                setHighlighting(expression, holder, SkelligTestStepHighlighter.PROPERTY)
+            }
+        }
     }
 
     private fun highlightValidationResults(
@@ -91,5 +110,17 @@ class SkelligTestStepFunctionAnnotator : Annotator {
             .range(range)
             .textAttributes(key)
             .create()
+    }
+
+    companion object {
+        private val PROPERTY_NAME_TYPES =
+            setOf(
+                SkelligTestStepTypes.ID,
+                SkelligTestStepTypes.NAME,
+                SkelligTestStepTypes.KEY_SYMBOLS,
+                SkelligTestStepTypes.STRING,
+                SkelligTestStepTypes.NUMBER,
+                SkelligTestStepTypes.TEST_STEP_PROPERTY_KEYWORDS,
+            )
     }
 }

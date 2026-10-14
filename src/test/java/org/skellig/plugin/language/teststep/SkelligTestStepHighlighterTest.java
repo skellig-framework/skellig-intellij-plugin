@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepParserDefinition;
 
+import org.skellig.plugin.language.teststep.psi.highlighter.SkelligTestStepColorsPage;
 import org.skellig.plugin.language.teststep.psi.highlighter.SkelligTestStepFunctionAnnotator;
 import org.skellig.plugin.language.teststep.psi.highlighter.SkelligTestStepHighlighter;
 import org.skellig.plugin.language.teststep.psi.highlighter.SkelligTestStepSyntaxHighlighter;
@@ -119,18 +120,85 @@ class SkelligTestStepHighlighterTest {
             """);
     }
 
+    @Test
+    public void testScalarArrayAndObjectPropertyNamesAtEveryDepth() {
+        assertHighlighting("""
+            name ("properties") {
+                <property>id</property> = stepId
+                values {
+                    <property>count</property> = 2
+                    <property>items</property> [
+                        { <property>name</property> = "event" }
+                    ]
+                    <property>details</property> {
+                        <property>values</property> = get(step).values
+                        <property>message</property> = "message"
+                        <property>test</property> = false
+                        <property>"display name"</property> = "event"
+                        <property>1</property> = "numeric key"
+                    }
+                }
+                message = toJson({
+                    <property>eventCode</property> = get(addEventTest).values
+                    <property>success</property> = true
+                })
+                <property>customObject</property>
+                { <property>inner</property> = ${1} }
+                // ignored = property
+            }
+            """, "property", SkelligTestStepHighlighter.INSTANCE.getPROPERTY());
+    }
+
+    @Test
+    public void testPropertyColourPreservesKeywordsFunctionsAndReferences() {
+        assertHighlighting("""
+            name ("validation") {
+                validate {
+                    $.<property>"skellig-db"</property>.fromIndex(0).<property>taken_seats</property>.contains(${1}) = true
+                    $result.<property>success</property> = true
+                    <property>body</property>.jsonPath(field) = contains(text)
+                    <property>actual</property> = compare($result, ${expected})
+                }
+            }
+            """, "property", SkelligTestStepHighlighter.INSTANCE.getPROPERTY());
+        assertHighlighting("""
+            name ("functions") {
+                validate {
+                    body.<function>jsonPath</function>(field) = <function>contains</function>(text)
+                }
+                message = <function>toJson</function>({ name = "event" })
+            }
+            """, "function", SkelligTestStepHighlighter.INSTANCE.getFUNCTION());
+    }
+
+    @Test
+    public void testPropertyColourIsConfigurableAndShownInPreview() {
+        var page = new SkelligTestStepColorsPage();
+        assertEquals(SkelligTestStepHighlighter.INSTANCE.getPROPERTY(),
+            page.getAdditionalHighlightingTagToDescriptorMap().get("property"));
+        assertEquals(1L, java.util.Arrays.stream(page.getAttributeDescriptors())
+            .filter(descriptor -> descriptor.getKey() == SkelligTestStepHighlighter.INSTANCE.getPROPERTY()).count());
+        org.junit.jupiter.api.Assertions.assertTrue(page.getDemoText().contains("<property>"));
+    }
+
     private void assertKeywordHighlighting(String markedText) {
+        assertHighlighting(markedText, "keyword", SkelligTestStepHighlighter.INSTANCE.getKEYWORD());
+    }
+
+    private void assertHighlighting(String markedText, String tag, TextAttributesKey attributes) {
+        String openTag = "<" + tag + ">";
+        String closeTag = "</" + tag + ">";
         Set<TextRange> expected = new LinkedHashSet<>();
         StringBuilder text = new StringBuilder();
         int cursor = 0;
-        while (markedText.indexOf("<keyword>", cursor) >= 0) {
-            int start = markedText.indexOf("<keyword>", cursor);
-            int end = markedText.indexOf("</keyword>", start);
+        while (markedText.indexOf(openTag, cursor) >= 0) {
+            int start = markedText.indexOf(openTag, cursor);
+            int end = markedText.indexOf(closeTag, start);
             text.append(markedText, cursor, start);
             int offset = text.length();
-            text.append(markedText, start + "<keyword>".length(), end);
+            text.append(markedText, start + openTag.length(), end);
             expected.add(new TextRange(offset, text.length()));
-            cursor = end + "</keyword>".length();
+            cursor = end + closeTag.length();
         }
         text.append(markedText.substring(cursor));
         PsiFile file = fixture.createPsiFile("highlighting", text.toString());
@@ -144,7 +212,7 @@ class SkelligTestStepHighlighterTest {
         lexer.start(text);
         while (lexer.getTokenType() != null) {
             if (java.util.Arrays.asList(highlighter.getTokenHighlights(lexer.getTokenType()))
-                .contains(SkelligTestStepHighlighter.INSTANCE.getKEYWORD())) {
+                .contains(attributes)) {
                 actual.add(new TextRange(lexer.getTokenStart(), lexer.getTokenEnd()));
             }
             lexer.advance();
@@ -161,7 +229,7 @@ class SkelligTestStepHighlighterTest {
         for (var annotation : holder) {
             var range = new TextRange(annotation.getStartOffset(), annotation.getEndOffset());
             TextAttributesKey key = annotation.getTextAttributes();
-            if (key == SkelligTestStepHighlighter.INSTANCE.getKEYWORD()) {
+            if (key == attributes) {
                 actual.add(range);
             } else {
                 actual.removeIf(range::contains);
