@@ -18,6 +18,7 @@ import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepNameExpre
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
 import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepGetReference
 import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepGetTargets
+import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepRunTestReference
 import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToFeatureReference
 import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepToValuesAndPropertiesReference
 import javax.swing.Icon
@@ -69,14 +70,16 @@ object SkelligTestStepPsiImplUtil {
     fun getReference(element: SkelligTestStepReferenceKey): PsiReference = SkelligTestStepToValuesAndPropertiesReference(element)
 
     @JvmStatic
-    fun getReference(element: SkelligTestStepFunctionExpression): PsiReference? =
-        if (element.functionName.text == "get" &&
-            element.argList.firstOrNull()?.let { SkelligTestStepGetTargets.literalName(it) } != null
-        ) {
-            SkelligTestStepGetReference(element)
-        } else {
-            null
+    fun getReference(element: SkelligTestStepFunctionExpression): PsiReference? {
+        val argument = element.argList.firstOrNull() ?: return null
+        return when {
+            element.functionName.text == "get" && SkelligTestStepGetTargets.literalName(argument) != null ->
+                SkelligTestStepGetReference(element)
+            element.functionName.text == "runTest" && SkelligTestStepRunTestReference.sampleName(argument) != null ->
+                SkelligTestStepRunTestReference(element)
+            else -> null
         }
+    }
 
     @JvmStatic
     fun getReference(element: SkelligTestStepTestStepName): PsiReference {

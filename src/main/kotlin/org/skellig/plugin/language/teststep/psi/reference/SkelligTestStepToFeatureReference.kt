@@ -1,16 +1,24 @@
 package org.skellig.plugin.language.teststep.psi.reference
 
+import com.intellij.ide.highlighter.JavaFileType
 import com.intellij.openapi.module.ModuleUtilCore
+import com.intellij.openapi.progress.ProgressManager
+import com.intellij.openapi.project.DumbService
 import com.intellij.openapi.util.TextRange
-import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementResolveResult
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiLiteralExpression
 import com.intellij.psi.PsiManager
+import com.intellij.psi.PsiMethodCallExpression
 import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
+import com.intellij.psi.impl.cache.impl.id.IdIndex
+import com.intellij.psi.impl.cache.impl.id.IdIndexEntry
 import com.intellij.psi.impl.source.resolve.ResolveCache
+import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
 import com.intellij.psi.util.CachedValueProvider
@@ -18,13 +26,19 @@ import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.indexing.FileBasedIndex
-import org.skellig.plugin.language.feature.psi.SkelligFeature
+import org.jetbrains.kotlin.idea.KotlinFileType
+import org.jetbrains.kotlin.psi.KtCallExpression
+import org.jetbrains.kotlin.psi.KtEscapeStringTemplateEntry
+import org.jetbrains.kotlin.psi.KtLiteralStringTemplateEntry
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.skellig.plugin.language.feature.psi.SkelligFeatureStep
 import org.skellig.plugin.language.feature.psi.SkelligFile
 import org.skellig.plugin.language.feature.psi.SkelligFileType
-import org.skellig.plugin.language.feature.psi.SkelligScenarioOutline
 import org.skellig.plugin.language.feature.psi.SkelligUtil
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepFunctionExpression
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName
 import java.util.regex.Pattern
+import java.util.regex.PatternSyntaxException
 
 open class SkelligTestStepToFeatureReference(
     myElement: PsiElement,
@@ -67,53 +81,114 @@ open class SkelligTestStepToFeatureReference(
     override fun getRangeInElement(): TextRange = range
 
     fun multiResolveInner(): Array<ResolveResult> {
-        val cacheKey = element
-        val resolvedElements: List<SkelligFeatureStepDefinition> =
-            CachedValuesManager.getCachedValue(cacheKey) {
-                val allSkelligFeatureFiles = mutableListOf<SkelligFile>()
+        val usages =
+            CachedValuesManager.getCachedValue(element) {
+                val results = mutableSetOf<PsiElement>()
+                val project = element.project
                 val module = ModuleUtilCore.findModuleForPsiElement(element)
-                module?.let {
-                    val fileBasedIndex = FileBasedIndex.getInstance()
-                    val project = module.project
+                val featureScope =
+                    module?.getModuleWithDependenciesAndLibrariesScope(true)?.uniteWith(ProjectScope.getLibrariesScope(project))
+                        ?: element.resolveScope
+                val name = element as? SkelligTestStepTestStepName
+                val pattern =
+                    try {
+                        Pattern.compile(SkelligUtil.getTestStepName(element))
+                    } catch (_: PatternSyntaxException) {
+                        null
+                    }
 
-                    val searchScope =
-                        module
-                            .getModuleWithDependenciesAndLibrariesScope(true)
-                            .uniteWith(ProjectScope.getLibrariesScope(project))
-                    val files = GlobalSearchScope.getScopeRestrictedByFileTypes(searchScope, SkelligFileType.INSTANCE)
+                fun matches(text: String): Boolean =
+                    if (name != null) SkelligTestStepRunTestReference.matches(name, text) else pattern?.matcher(text)?.matches() == true
 
-                    val psiManager = PsiManager.getInstance(project)
-                    fileBasedIndex.iterateIndexableFiles({ virtualFile: VirtualFile ->
-                        if (!virtualFile.isDirectory && files.contains(virtualFile)) {
-                            val psiFile = psiManager.findFile(virtualFile)
-                            if (psiFile != null && psiFile is SkelligFile) {
-                                allSkelligFeatureFiles.add(psiFile)
-                            }
-                        }
-                        true // continue processing
-                    }, project, null)
-
-                    val resolvedElements: MutableList<SkelligFeatureStepDefinition> = mutableListOf()
-                    val testStepPattern = Pattern.compile(SkelligUtil.getTestStepName(element))
-                    for (skelligFeatureFile in allSkelligFeatureFiles) {
-                        PsiTreeUtil.getChildrenOfType(skelligFeatureFile, SkelligFeature::class.java)?.forEach { feature ->
-                            PsiTreeUtil.getChildrenOfType(feature, SkelligScenarioOutline::class.java)?.forEach { scenario ->
-                                PsiTreeUtil.getChildrenOfType(scenario, SkelligFeatureStep::class.java)?.forEach { step ->
-                                    if (testStepPattern.matcher(step.substitutedName ?: "").matches()) {
-                                        resolvedElements.add(SkelligFeatureStepDefinition(step))
-                                    }
+                if (!DumbService.isDumb(project)) {
+                    val manager = PsiManager.getInstance(project)
+                    FileTypeIndex.processFiles(
+                        SkelligFileType.INSTANCE,
+                        { file ->
+                            ProgressManager.checkCanceled()
+                            val featureFile = manager.findFile(file) as? SkelligFile
+                            if (featureFile != null) {
+                                for (step in PsiTreeUtil.findChildrenOfType(featureFile, SkelligFeatureStep::class.java)) {
+                                    if (matches(step.substitutedName.orEmpty())) results.add(step)
                                 }
                             }
-                        }
-                    }
-                    CachedValueProvider.Result.create<List<SkelligFeatureStepDefinition>>(
-                        resolvedElements,
-                        PsiModificationTracker.MODIFICATION_COUNT,
+                            true
+                        },
+                        featureScope,
                     )
+                    if (name != null) {
+                        val usageScope = GlobalSearchScope.projectScope(project)
+                        collectRunTestUsages(element.containingFile, name, results)
+                        FileBasedIndex.getInstance().processValues(
+                            SkelligTestStepStepIndex.INDEX_ID,
+                            true,
+                            null,
+                            { file, _ ->
+                                ProgressManager.checkCanceled()
+                                val psiFile = manager.findFile(file)
+                                if (psiFile != null && psiFile != element.containingFile) collectRunTestUsages(psiFile, name, results)
+                                true
+                            },
+                            usageScope,
+                        )
+                        collectLanguageUsages(usageScope, ::matches, results)
+                    }
+                } else if (name != null) {
+                    collectRunTestUsages(element.containingFile, name, results)
+                }
+                CachedValueProvider.Result.create(
+                    results.map { SkelligFeatureStepDefinition(it) },
+                    PsiModificationTracker.MODIFICATION_COUNT,
+                    DumbService.getInstance(project).modificationTracker,
+                )
+            }
+        return usages.mapNotNull { it.getElement() }.map { PsiElementResolveResult(it) }.toTypedArray()
+    }
+
+    private fun collectLanguageUsages(
+        scope: GlobalSearchScope,
+        matches: (String) -> Boolean,
+        results: MutableSet<PsiElement>,
+    ) {
+        val languages = GlobalSearchScope.getScopeRestrictedByFileTypes(scope, JavaFileType.INSTANCE, KotlinFileType.INSTANCE)
+        val manager = PsiManager.getInstance(element.project)
+        // Use the word index to avoid parsing every Java/Kotlin file whenever
+        // the usage cache is invalidated by an edit.
+        for (file in FileBasedIndex.getInstance().getContainingFiles(IdIndex.NAME, IdIndexEntry("run", true), languages)) {
+            ProgressManager.checkCanceled()
+            val psiFile = manager.findFile(file) ?: continue
+            if (file.fileType == JavaFileType.INSTANCE) {
+                for (call in PsiTreeUtil.findChildrenOfType(psiFile, PsiMethodCallExpression::class.java)) {
+                    val argument = call.argumentList.expressions.firstOrNull() as? PsiLiteralExpression
+                    val text = argument?.value as? String
+                    if (call.methodExpression.referenceName == "run" && text != null && matches(text)) results.add(argument)
+                }
+            } else {
+                for (call in PsiTreeUtil.findChildrenOfType(psiFile, KtCallExpression::class.java)) {
+                    val argument = call.valueArguments.firstOrNull()?.getArgumentExpression() as? KtStringTemplateExpression
+                    if (call.calleeExpression?.text == "run" &&
+                        argument != null &&
+                        argument.entries.all { it is KtLiteralStringTemplateEntry || it is KtEscapeStringTemplateEntry } &&
+                        matches(SkelligUtil.extractTextFromKotlinString(argument))
+                    ) {
+                        results.add(argument)
+                    }
                 }
             }
+        }
+    }
 
-        return resolvedElements.mapNotNull { it.getElement() }.map { PsiElementResolveResult(it) }.toTypedArray()
+    private fun collectRunTestUsages(
+        file: PsiFile,
+        name: SkelligTestStepTestStepName,
+        results: MutableSet<PsiElement>,
+    ) {
+        for (call in PsiTreeUtil.findChildrenOfType(file, SkelligTestStepFunctionExpression::class.java)) {
+            ProgressManager.checkCanceled()
+            if (call.functionName.text != "runTest") continue
+            val sample = call.argList.firstOrNull()?.let { SkelligTestStepRunTestReference.sampleName(it) } ?: continue
+            if (SkelligTestStepRunTestReference.matches(name, sample)) results.add(call)
+        }
     }
 
     override fun equals(other: Any?): Boolean =
