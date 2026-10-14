@@ -241,6 +241,174 @@ class SkelligTestStepReferenceTest {
         });
     }
 
+    @Test void runTestResolvesLiteralNamesAcrossFiles() throws Exception {
+        withFixture("runTestLiteral", fixture -> {
+            PsiFile declaration = fixture.addFile("target.sts", "name(\"Event inserted in database\") { }");
+            PsiFile caller = fixture.addFile("caller.sts", """
+                name("caller") {
+                    runTest("Event inserted in database") { }
+                    runTest("Missing step") { }
+                }
+                """);
+            fixture.ready();
+            ReadAction.run(() -> {
+                var calls = PsiTreeUtil.findChildrenOfType(caller, SkelligTestStepFunctionExpression.class).stream().toList();
+                var reference = calls.get(0).getReference();
+                assertNotNull(reference);
+                assertInstanceOf(org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName.class, reference.resolve());
+                assertSame(declaration, reference.resolve().getContainingFile());
+                assertEquals("Event inserted in database", reference.getRangeInElement().substring(calls.get(0).getText()));
+                assertNotNull(caller.findReferenceAt(calls.get(0).getTextOffset() + reference.getRangeInElement().getStartOffset()));
+                assertTrue(reference.isReferenceTo(reference.resolve()));
+                assertNull(calls.get(1).getReference().resolve());
+            });
+        });
+    }
+
+    @Test void runTestMatchesRegexWithConcatenatedParameters() throws Exception {
+        withFixture("runTestRegex", fixture -> {
+            PsiFile declaration = fixture.addFile("target.sts", """
+                name ("Add event with available seats (.+)") { }
+                name ("Event ([a-zA-Z0-9]+) in (.+)") { }
+                """);
+            PsiFile caller = fixture.addFile("caller.sts", """
+                name("caller") {
+                    runTest("Add event with available seats " + ${1}) { }
+                    runTest("Event " + ${eventId} + " in " + get(location)) { }
+                    runTest(${unknown}) { }
+                    runTest("Event " + get(location).values + " in " + ${1}) { }
+                }
+                """);
+            fixture.ready();
+            ReadAction.run(() -> {
+                var calls = PsiTreeUtil.findChildrenOfType(caller, SkelligTestStepFunctionExpression.class).stream()
+                    .filter(call -> call.getFunctionName().getText().equals("runTest")).toList();
+                var first = calls.get(0).getReference();
+                assertNotNull(first);
+                assertEquals("Add event with available seats a", first.getCanonicalText());
+                assertEquals("Add event with available seats (.+)",
+                    ((org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName) first.resolve()).getName());
+                var second = calls.get(1).getReference();
+                assertNotNull(second);
+                assertEquals("Event a in a", second.getCanonicalText());
+                assertSame(declaration, second.resolve().getContainingFile());
+                assertNull(calls.get(2).getReference());
+                var chained = calls.get(3).getReference();
+                assertNotNull(chained);
+                assertEquals("Event a in a", chained.getCanonicalText());
+                assertSame(declaration, chained.resolve().getContainingFile());
+            });
+        });
+    }
+
+    @Test void runTestHandlesAmbiguousAndInvalidPatterns() throws Exception {
+        withFixture("runTestAmbiguous", fixture -> {
+            fixture.addFile("patterns.sts", """
+                name("Event (.+)") { }
+                name("Event [a-z]+") { }
+                name("Broken [") { }
+                """);
+            PsiFile caller = fixture.addFile("caller.sts", """
+                name("caller") {
+                    runTest("Event " + ${1}) { }
+                    runTest("No match") { }
+                    runTest("x" - ${1}) { }
+                }
+                """);
+            fixture.ready();
+            ReadAction.run(() -> {
+                var calls = PsiTreeUtil.findChildrenOfType(caller, SkelligTestStepFunctionExpression.class).stream().toList();
+                var reference = (PsiPolyVariantReference) calls.get(0).getReference();
+                assertNotNull(reference);
+                assertEquals(2, reference.multiResolve(false).length);
+                assertNull(reference.resolve());
+                assertEquals(0, ((PsiPolyVariantReference) calls.get(1).getReference()).multiResolve(false).length);
+                assertNull(calls.get(2).getReference());
+            });
+        });
+    }
+
+    @Test void nameNavigationCombinesFeatureJavaKotlinAndRunTestUsages() throws Exception {
+        withFixture("combinedNameUsages", fixture -> {
+            PsiFile declaration = fixture.addFile("target.sts", "name(\"Event inserted in database\") { }");
+            fixture.addFile("usage.sf", """
+                Feature: Event
+                  Scenario: Insert event
+                    Given Event inserted in database
+                """);
+            fixture.addFile("Usage.java", """
+                class Usage {
+                    void execute() { run("Event inserted in database"); }
+                    void run(String name) { }
+                }
+                """);
+            fixture.addFile("Usage.kt", """
+                fun execute() { run("Event inserted in database") }
+                fun run(name: String) { }
+                """);
+            fixture.addFile("calls.sts", """
+                name("caller") {
+                    runTest("Event inserted in database") { }
+                    runTest("unrelated") { }
+                }
+                """);
+            fixture.ready();
+            ReadAction.run(() -> {
+                var name = PsiTreeUtil.findChildOfType(declaration,
+                    org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName.class);
+                assertNotNull(name);
+                var results = ((PsiPolyVariantReference) name.getReference()).multiResolve(false);
+                assertEquals(4, results.length);
+                var files = java.util.Arrays.stream(results).map(result -> result.getElement().getContainingFile().getName())
+                    .collect(java.util.stream.Collectors.toSet());
+                assertEquals(java.util.Set.of("usage.sf", "Usage.java", "Usage.kt", "calls.sts"), files);
+                assertEquals(1, java.util.Arrays.stream(results)
+                    .filter(result -> result.getElement() instanceof SkelligTestStepFunctionExpression).count());
+            });
+        });
+    }
+
+    @Test void regexNameNavigationFindsSameFileAndNestedRunTestCalls() throws Exception {
+        withFixture("reverseRegex", fixture -> {
+            PsiFile declaration = fixture.addFile("target.sts", """
+                name("Add event with available seats (.+)") { }
+                name("local caller") {
+                    runTest("Add event with available seats " + ${1}) { }
+                }
+                """);
+            PsiFile calls = fixture.addFile("calls.sts", """
+                name("caller") {
+                    message = toJson({
+                        result = runTest("Add event with available seats " + get(step).values)
+                    })
+                    runTest("Different event " + ${1}) { }
+                }
+                """);
+            fixture.ready();
+            ReadAction.run(() -> {
+                var name = PsiTreeUtil.findChildOfType(declaration,
+                    org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName.class);
+                assertNotNull(name);
+                var reverse = (PsiPolyVariantReference) name.getReference();
+                var results = reverse.multiResolve(false);
+                assertEquals(2, results.length);
+                for (var result : results) {
+                    var call = assertInstanceOf(SkelligTestStepFunctionExpression.class, result.getElement());
+                    assertTrue(call.getReference().isReferenceTo(name));
+                    assertTrue(reverse.isReferenceTo(call));
+                }
+                assertTrue(java.util.Arrays.stream(results).anyMatch(result -> result.getElement().getContainingFile() == calls));
+            });
+            fixture.replace(calls, calls.getText().replace("Add event with available seats ", "Changed event "));
+            fixture.ready();
+            ReadAction.run(() -> {
+                var name = PsiTreeUtil.findChildOfType(declaration,
+                    org.skellig.plugin.language.teststep.psi.SkelligTestStepTestStepName.class);
+                assertEquals(1, ((PsiPolyVariantReference) name.getReference()).multiResolve(false).length);
+            });
+        });
+    }
+
     private void withFixture(String name, Consumer<Fixture> test) throws Exception {
         EdtTestUtil.runInEdtAndWait(() -> {
             TestApplicationManager.getInstance();
