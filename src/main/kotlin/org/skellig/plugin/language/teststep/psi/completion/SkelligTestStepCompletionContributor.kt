@@ -7,6 +7,7 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
+import com.intellij.psi.PsiElement
 import com.intellij.util.ProcessingContext
 import org.skellig.plugin.language.teststep.SkelligTestStepLexerAdapter
 import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
@@ -69,6 +70,29 @@ class SkelligTestStepCompletionContributor : CompletionContributor() {
                     context: ProcessingContext,
                     result: CompletionResultSet,
                 ) {
+                    if (SkelligTestStepChainedFunctions.isAfterDot(
+                            parameters.originalFile.text,
+                            parameters.offset - result.prefixMatcher.prefix.length,
+                        )
+                    ) {
+                        SkelligTestStepChainedFunctions.names.forEach { name ->
+                            result.addElement(
+                                LookupElementBuilder
+                                    .create(name)
+                                    .withTailText("()")
+                                    .withTypeText("Skellig function")
+                                    .withInsertHandler { insertion, _ ->
+                                        val offset = insertion.tailOffset
+                                        if (insertion.document.charsSequence.getOrNull(offset) != '(') {
+                                            insertion.document.insertString(offset, "()")
+                                        }
+                                        insertion.editor.caretModel.moveToOffset(offset + 1)
+                                        insertion.setAddCompletionChar(false)
+                                    },
+                            )
+                        }
+                        return
+                    }
                     parameters.originalPosition?.text?.let { currentText ->
                         keywords
                             .filter { it.startsWith(currentText) }
@@ -99,6 +123,11 @@ class SkelligTestStepCompletionContributor : CompletionContributor() {
             },
         )
     }
+
+    override fun invokeAutoPopup(
+        context: PsiElement,
+        charTyped: Char,
+    ): Boolean = charTyped == '.'
 
     private fun isTopLevel(parameters: CompletionParameters): Boolean {
         // Incomplete declarations may not have object PSI yet, so inspect delimiters before the caret.
