@@ -59,6 +59,9 @@
 
         <fileType name="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepFileType"
                   fieldName="INSTANCE" language="SkelligTestStep" extensions="sts;ts"/>
+        <fileBasedIndex implementation="org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepGetTargetIndex"/>
+        <lang.findUsagesProvider language="SkelligTestStep"
+                                 implementationClass="org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepFindUsagesProvider"/>
         <lang.parserDefinition language="SkelligTestStep"
                                implementationClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepParserDefinition"/>
         <lang.syntaxHighlighterFactory language="SkelligTestStep"

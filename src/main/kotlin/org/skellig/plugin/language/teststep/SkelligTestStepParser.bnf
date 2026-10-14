@@ -65,10 +65,14 @@ pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE* {
   name = "Property [= Value | { } | [ ] ] pair"
 }
 key ::= expression+ {
+  implements="com.intellij.psi.PsiNameIdentifierOwner"
   mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepKeyMixin"
 }
 
-value ::= expression+
+value ::= expression+ {
+  implements="com.intellij.psi.PsiNameIdentifierOwner"
+  mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepValueMixin"
+}
 allValues ::= value | map | array {
     name = "Value or Map or Array declaration"
 }

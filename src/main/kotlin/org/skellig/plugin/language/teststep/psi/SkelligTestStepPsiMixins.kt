@@ -6,6 +6,7 @@ import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import org.skellig.plugin.language.teststep.SkelligTestStepPsiImplUtil
+import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepGetTargets
 
 // Keep custom PSI behavior in source so headless Grammar-Kit generation does not
 // need to resolve utility methods before the generated PSI types exist.
@@ -35,6 +36,15 @@ abstract class SkelligTestStepKeyMixin(
     node: ASTNode,
 ) : ASTWrapperPsiElement(node),
     SkelligTestStepKey {
+    override fun getName(): String? = SkelligTestStepGetTargets.stateName(this)
+
+    override fun getNameIdentifier(): PsiElement? = if (name != null) expressionList.singleOrNull()?.firstChild else null
+
+    override fun setName(name: String): PsiElement {
+        if (this.name != null) SkelligTestStepGetTargets.renameLiteral(expressionList.single(), name)
+        return this
+    }
+
     override fun getPresentation(): ItemPresentation = SkelligTestStepPsiImplUtil.getPresentation(this)
 }
 
@@ -42,7 +52,7 @@ abstract class SkelligTestStepFunctionMixin(
     node: ASTNode,
 ) : ASTWrapperPsiElement(node),
     SkelligTestStepFunctionExpression {
-    override fun getReference(): PsiReference = SkelligTestStepPsiImplUtil.getReference(this)
+    override fun getReference(): PsiReference? = SkelligTestStepPsiImplUtil.getReference(this)
 }
 
 abstract class SkelligTestStepReferenceMixin(
@@ -50,4 +60,18 @@ abstract class SkelligTestStepReferenceMixin(
 ) : ASTWrapperPsiElement(node),
     SkelligTestStepReferenceKey {
     override fun getReference(): PsiReference = SkelligTestStepPsiImplUtil.getReference(this)
+}
+
+abstract class SkelligTestStepValueMixin(
+    node: ASTNode,
+) : ASTWrapperPsiElement(node),
+    SkelligTestStepValue {
+    override fun getName(): String? = SkelligTestStepGetTargets.idName(this)
+
+    override fun getNameIdentifier(): PsiElement? = if (name != null) expressionList.singleOrNull()?.firstChild else null
+
+    override fun setName(name: String): PsiElement {
+        if (this.name != null) SkelligTestStepGetTargets.renameLiteral(expressionList.single(), name)
+        return this
+    }
 }
