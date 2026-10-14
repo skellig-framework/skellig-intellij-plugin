@@ -96,6 +96,7 @@ functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION
 }
 functionName ::= ID {
  name = "Function name"
+ mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepFunctionNameMixin"
 }
 testStepPropertyKeywords ::= (VALUES | STATE | VALIDATE | WHERE | PAYLOAD | BODY | MESSAGE | REQUEST ) {
   name = "Test Step keywords"
