@@ -6,6 +6,7 @@ import com.intellij.navigation.ItemPresentation
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import org.skellig.plugin.language.teststep.SkelligTestStepPsiImplUtil
+import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepFunctionImplementationReference
 import org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepGetTargets
 
 // Keep custom PSI behavior in source so headless Grammar-Kit generation does not
@@ -74,4 +75,11 @@ abstract class SkelligTestStepValueMixin(
         if (this.name != null) SkelligTestStepGetTargets.renameLiteral(expressionList.single(), name)
         return this
     }
+}
+
+abstract class SkelligTestStepFunctionNameMixin(
+    node: ASTNode,
+) : ASTWrapperPsiElement(node),
+    SkelligTestStepFunctionName {
+    override fun getReference(): PsiReference = SkelligTestStepFunctionImplementationReference(this)
 }
