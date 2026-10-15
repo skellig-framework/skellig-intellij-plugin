@@ -34,3 +34,47 @@ To use an existing IDE installation instead of downloading it:
 ```
 
 Run `./gradlew verifyPlugin` to check binary compatibility with the target IDE.
+
+## Publishing to JetBrains Marketplace
+
+Use JDK 27. Set `pluginVersion` in `gradle.properties` to an unused release version;
+`platformVersion` controls the IDE used to build the plugin and is independent.
+The plugin ID remains `org.skellig.plugin.language` so uploads update the existing listing.
+The minimum supported IDE build remains `262.10968.63`. The upper compatibility
+limit is unset following JetBrains' recommendation for current platforms; set
+`pluginUntilBuild` explicitly if a future release needs a limit.
+
+Prepare the ZIP and run unit tests, style checks, descriptor validation, and binary
+compatibility verification without uploading anything:
+
+```shell
+./gradlew prepareMarketplaceRelease
+```
+
+Create a Marketplace token in your JetBrains account and provide it as the
+`PUBLISH_TOKEN` environment variable in your terminal or IntelliJ Gradle run configuration.
+Keep the token out of project files and version control.
+
+```shell
+./gradlew publishPlugin
+```
+
+Publishing runs the same release checks before uploading to the stable `default`
+channel. To upload to a custom channel:
+
+```shell
+./gradlew publishPlugin -PpluginChannels=beta
+```
+
+You can append `-PlocalPlatformPath="/Applications/IntelliJ IDEA.app/Contents"` to
+these commands to build and verify against your installed macOS IDE.
+The verification tools may need to be downloaded on the first run.
+
+Optional author signing is configured through `CERTIFICATE_CHAIN`, `PRIVATE_KEY`,
+and `PRIVATE_KEY_PASSWORD` environment variables. The first two contain the PEM
+certificate chain and private key. When supplied, Gradle signs the ZIP before uploading;
+otherwise signing is skipped. See [JetBrains plugin signing documentation](https://plugins.jetbrains.com/docs/intellij/plugin-signing.html).
+
+For a plugin's first Marketplace publication, upload the ZIP from `build/distributions`
+manually to create the listing. Later versions can use `publishPlugin`.
+See [JetBrains publishing documentation](https://plugins.jetbrains.com/docs/intellij/publishing-plugin.html).

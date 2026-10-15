@@ -79,6 +79,10 @@
         <completion.contributor language="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.completion.SkelligTestStepCompletionContributor"/>
     </extensions>
 
+    <extensions defaultExtensionNs="org.jetbrains.kotlin">
+        <supportsKotlinPluginMode supportsK1="false" supportsK2="true"/>
+    </extensions>
+
     <extensionPoints>
         <extensionPoint name="skelligExtensionPoint"
                         interface="org.skellig.plugin.language.feature.steps.reference.SkelligExtensionPoint"/>

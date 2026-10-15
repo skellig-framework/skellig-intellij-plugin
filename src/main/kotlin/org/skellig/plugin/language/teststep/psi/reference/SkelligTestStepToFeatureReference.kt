@@ -15,12 +15,11 @@ import com.intellij.psi.PsiPolyVariantReference
 import com.intellij.psi.ResolveResult
 import com.intellij.psi.SmartPointerManager
 import com.intellij.psi.SmartPsiElementPointer
-import com.intellij.psi.impl.cache.impl.id.IdIndex
-import com.intellij.psi.impl.cache.impl.id.IdIndexEntry
 import com.intellij.psi.impl.source.resolve.ResolveCache
 import com.intellij.psi.search.FileTypeIndex
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.psi.search.ProjectScope
+import com.intellij.psi.search.PsiSearchHelper
 import com.intellij.psi.util.CachedValueProvider
 import com.intellij.psi.util.CachedValuesManager
 import com.intellij.psi.util.PsiModificationTracker
@@ -151,13 +150,20 @@ open class SkelligTestStepToFeatureReference(
         results: MutableSet<PsiElement>,
     ) {
         val languages = GlobalSearchScope.getScopeRestrictedByFileTypes(scope, JavaFileType.INSTANCE, KotlinFileType.INSTANCE)
-        val manager = PsiManager.getInstance(element.project)
-        // Use the word index to avoid parsing every Java/Kotlin file whenever
-        // the usage cache is invalidated by an edit.
-        for (file in FileBasedIndex.getInstance().getContainingFiles(IdIndex.NAME, IdIndexEntry("run", true), languages)) {
+        val files = mutableSetOf<PsiFile>()
+        // Keep the indexed candidate search behind the public PSI search API.
+        PsiSearchHelper.getInstance(element.project).processAllFilesWithWord(
+            "run",
+            languages,
+            { file ->
+                files.add(file)
+                true
+            },
+            true,
+        )
+        for (psiFile in files) {
             ProgressManager.checkCanceled()
-            val psiFile = manager.findFile(file) ?: continue
-            if (file.fileType == JavaFileType.INSTANCE) {
+            if (psiFile.fileType == JavaFileType.INSTANCE) {
                 for (call in PsiTreeUtil.findChildrenOfType(psiFile, PsiMethodCallExpression::class.java)) {
                     val argument = call.argumentList.expressions.firstOrNull() as? PsiLiteralExpression
                     val text = argument?.value as? String

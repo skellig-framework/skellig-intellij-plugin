@@ -63,6 +63,8 @@ dependencies {
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(27))
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.test {
@@ -107,8 +109,30 @@ intellijPlatform {
     }
 
     publishing {
-        token.set(providers.environmentVariable("PUBLISH_TOKEN"))
+        token.set(providers.environmentVariable("PUBLISH_SKELLIG_PLUGIN_TOKEN"))
+        channels.set(
+            providers.gradleProperty("pluginChannels").orElse("default").map { channels ->
+                channels.split(',').map(String::trim).filter(String::isNotEmpty)
+            },
+        )
     }
+
+    signing {
+        certificateChain.set(providers.environmentVariable("CERTIFICATE_CHAIN"))
+        privateKey.set(providers.environmentVariable("PRIVATE_KEY"))
+        password.set(providers.environmentVariable("PRIVATE_KEY_PASSWORD"))
+    }
+}
+
+val prepareMarketplaceRelease =
+    tasks.register("prepareMarketplaceRelease") {
+        group = "intellij platform"
+        description = "Builds and verifies the plugin ZIP for JetBrains Marketplace without uploading it."
+        dependsOn("test", "ktlintCheck", "verifyPluginProjectConfiguration", "verifyPluginStructure", "verifyPlugin", "buildPlugin")
+    }
+
+tasks.named("publishPlugin") {
+    dependsOn(prepareMarketplaceRelease)
 }
 
 detekt {
