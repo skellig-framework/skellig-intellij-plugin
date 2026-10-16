@@ -17,6 +17,7 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
                 AttributesDescriptor("TEXT", SkelligTestStepHighlighter.TEXT),
                 AttributesDescriptor("COMMENT", SkelligTestStepHighlighter.COMMENT),
                 AttributesDescriptor("KEYWORD", SkelligTestStepHighlighter.KEYWORD),
+                AttributesDescriptor("PROPERTY", SkelligTestStepHighlighter.PROPERTY),
                 AttributesDescriptor("STRING", SkelligTestStepHighlighter.STRING),
                 AttributesDescriptor("BRACKETS", SkelligTestStepHighlighter.BRACKETS),
                 AttributesDescriptor("REFERENCE", SkelligTestStepHighlighter.REFERENCE),
@@ -35,27 +36,35 @@ class SkelligTestStepColorsPage : ColorSettingsPage {
     override fun getDemoText(): String =
         """
            // comment
-           name ("test 1") {
-              id = test1
+           <keyword>name</keyword> ("test 1") {
+              <property>id</property> = test1
               
-              values {
-                 a = "string value"
-                 b [
+              <keyword>values</keyword> {
+                 <property>a</property> = "string value"
+                 <property>b</property> [
                    1,
                    2
                  ]
-                 c = $\{property1}
+                 <property>c</property> = $\{property1}
               }
               
-              validate {
-                 body.jsonPath(a.b.c) = contains(text)
-                 status = $\{status}
+              <property>metadata</property> {
+                 <property>name</property> = "nested object"
+              }
+
+              <keyword>validate</keyword> {
+                 <property>body</property>.jsonPath(a.b.c) = contains(text)
+                 <property>status</property> = $\{status}
               }
            }
         """.replace("\\", "").trimIndent()
 
-    @Nullable
-    override fun getAdditionalHighlightingTagToDescriptorMap(): @Nullable MutableMap<String, TextAttributesKey>? = null
+    @NotNull
+    override fun getAdditionalHighlightingTagToDescriptorMap(): MutableMap<String, TextAttributesKey> =
+        mutableMapOf(
+            "keyword" to SkelligTestStepHighlighter.KEYWORD,
+            "property" to SkelligTestStepHighlighter.PROPERTY,
+        )
 
     @NotNull
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> = ATTRS

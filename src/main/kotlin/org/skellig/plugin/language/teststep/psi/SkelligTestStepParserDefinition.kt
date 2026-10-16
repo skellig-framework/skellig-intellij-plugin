@@ -8,7 +8,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.FileViewProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
@@ -41,13 +40,12 @@ class SkelligTestStepParserDefinition : ParserDefinition {
         if (leftElementType === SkelligTestStepTypes.COMMENT) {
             return ParserDefinition.SpaceRequirements.MUST_LINE_BREAK
         }
-        return if (right.elementType === SkelligTestStepTypes.VALUE_ASSIGN) {
-            ParserDefinition.SpaceRequirements.MUST_LINE_BREAK
+        return if (right.elementType === SkelligTestStepTypes.VALUE_ASSIGN || left.elementType === SkelligTestStepTypes.VALUE_ASSIGN) {
+            ParserDefinition.SpaceRequirements.MUST
         } else {
             ParserDefinition.SpaceRequirements.MAY
         }
     }
 }
 
-private val WHITESPACE: TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
 private val COMMENTS: TokenSet = TokenSet.create(SkelligTestStepTypes.COMMENT)

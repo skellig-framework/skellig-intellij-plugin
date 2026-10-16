@@ -49,6 +49,7 @@
 
 file ::= testStepNameExpression*
 testStepNameExpression ::= NEWLINE* testNameKeyword FUNCTION_L_BRACKET testStepName FUNCTION_R_BRACKET NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET NEWLINE* {
+ pin = 8
  name = "Test Step declaration"
    mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepDeclarationMixin"
 }
@@ -64,18 +65,24 @@ pair ::= key (VALUE_ASSIGN value | map | array) NEWLINE* {
   name = "Property [= Value | { } | [ ] ] pair"
 }
 key ::= expression+ {
+  implements="com.intellij.psi.PsiNameIdentifierOwner"
   mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepKeyMixin"
 }
 
-value ::= expression+
+value ::= expression+ {
+  implements="com.intellij.psi.PsiNameIdentifierOwner"
+  mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepValueMixin"
+}
 allValues ::= value | map | array {
     name = "Value or Map or Array declaration"
 }
 
 array ::= NEWLINE* ARRAY_L_BRACKET NEWLINE* (allValues (COMMA NEWLINE? allValues)*)? NEWLINE* ARRAY_R_BRACKET NEWLINE* {
+  pin = 2
   name = "Array declaration"
 }
 map ::= NEWLINE* OBJECT_L_BRACKET NEWLINE* pair* NEWLINE* OBJECT_R_BRACKET {
+   pin = 2
    name = "Map declaration"
 }
 
@@ -83,16 +90,18 @@ expression ::= referenceExpression | functionExpression | testStepPropertyKeywor
     name = "Property, Value or Expression declaration"
 }
 functionExpression ::= functionName FUNCTION_L_BRACKET arg (COMMA arg)* FUNCTION_R_BRACKET {
+ pin = 2
  name = "Function declaration"
  mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepFunctionMixin"
 }
 functionName ::= ID {
  name = "Function name"
+ mixin="org.skellig.plugin.language.teststep.psi.SkelligTestStepFunctionNameMixin"
 }
 testStepPropertyKeywords ::= (VALUES | STATE | VALIDATE | WHERE | PAYLOAD | BODY | MESSAGE | REQUEST ) {
   name = "Test Step keywords"
 }
-arg ::= expression* {
+arg ::= NEWLINE* (map | expression*) NEWLINE* {
   name = "Function arguments"
 }
 referenceExpression ::= REFERENCE_BRACKET referenceKey+ (COMMA expression*)? OBJECT_R_BRACKET

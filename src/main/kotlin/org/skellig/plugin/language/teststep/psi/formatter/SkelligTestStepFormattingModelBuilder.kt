@@ -11,7 +11,7 @@ class SkelligTestStepFormattingModelBuilder : FormattingModelBuilder {
         return FormattingModelProvider
             .createFormattingModelForPsiFile(
                 formattingContext.containingFile,
-                SkelligTestStepBlock(formattingContext.node),
+                SkelligTestStepBlock(formattingContext.containingFile.node),
                 codeStyleSettings,
             )
     }

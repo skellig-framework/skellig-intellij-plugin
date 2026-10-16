@@ -59,6 +59,9 @@
 
         <fileType name="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepFileType"
                   fieldName="INSTANCE" language="SkelligTestStep" extensions="sts;ts"/>
+        <fileBasedIndex implementation="org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepGetTargetIndex"/>
+        <lang.findUsagesProvider language="SkelligTestStep"
+                                 implementationClass="org.skellig.plugin.language.teststep.psi.reference.SkelligTestStepFindUsagesProvider"/>
         <lang.parserDefinition language="SkelligTestStep"
                                implementationClass="org.skellig.plugin.language.teststep.psi.SkelligTestStepParserDefinition"/>
         <lang.syntaxHighlighterFactory language="SkelligTestStep"
@@ -74,7 +77,10 @@
         <lang.psiStructureViewFactory language="SkelligTestStep"
                                       implementationClass="org.skellig.plugin.language.teststep.psi.view.SkelligTestStepKeyStructureViewFactory"/>
         <completion.contributor language="SkelligTestStep" implementationClass="org.skellig.plugin.language.teststep.psi.completion.SkelligTestStepCompletionContributor"/>
-        <enterHandlerDelegate implementation="org.skellig.plugin.language.teststep.psi.formatter.DefaultEnterHandlerDelegate" />
+    </extensions>
+
+    <extensions defaultExtensionNs="org.jetbrains.kotlin">
+        <supportsKotlinPluginMode supportsK1="false" supportsK2="true"/>
     </extensions>
 
     <extensionPoints>

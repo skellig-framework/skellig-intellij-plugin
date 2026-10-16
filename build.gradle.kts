@@ -1,4 +1,5 @@
 import dev.detekt.gradle.Detekt
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.tasks.BaseKtLintCheckTask
@@ -50,12 +51,26 @@ dependencies {
         }
         bundledPlugins("com.intellij.java", "org.jetbrains.kotlin")
         plugin("org.jetbrains.plugins.hocon", providers.gradleProperty("hoconPluginVersion").get())
+        testFramework(TestFrameworkType.Platform)
     }
+    testImplementation(platform("org.junit:junit-bom:5.14.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    // IntelliJ's ParsingTestCase still extends junit.framework.TestCase.
+    testImplementation("junit:junit:4.13.2")
     detektPlugins("dev.detekt:detekt-rules-ktlint-wrapper:2.0.0-alpha.6")
 }
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(27))
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+tasks.test {
+    useJUnitPlatform {
+        includeEngines("junit-jupiter")
+    }
 }
 
 kotlin {
@@ -94,8 +109,30 @@ intellijPlatform {
     }
 
     publishing {
-        token.set(providers.environmentVariable("PUBLISH_TOKEN"))
+        token.set(providers.environmentVariable("PUBLISH_SKELLIG_PLUGIN_TOKEN"))
+        channels.set(
+            providers.gradleProperty("pluginChannels").orElse("default").map { channels ->
+                channels.split(',').map(String::trim).filter(String::isNotEmpty)
+            },
+        )
     }
+
+    signing {
+        certificateChain.set(providers.environmentVariable("CERTIFICATE_CHAIN"))
+        privateKey.set(providers.environmentVariable("PRIVATE_KEY"))
+        password.set(providers.environmentVariable("PRIVATE_KEY_PASSWORD"))
+    }
+}
+
+val prepareMarketplaceRelease =
+    tasks.register("prepareMarketplaceRelease") {
+        group = "intellij platform"
+        description = "Builds and verifies the plugin ZIP for JetBrains Marketplace without uploading it."
+        dependsOn("test", "ktlintCheck", "verifyPluginProjectConfiguration", "verifyPluginStructure", "verifyPlugin", "buildPlugin")
+    }
+
+tasks.named("publishPlugin") {
+    dependsOn(prepareMarketplaceRelease)
 }
 
 detekt {

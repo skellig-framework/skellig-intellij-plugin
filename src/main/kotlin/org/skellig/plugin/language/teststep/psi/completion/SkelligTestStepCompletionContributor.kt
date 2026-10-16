@@ -7,7 +7,10 @@ import com.intellij.codeInsight.completion.CompletionResultSet
 import com.intellij.codeInsight.completion.CompletionType
 import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.patterns.PlatformPatterns
+import com.intellij.psi.PsiElement
 import com.intellij.util.ProcessingContext
+import org.skellig.plugin.language.teststep.SkelligTestStepLexerAdapter
+import org.skellig.plugin.language.teststep.psi.SkelligTestStepTypes
 
 private const val NAME = "name"
 
@@ -67,6 +70,29 @@ class SkelligTestStepCompletionContributor : CompletionContributor() {
                     context: ProcessingContext,
                     result: CompletionResultSet,
                 ) {
+                    if (SkelligTestStepChainedFunctions.isAfterDot(
+                            parameters.originalFile.text,
+                            parameters.offset - result.prefixMatcher.prefix.length,
+                        )
+                    ) {
+                        SkelligTestStepChainedFunctions.names.forEach { name ->
+                            result.addElement(
+                                LookupElementBuilder
+                                    .create(name)
+                                    .withTailText("()")
+                                    .withTypeText("Skellig function")
+                                    .withInsertHandler { insertion, _ ->
+                                        val offset = insertion.tailOffset
+                                        if (insertion.document.charsSequence.getOrNull(offset) != '(') {
+                                            insertion.document.insertString(offset, "()")
+                                        }
+                                        insertion.editor.caretModel.moveToOffset(offset + 1)
+                                        insertion.setAddCompletionChar(false)
+                                    },
+                            )
+                        }
+                        return
+                    }
                     parameters.originalPosition?.text?.let { currentText ->
                         keywords
                             .filter { it.startsWith(currentText) }
@@ -78,11 +104,16 @@ class SkelligTestStepCompletionContributor : CompletionContributor() {
                                             context.document.insertString(context.selectionEndOffset, " { }")
                                             context.editor.caretModel.moveToOffset(context.selectionEndOffset - 1)
                                         }
-                                } else if (NAME == it) {
+                                } else if (NAME == it && isTopLevel(parameters)) {
                                     element =
                                         element.withInsertHandler { context, _ ->
-                                            context.document.insertString(context.selectionEndOffset, " (\"\") { }")
-                                            context.editor.caretModel.moveToOffset(context.selectionEndOffset - 1)
+                                            val insertionOffset = context.selectionEndOffset
+                                            val testName = "Test name"
+                                            context.document.insertString(insertionOffset, " (\"$testName\") {\n}")
+                                            val nameStart = insertionOffset + " (\"".length
+                                            context.editor.caretModel.moveToOffset(nameStart)
+                                            context.editor.selectionModel.setSelection(nameStart, nameStart + testName.length)
+                                            context.setAddCompletionChar(false)
                                         }
                                 }
                                 result.addElement(element)
@@ -91,5 +122,32 @@ class SkelligTestStepCompletionContributor : CompletionContributor() {
                 }
             },
         )
+    }
+
+    override fun invokeAutoPopup(
+        context: PsiElement,
+        charTyped: Char,
+    ): Boolean = charTyped == '.'
+
+    private fun isTopLevel(parameters: CompletionParameters): Boolean {
+        // Incomplete declarations may not have object PSI yet, so inspect delimiters before the caret.
+        val lexer = SkelligTestStepLexerAdapter()
+        lexer.start(parameters.originalFile.text, 0, parameters.offset)
+        var depth = 0
+        while (lexer.tokenType != null) {
+            when (lexer.tokenType) {
+                SkelligTestStepTypes.OBJECT_L_BRACKET,
+                SkelligTestStepTypes.REFERENCE_BRACKET,
+                SkelligTestStepTypes.FUNCTION_L_BRACKET,
+                SkelligTestStepTypes.ARRAY_L_BRACKET,
+                -> depth++
+                SkelligTestStepTypes.OBJECT_R_BRACKET,
+                SkelligTestStepTypes.FUNCTION_R_BRACKET,
+                SkelligTestStepTypes.ARRAY_R_BRACKET,
+                -> depth = (depth - 1).coerceAtLeast(0)
+            }
+            lexer.advance()
+        }
+        return depth == 0
     }
 }
